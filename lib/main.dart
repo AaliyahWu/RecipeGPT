@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screen/openai_entry_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,6 +13,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      initialRoute: '/',
+      routes: {
+        '/openai': (context) => const OpenAIEntryScreen(), //新增連到食譜產生畫面的路徑
+      },
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -68,6 +73,10 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  final List<Widget> _pageList = [
+    const OpenAIEntryScreen(), //測試加入按鈕 跳轉業面
+  ];
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -111,6 +120,16 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+
+            // 以下按鈕為按下 傳送路徑到/openai
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  elevation: 9.0, textStyle: const TextStyle(fontSize: 20)),
+              onPressed: () {
+                Navigator.pushNamed(context, '/openai');
+              },
+              child: const Text('openai'),
             ),
           ],
         ),
