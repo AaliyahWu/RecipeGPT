@@ -9,12 +9,13 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   String _chatResponse = '';
   TextEditingController _textEditingController = TextEditingController();
+  int _selectedPeople = 1; // 選擇的人數，預設為1
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat Page'),
+        title: Text('生成食譜'),
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
@@ -40,7 +41,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   child: Center(
                     child: Text(
-                      _chatResponse.isNotEmpty ? _chatResponse : 'Hello!',
+                      _chatResponse.isNotEmpty ? _chatResponse : '輸入食材，產生食譜吧!',
                       style: TextStyle(fontSize: 18.0),
                     ),
                   ),
@@ -48,10 +49,25 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
             SizedBox(height: 20.0),
+            DropdownButtonFormField<int>(
+              value: _selectedPeople,
+              onChanged: (value) {
+                setState(() {
+                  _selectedPeople = value!;
+                });
+              },
+              items: List.generate(10, (index) {
+                return DropdownMenuItem<int>(
+                  value: index + 1,
+                  child: Text('${index + 1} 人份'),
+                );
+              }),
+            ),
+            SizedBox(height: 20.0),
             TextField(
               controller: _textEditingController,
               decoration: InputDecoration(
-                hintText: 'Enter your message...',
+                hintText: '請輸入食材...',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -60,7 +76,7 @@ class _ChatPageState extends State<ChatPage> {
               onPressed: () {
                 _startChat(_textEditingController.text);
               },
-              child: Text('Start Chat'),
+              child: Text('產生食譜'),
             ),
           ],
         ),
@@ -69,7 +85,9 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _startChat(String prompt) async {
-    String? response = await ChatService().request(prompt);
+    // String? response = await ChatService().request(prompt); //原本只有食材內容
+    String? response = await ChatService().request(prompt,
+        _selectedPeople); //在 _startChat 方法中，將 _selectedPeople 傳遞給 ChatService 的 request 方法
     setState(() {
       _chatResponse = response ?? 'No response';
     });

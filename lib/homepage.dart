@@ -50,7 +50,7 @@ class _BottomNavBarState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ElevatedButton(
-                  child: Text('openai'),
+                  child: Text('生成食譜'),
                   onPressed: () {
                     Navigator.push(
                       context,

@@ -13,12 +13,24 @@ class ChatService {
     'Authorization': 'Bearer ${ApiKey.openAIApiKey}',
   };
 
-  Future<String?> request(String prompt) async {
+  Future<String?> request(String prompt, int people) async {
+    String strPeople = people.toString();
+
     try {
       ChatRequest request = ChatRequest(
           model: "gpt-3.5-turbo",
-          maxTokens: 150,
-          messages: [Message(role: "system", content: prompt)]);
+          // maxTokens: 150,
+          messages: [
+            Message(
+              role: "system",
+              // people: people,
+              content: "先顯示食譜名稱。" +
+                  strPeople +
+                  "人份。偏好增肌。請僅用下列食材，編號條列產生製作過程(含調味料的份量)。" +
+                  prompt,
+            )
+          ]);
+
       if (prompt.isEmpty) {
         return null;
       }

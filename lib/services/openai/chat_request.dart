@@ -70,12 +70,14 @@ class ChatRequest {
 class Message {
   final String? role;
   final String? content;
+  final int? people;
 
-  Message({this.role, this.content});
+  Message({this.role, this.content, this.people});
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       role: json['role'],
+      people: json['people'],
       content: json['content'],
     );
   }
