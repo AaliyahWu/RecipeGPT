@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:recipe_gpt/homepage.dart';
+//import 'package:recipe_gpt/homepage.dart';
+import 'package:recipe_gpt/login3.dart';
 
 void main() {
   runApp(const Login());
@@ -62,7 +63,7 @@ class LoginCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
+                    MaterialPageRoute(builder: (context) => MyApp()),
                   );
                   // Handle login logic here
                 },
