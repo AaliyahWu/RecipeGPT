@@ -1,3 +1,4 @@
 {
-    "emulator.emulatorPath": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\emulator"
+    "emulator.emulatorPath": "C:\\Users\\user\\AppData\\Local\\Android\\Sdk\\emulator",
+    "cmake.sourceDirectory": "C:/Users/User/RecipeGPT/windows/flutter"
 }
