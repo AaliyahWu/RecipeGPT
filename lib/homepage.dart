@@ -5,6 +5,7 @@ import 'package:recipe_gpt/main.dart';
 import 'package:recipe_gpt/services/openai/chat_response.dart';
 import 'package:recipe_gpt/empty.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
+import 'package:recipe_gpt/views/camera_view.dart';
 
 void main() => runApp(MaterialApp(home: LoginCard()));
 
@@ -61,11 +62,11 @@ class _BottomNavBarState extends State<HomePage> {
                 SizedBox(height: 20), // +間距
 
                 ElevatedButton(
-                  child: Text('empty'),
+                  child: Text('CameraView'),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => Empty()),
+                      MaterialPageRoute(builder: (context) => CameraView()),
                     );
                   },
                 ),
