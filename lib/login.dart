@@ -124,7 +124,55 @@ class _LoginCardState extends State<LoginCard> {
   }
 }
 
-class SignupCard extends StatelessWidget {
+class SignupCard extends StatefulWidget {
+  @override
+  _SignupCardState createState() => _SignupCardState();
+}
+
+class _SignupCardState extends State<SignupCard> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+  Future<void> registerUser(String name, String email, String password) async {
+    try {
+      var conn = await DatabaseService().connection;
+      await conn.query(
+        'INSERT INTO recipedb.accounts (name, email, password) VALUES (?, ?, ?)',
+        [name, email, password]
+      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('註冊成功！'),
+        backgroundColor: Colors.green,
+      ));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => HomePage(), // Assuming HomePage exists
+      ));
+    } catch (e) {
+      print('Failed to register user: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('註冊失敗'),
+        backgroundColor: Colors.red,
+      ));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _handleRegister() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await registerUser(
+      _nameController.text,
+      _emailController.text,
+      _passwordController.text,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -135,20 +183,28 @@ class SignupCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              TextField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: '名字'),
+              ),
               SizedBox(height: 10),
               TextField(
+                controller: _emailController,
                 decoration: const InputDecoration(labelText: '電子信箱'),
               ),
               SizedBox(height: 10),
               TextField(
+                controller: _passwordController,
                 decoration: const InputDecoration(labelText: '密碼'),
                 obscureText: true,
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text('Signup'),
-              ),
+              _isLoading
+                  ? CircularProgressIndicator()
+                  : ElevatedButton(
+                      onPressed: _handleRegister,
+                      child: const Text('註冊'),
+                    ),
             ],
           ),
         ),
@@ -156,6 +212,40 @@ class SignupCard extends StatelessWidget {
     );
   }
 }
+
+
+// class SignupCard extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(
+//       child: Card(
+//         margin: const EdgeInsets.all(20.0),
+//         child: Padding(
+//           padding: const EdgeInsets.all(16.0),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: <Widget>[
+//               SizedBox(height: 10),
+//               TextField(
+//                 decoration: const InputDecoration(labelText: '電子信箱'),
+//               ),
+//               SizedBox(height: 10),
+//               TextField(
+//                 decoration: const InputDecoration(labelText: '密碼'),
+//                 obscureText: true,
+//               ),
+//               SizedBox(height: 20),
+//               ElevatedButton(
+//                 onPressed: () {},
+//                 child: const Text('Signup'),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
