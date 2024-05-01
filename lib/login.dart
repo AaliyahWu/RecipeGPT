@@ -260,10 +260,10 @@ class DatabaseService {
   Future<MySqlConnection> get connection async {
     if (_connection == null) {
       final settings = ConnectionSettings(
-        host: 'recipe-database.cyg3ezxgvj0g.us-east-1.rds.amazonaws.com',
+        host: 'recipeedb-2.mysql.database.azure.com',
         port: 3306,
-        user: 'admin',
-        password: 'recipegpt',
+        user: 'yuntech',
+        password: 'recipeDB@@',
         db: 'recipedb',
       );
       _connection = await MySqlConnection.connect(settings);
