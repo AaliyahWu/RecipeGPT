@@ -67,7 +67,7 @@ class _PickImageState extends State<PickImage> {
                     // 按鈕點擊時執行的代碼
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
+                      MaterialPageRoute(builder: (context) => ChatPage()),
                     );
                   },
                   child: const Text('確認送出'),
@@ -177,12 +177,31 @@ class _PickImageState extends State<PickImage> {
     Navigator.of(context).pop(); // 關閉模態對話框
   }
 
-  ObjectDetector(Uint8List image) async{
+  // ObjectDetector(Uint8List image) async{
+  //     var detector = await Tflite.runModelOnFrame(
+  //       bytesList: [image],
+  //     );
+  //     if(detector != null){
+  //       print("Result is $detector");
+  //     }
+  //   }
+  bool _isModelRunning = false;
+
+  ObjectDetector(Uint8List image) async {
+    if (_isModelRunning) {
+      // 模型正在運行，跳過這個請求
+      return;
+    }
+    _isModelRunning = true;
+    try {
       var detector = await Tflite.runModelOnFrame(
         bytesList: [image],
       );
-      if(detector != null){
+      if (detector != null) {
         print("Result is $detector");
       }
+    } finally {
+      _isModelRunning = false;
     }
+  }
 }
