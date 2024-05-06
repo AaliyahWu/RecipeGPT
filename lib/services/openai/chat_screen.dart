@@ -10,6 +10,7 @@ class _ChatPageState extends State<ChatPage> {
   String _chatResponse = '';
   TextEditingController _textEditingController = TextEditingController();
   int _selectedPeople = 1; // 選擇的人數，預設為1
+  ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +40,22 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: Text(
-                      _chatResponse.isNotEmpty ? _chatResponse : '輸入食材，產生食譜吧!',
-                      style: TextStyle(fontSize: 18.0),
-                    ),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Center(
+                          child: Text(
+                            _chatResponse.isNotEmpty
+                                ? _chatResponse
+                                : '輸入食材，產生食譜吧!',
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -90,6 +102,13 @@ class _ChatPageState extends State<ChatPage> {
         _selectedPeople); //在 _startChat 方法中，將 _selectedPeople 傳遞給 ChatService 的 request 方法
     setState(() {
       _chatResponse = response ?? 'No response';
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
