@@ -68,17 +68,19 @@ class ScanController extends GetxController {
 
   ObjectDetector(CameraImage image) async {
     var detector = await Tflite.runModelOnFrame(
-      bytesList: image.planes.map((e) {
-        return e.bytes;
-      }).toList(),
-      asynch: true,
-      imageHeight: image.height,
-      imageWidth: image.width,
-      imageMean: 127.5,
-      imageStd: 127.5,
-      numResults: 1,
-      rotation: 90,
-      threshold: 0.4,
+      bytesList: image.planes.map((e){
+      return e.bytes;
+    }).toList(),
+    /*
+    asynch: true,
+    imageHeight: image.height,
+    imageWidth: image.width,
+    imageMean: 127.5,
+    imageStd: 127.5,
+    numResults: 1,
+    rotation: 90,
+    threshold: 0.4,
+    */
     );
 
     if (detector != null) {

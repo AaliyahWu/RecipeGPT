@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       },
       debugShowCheckedModeBanner: false, //右上角紅色東東去掉
       home: Login(),
+      //home: HomePage(),
     );
   }
 }
