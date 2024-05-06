@@ -73,6 +73,10 @@ flutter:
   assets:
     - assets/model.tflite
     - assets/labels.txt
+    - assets/image/food.jpg
+    - assets/image/note.jpg
+    - assets/images.png
+    # - jsonfile.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -100,3 +104,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+  

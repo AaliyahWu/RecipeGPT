@@ -141,14 +141,15 @@ class _BottomNavBarState extends State<HomePage> {
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          border:
-                              Border.all(color: Colors.black, width: 2), // 添加外框
+                          border: Border.all(
+                              color: Colors.black, width: 0.5), // 添加外框
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.fill,
-                            image: AssetImage("/assets/images.png"), //
+                            image: AssetImage('assets/images.png'), //
                           ),
                         ),
+                        padding: const EdgeInsets.all(10),
                       ),
                       Positioned(
                         bottom: 0,
