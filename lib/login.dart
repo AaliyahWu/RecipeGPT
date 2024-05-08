@@ -214,39 +214,6 @@ class _SignupCardState extends State<SignupCard> {
 }
 
 
-// class SignupCard extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: Card(
-//         margin: const EdgeInsets.all(20.0),
-//         child: Padding(
-//           padding: const EdgeInsets.all(16.0),
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: <Widget>[
-//               SizedBox(height: 10),
-//               TextField(
-//                 decoration: const InputDecoration(labelText: '電子信箱'),
-//               ),
-//               SizedBox(height: 10),
-//               TextField(
-//                 decoration: const InputDecoration(labelText: '密碼'),
-//                 obscureText: true,
-//               ),
-//               SizedBox(height: 20),
-//               ElevatedButton(
-//                 onPressed: () {},
-//                 child: const Text('Signup'),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
   MySqlConnection? _connection;
