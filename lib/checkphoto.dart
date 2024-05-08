@@ -15,7 +15,7 @@ class CheckPhoto extends StatelessWidget {
         title: const Text('CheckPhoto'),
         backgroundColor: Color.fromARGB(255, 255, 196, 106), // bar
       ),
-      backgroundColor: Color.fromARGB(255, 255, 196, 106), // background
+      backgroundColor: Color.fromARGB(255, 247, 238, 163), // background
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -23,6 +23,15 @@ class CheckPhoto extends StatelessWidget {
             width: 280,
             height: 360,
             decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  //陰影
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
               border: Border.all(color: Colors.black, width: 0.5), // 添加外框
               image: DecorationImage(
                 fit: BoxFit.fill,
