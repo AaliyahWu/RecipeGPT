@@ -82,7 +82,7 @@ class _BottomNavBarState extends State<HomePage> {
                           child: TextFormField(
                             controller: _controller,
                             decoration: InputDecoration(
-                              hintText: '输入偏好',
+                              hintText: '輸入偏好',
                               border: OutlineInputBorder(),
                               contentPadding: EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 10),
