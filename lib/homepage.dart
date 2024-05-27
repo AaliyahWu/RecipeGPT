@@ -17,34 +17,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<HomePage> {
-  int _currentPageIndex = 2; // 默认选中第三个页面（索引从0开始）
+  int _currentPageIndex = 2;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+
+  String userInput = '';
+  TextEditingController _controller = TextEditingController();
+  List<String> userInputList = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
-        index: _currentPageIndex, // 初始位置
+        index: _currentPageIndex,
         height: 60.0,
         items: <Widget>[
           Icon(Icons.group, size: 30),
           Icon(Icons.list, size: 30),
           Icon(Icons.camera, size: 45),
           Icon(Icons.history, size: 30),
-          Icon(Icons.perm_identity, size: 30), // 按钮大小
+          Icon(Icons.perm_identity, size: 30),
         ],
-        color: Color.fromARGB(255, 255, 196, 106), // 下方整体颜色
+        color: Color.fromARGB(255, 255, 196, 106),
         buttonBackgroundColor: Color.fromARGB(255, 255, 196, 106),
         backgroundColor: Color.fromARGB(255, 247, 238, 163),
         animationCurve: Curves.easeInOut,
-        animationDuration: Duration(milliseconds: 350), // 改速度
+        animationDuration: Duration(milliseconds: 350),
         onTap: (index) {
           setState(() {
             _currentPageIndex = index;
           });
         },
-        letIndexChange: (index) => true, // 动画开关
+        letIndexChange: (index) => true,
       ),
       body: _buildBody(),
     );
@@ -53,27 +57,93 @@ class _BottomNavBarState extends State<HomePage> {
   Widget _buildBody() {
     switch (_currentPageIndex) {
       case 0:
-        // 第一个页面的内容
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163), // 背景色
+          color: Color.fromARGB(255, 247, 238, 163),
           child: Center(
             child: Text('社群'),
           ),
         );
 
       case 1:
-        // 第二个页面的内容
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163), // 背景色
+          color: Color.fromARGB(255, 247, 238, 163),
           child: Center(
-            child: Text('飲食偏好'),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(height: 50),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 50,
+                          child: TextFormField(
+                            controller: _controller,
+                            decoration: InputDecoration(
+                              hintText: '输入偏好',
+                              border: OutlineInputBorder(),
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 10),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                userInput = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Container(
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: userInput.isNotEmpty
+                              ? () {
+                                  setState(() {
+                                    userInputList.add(userInput);
+                                    _controller.clear();
+                                    userInput = '';
+                                  });
+                                }
+                              : null,
+                          child: Text('送出'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: userInputList.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(
+                          userInputList[index],
+                          style: TextStyle(fontSize: 18.0),
+                        ),
+                        trailing: IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            setState(() {
+                              userInputList.removeAt(index);
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         );
 
       case 2:
-        // 第三个页面的内容
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163), // 背景色
+          color: Color.fromARGB(255, 247, 238, 163),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -87,20 +157,17 @@ class _BottomNavBarState extends State<HomePage> {
                     );
                   },
                 ),
-                SizedBox(height: 20), // +间距
-
+                SizedBox(height: 20),
                 ElevatedButton(
                   child: Text('CameraView'),
                   onPressed: () {
                     Navigator.push(
                       context,
-                      //MaterialPageRoute(builder: (context) => CameraView()),
                       MaterialPageRoute(builder: (context) => PickImage()),
                     );
                   },
                 ),
-                SizedBox(height: 20), // +间距
-
+                SizedBox(height: 20),
                 ElevatedButton(
                   child: Text('MainButton'),
                   onPressed: () {
@@ -116,26 +183,22 @@ class _BottomNavBarState extends State<HomePage> {
         );
 
       case 3:
-        // 第四个页面的内容
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163), // 背景色
+          color: Color.fromARGB(255, 247, 238, 163),
           child: Center(
             child: Text('歷史食譜'),
           ),
         );
 
       case 4:
-      // 第五个页面的内容
-      case 4:
-        // 第五个页面的内容
         return Scaffold(
-          backgroundColor: Color.fromARGB(255, 247, 238, 163), // 背景色
+          backgroundColor: Color.fromARGB(255, 247, 238, 163),
           body: Padding(
-            padding: const EdgeInsets.only(top: 50.0), // 向上移動 50 像素
+            padding: const EdgeInsets.only(top: 50.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start, // 將子元件靠左對齊
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
@@ -143,12 +206,11 @@ class _BottomNavBarState extends State<HomePage> {
                         width: 150,
                         height: 150,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Colors.black, width: 0.5), // 添加外框
+                          border: Border.all(color: Colors.black, width: 0.5),
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.fill,
-                            image: AssetImage('assets/images.png'), //
+                            image: AssetImage('assets/images.png'),
                           ),
                         ),
                         padding: const EdgeInsets.all(10),
@@ -157,9 +219,7 @@ class _BottomNavBarState extends State<HomePage> {
                         bottom: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: () {
-                            // 上傳圖片
-                          },
+                          onTap: () {},
                           child: Container(
                             width: 30,
                             height: 30,
@@ -176,12 +236,12 @@ class _BottomNavBarState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20), // +間距
+                  SizedBox(height: 20),
                   Text(
                     '用戶名稱: Bob\n性別: Man\n電子郵件: Bob@gmail.com',
                     textAlign: TextAlign.left,
                   ),
-                  SizedBox(height: 20), // +間距
+                  SizedBox(height: 20),
                   ElevatedButton(
                     child: Text('登出'),
                     onPressed: () {
