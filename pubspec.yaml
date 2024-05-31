@@ -45,6 +45,8 @@ dependencies:
   permission_handler: ^11.3.1
   image: ^3.3.0
   flutter_tflite: ^1.0.1
+  image_picker: ^0.8.9
+  tflite_v2: ^1.0.0
 
 
 dev_dependencies:
@@ -77,6 +79,7 @@ flutter:
     - assets/image/note.jpg
     - assets/images.png
     # - jsonfile.json
+    - assets/labels_cn.txt
     - assets/
   #   - images/a_dot_ham.jpeg
 

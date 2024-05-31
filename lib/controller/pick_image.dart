@@ -70,7 +70,9 @@ class _PickImageState extends State<PickImage> {
                       MaterialPageRoute(builder: (context) => ChatPage()),
                     );
                   },
-                  child: const Text('確認送出'),
+                  child: const Text('確認送出',
+                  style: TextStyle(color: Color.fromARGB(255, 62, 62, 62),
+                  ),),
                 ),
               ),
             ),
