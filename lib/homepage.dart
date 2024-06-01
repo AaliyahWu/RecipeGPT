@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recipe_gpt/controller/pick_image.dart';
-// import 'package:recipe_gpt/controller/picker_image.dart';
 import 'package:recipe_gpt/login.dart';
 import 'package:recipe_gpt/main.dart';
 import 'package:recipe_gpt/services/openai/chat_response.dart';
@@ -13,11 +12,11 @@ void main() => runApp(MaterialApp(home: LoginCard()));
 
 class HomePage extends StatefulWidget {
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _BottomNavBarState extends State<HomePage> {
-  int _currentPageIndex = 2;
+class _HomePageState extends State<HomePage> {
+  int _currentPageIndex = 2; // 当前页面索引
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   String userInput = '';
@@ -150,7 +149,7 @@ class _BottomNavBarState extends State<HomePage> {
               Column(
                 children: [
                   Container(
-                    height: 320.0, // Adjust height as needed
+                    height: 320.0, // 调整高度
                     child: CarouselSlider(
                       options: CarouselOptions(
                         height: 200.0,
@@ -186,14 +185,15 @@ class _BottomNavBarState extends State<HomePage> {
                     ),
                   ),
                   Expanded(
-                      child: SizedBox()), // Spacer to push button to the bottom
+                    child: SizedBox(),
+                  ), // 使按钮位置靠下
                 ],
               ),
               Positioned(
-                bottom: 50, // Adjust the bottom position as needed
+                bottom: 50, // 调整底部位置
                 child: SizedBox(
-                  width: 300, // Adjust the width as needed
-                  height: 150, // Adjust the height as needed
+                  width: 300, // 调整宽度
+                  height: 150, // 调整高度
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
@@ -215,8 +215,7 @@ class _BottomNavBarState extends State<HomePage> {
                     child: Ink(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage(
-                              'assets/images.png'), // Replace with your image path
+                          image: AssetImage('assets/images.png'), // 替换为您的图片路径
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(10.0),
@@ -226,7 +225,7 @@ class _BottomNavBarState extends State<HomePage> {
                         child: Text(
                           'Go to Camera',
                           style: TextStyle(
-                            color: Colors.white, // Adjust text color as needed
+                            color: Colors.white, // 调整文字颜色
                             fontSize: 16.0,
                           ),
                         ),
@@ -236,29 +235,6 @@ class _BottomNavBarState extends State<HomePage> {
                 ),
               ),
             ],
-                SizedBox(height: 20),
-                ElevatedButton(
-                  child: Text('CameraView'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      //MaterialPageRoute(builder: (context) => CameraView()),
-                      MaterialPageRoute(builder: (context) => PickImage()),
-                    );
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  child: Text('MainButton'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Camera()),
-                    );
-                  },
-                ),
-              ],
-            ),
           ),
         );
 
