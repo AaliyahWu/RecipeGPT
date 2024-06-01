@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recipe_gpt/controller/pick_image.dart';
+// import 'package:recipe_gpt/controller/picker_image.dart';
 import 'package:recipe_gpt/login.dart';
 import 'package:recipe_gpt/main.dart';
 import 'package:recipe_gpt/services/openai/chat_response.dart';
-import 'package:recipe_gpt/empty.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
-import 'package:recipe_gpt/views/camera_view.dart';
 import 'package:recipe_gpt/camerafunction.dart';
 
 void main() => runApp(MaterialApp(home: LoginCard()));
@@ -237,6 +236,29 @@ class _BottomNavBarState extends State<HomePage> {
                 ),
               ),
             ],
+                SizedBox(height: 20),
+                ElevatedButton(
+                  child: Text('CameraView'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      //MaterialPageRoute(builder: (context) => CameraView()),
+                      MaterialPageRoute(builder: (context) => PickImage()),
+                    );
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  child: Text('MainButton'),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Camera()),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         );
 
