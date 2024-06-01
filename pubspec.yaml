@@ -35,6 +35,7 @@ dependencies:
   mysql1: ^0.20.0
 
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
@@ -45,6 +46,7 @@ dependencies:
   permission_handler: ^11.3.1
   image: ^3.3.0
   flutter_tflite: ^1.0.1
+  carousel_slider: ^4.0.0
 
 
 dev_dependencies:

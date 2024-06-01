@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recipe_gpt/controller/pick_image.dart';
 import 'package:recipe_gpt/login.dart';
 import 'package:recipe_gpt/main.dart';
@@ -144,41 +145,98 @@ class _BottomNavBarState extends State<HomePage> {
       case 2:
         return Container(
           color: Color.fromARGB(255, 247, 238, 163),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                  child: Text('生成食谱'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ChatPage()),
-                    );
-                  },
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    height: 320.0, // Adjust height as needed
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        height: 200.0,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        aspectRatio: 16 / 9,
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        enableInfiniteScroll: true,
+                        autoPlayAnimationDuration: Duration(milliseconds: 800),
+                        viewportFraction: 0.8,
+                      ),
+                      items: [
+                        'assets/images.png',
+                        'assets/image/food.jpg',
+                        'assets/image/note.jpg',
+                      ].map((i) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 5.0),
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage(i),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  Expanded(
+                      child: SizedBox()), // Spacer to push button to the bottom
+                ],
+              ),
+              Positioned(
+                bottom: 50, // Adjust the bottom position as needed
+                child: SizedBox(
+                  width: 300, // Adjust the width as needed
+                  height: 150, // Adjust the height as needed
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Camera()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.transparent),
+                      padding: MaterialStateProperty.all<EdgeInsets>(
+                          EdgeInsets.zero),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    child: Ink(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(
+                              'assets/images.png'), // Replace with your image path
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Go to Camera',
+                          style: TextStyle(
+                            color: Colors.white, // Adjust text color as needed
+                            fontSize: 16.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  child: Text('CameraView'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PickImage()),
-                    );
-                  },
-                ),
-                SizedBox(height: 20),
-                ElevatedButton(
-                  child: Text('MainButton'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Camera()),
-                    );
-                  },
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
 
