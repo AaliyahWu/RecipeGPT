@@ -19,18 +19,24 @@ class Login extends StatelessWidget {
           appBar: AppBar(
             title: const Text('RecipeGPT'),
             centerTitle: true, //移到中間
+            backgroundColor: Color(0xFFF4DAB5), // TabBar color
             bottom: const TabBar(
+              indicatorColor: Colors.white, // Indicator color
+              labelColor: Colors.white, // Label color
               tabs: [
                 Tab(text: '登入'),
                 Tab(text: '註冊'),
               ],
             ),
           ),
-          body: TabBarView(
-            children: [
-              LoginCard(),
-              SignupCard(),
-            ],
+          body: Container(
+            color: Color(0xFFF2B892),
+            child: const TabBarView(
+              children: [
+                LoginCard(),
+                SignupCard(),
+              ],
+            ),
           ),
         ),
       ),
@@ -39,6 +45,8 @@ class Login extends StatelessWidget {
 }
 
 class LoginCard extends StatefulWidget {
+  const LoginCard({Key? key}) : super(key: key);
+
   @override
   _LoginCardState createState() => _LoginCardState();
 }
@@ -125,6 +133,8 @@ class _LoginCardState extends State<LoginCard> {
 }
 
 class SignupCard extends StatefulWidget {
+  const SignupCard({Key? key}) : super(key: key);
+
   @override
   _SignupCardState createState() => _SignupCardState();
 }
