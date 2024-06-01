@@ -3,6 +3,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recipe_gpt/controller/pick_image.dart';
 import 'package:recipe_gpt/login.dart';
+import 'package:recipe_gpt/login/splash.dart';
 import 'package:recipe_gpt/main.dart';
 import 'package:recipe_gpt/services/openai/chat_response.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
@@ -198,7 +199,8 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Camera()),
+                        //MaterialPageRoute(builder: (context) => Camera()),
+                        MaterialPageRoute(builder: (context) => MealPlannerSplashScreen()),
                       );
                     },
                     style: ButtonStyle(

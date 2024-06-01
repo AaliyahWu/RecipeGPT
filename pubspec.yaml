@@ -80,6 +80,7 @@ flutter:
     - assets/image/food.jpg
     - assets/image/note.jpg
     - assets/images.png
+    - assets/LOGO.png
     # - jsonfile.json
     - assets/labels_cn.txt
     - assets/
