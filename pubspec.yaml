@@ -48,6 +48,7 @@ dependencies:
   flutter_tflite: ^1.0.1
   carousel_slider: ^4.0.0
   image_picker: ^0.8.9
+  smooth_page_indicator: ^1.1.0
   # tflite_v2: ^1.0.0
 
 

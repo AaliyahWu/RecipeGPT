@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_gpt/login.dart';
+import 'package:recipe_gpt/login/onboarding.dart';
 
 class MealPlannerSplashScreen extends StatelessWidget {
   @override
@@ -35,17 +37,24 @@ class MealPlannerSplashScreen extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: 'Meal',
+                            text: '好',
                             style: TextStyle(
                               letterSpacing: 0,
                               color: Colors.black,
                             ),
                           ),
                           TextSpan(
-                            text: 'Planner',
+                            text: '食',
                             style: TextStyle(
                               color: Color(0xFFDD8A62),
                               letterSpacing: 0,
+                            ),
+                          ),
+                          TextSpan(
+                            text: '在',
+                            style: TextStyle(
+                              letterSpacing: 0,
+                              color: Colors.black,
                             ),
                           )
                         ],
@@ -67,9 +76,19 @@ class MealPlannerSplashScreen extends StatelessWidget {
               children: [
                 ElevatedButton(
                   onPressed: () async {
-                    // TODO: 實現 Get Started 按鈕的功能
+                    // 點擊事件
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OnboardingSlideshow()),
+                    );
                   },
-                  child: Text('Get Started'),
+                  child: Text(
+                    '開始使用',
+                    style: TextStyle(
+                      color: Colors.black, // 將文字顏色設定為黑色
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFF2B892),
                     textStyle: TextStyle(
@@ -82,7 +101,12 @@ class MealPlannerSplashScreen extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () async {
-                    // TODO: 實現 Already a member? Sign In 按鈕的功能
+                    // 點擊事件
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => Login()),
+                    );
                   },
                   child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 24, 0, 24),
@@ -90,17 +114,19 @@ class MealPlannerSplashScreen extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: 'Already a member?  ',
+                            text: '已經加入會員?  ',
                             style: TextStyle(
                               letterSpacing: 0,
+                              color: Colors.black,
                             ),
                           ),
                           TextSpan(
-                            text: 'Sign In',
+                            text: '登入',
                             style: TextStyle(
                               letterSpacing: 0,
                               fontWeight: FontWeight.w600,
                               decoration: TextDecoration.underline,
+                              color: Colors.black,
                             ),
                           )
                         ],

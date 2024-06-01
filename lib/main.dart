@@ -3,6 +3,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:recipe_gpt/homepage.dart';
 // import 'screen/openai_entry_screen.dart';
 import 'package:recipe_gpt/login.dart';
+import 'package:recipe_gpt/login/splash.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         // '/openai': (context) => const OpenAIEntryScreen(), //新增連到食譜產生畫面的路徑
       },
       debugShowCheckedModeBanner: false, //右上角紅色東東去掉
-      home: Login(),
+      home: MealPlannerSplashScreen(),
       //home: HomePage(),
     );
   }
