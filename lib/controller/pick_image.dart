@@ -8,6 +8,8 @@ import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:recipe_gpt/homepage.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
+import 'package:recipe_gpt/checklist.dart';
+
 
 class PickImage extends StatefulWidget {
   const PickImage({super.key});
@@ -22,58 +24,61 @@ class _PickImageState extends State<PickImage> {
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text('CAMERA'),
-    ),
-    backgroundColor: Color.fromARGB(255, 247, 238, 163),
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          _image != null
-              ? Image.memory(_image!)
-              : Text('還沒有照片哦!'),
-          SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () {
-                  showImagePickerOption(context);
-                },
-                child: const Icon(Icons.add_a_photo),
-              ),
-              SizedBox(width: 20), // 在兩個按鈕之間增加空間
-              ElevatedButton(
-                onPressed: () {
-                  // 點擊事件
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ChatPage()),
-                  );
-                },
-                child: const Text('下一步'),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          if (_image != null)
-            Text(
-              '番茄',
-              style: TextStyle(
-                color: Color.fromARGB(255, 62, 62, 62),
-              ),
-            ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('CAMERA'),
       ),
-    ),
-  );
-}
-
-
-
-
+      backgroundColor: Color.fromARGB(255, 247, 238, 163),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _image != null ? Image.memory(_image!) : Text('還沒有照片哦!'),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    showImagePickerOption(context);
+                  },
+                  child: const Icon(Icons.add_a_photo),
+                ),
+                SizedBox(width: 20), // 在兩個按鈕之間增加空間
+                // ElevatedButton(
+                //   onPressed: () {
+                //     // 點擊事件
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(builder: (context) => ChatPage()), // 生成食譜頁面
+                //     );
+                //   },
+                //   child: const Text('下一步'),
+                // ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CheckList()), // 勾選辨識清單頁面
+                    );
+                  },
+                  child: Text('下一步'),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            if (_image != null)
+              Text(
+                '目前食材：番茄',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 62, 62, 62),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
   void showImagePickerOption(BuildContext context) {
     showModalBottomSheet(
@@ -150,7 +155,8 @@ class _PickImageState extends State<PickImage> {
 
   //Gallery
   Future<void> _pickImageFromGallery() async {
-    final returnImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final returnImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (returnImage == null) return;
     setState(() {
       selectedIMage = File(returnImage.path);
@@ -162,7 +168,8 @@ class _PickImageState extends State<PickImage> {
 
   //Camera
   Future<void> _pickImageFromCamera() async {
-    final returnImage = await ImagePicker().pickImage(source: ImageSource.camera);
+    final returnImage =
+        await ImagePicker().pickImage(source: ImageSource.camera);
     if (returnImage == null) return;
     setState(() {
       selectedIMage = File(returnImage.path);

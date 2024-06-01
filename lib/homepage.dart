@@ -199,8 +199,10 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        //MaterialPageRoute(builder: (context) => Camera()),
-                        MaterialPageRoute(builder: (context) => MealPlannerSplashScreen()),
+                        // MaterialPageRoute(builder: (context) => Camera()), //高的拍照寫死頁面
+                        MaterialPageRoute(
+                            builder: (context) => PickImage()), //雅的拍照寫死頁面
+                        // MaterialPageRoute(builder: (context) => MealPlannerSplashScreen()), //雅 測試登入前動畫導覽頁面
                       );
                     },
                     style: ButtonStyle(

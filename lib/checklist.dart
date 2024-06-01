@@ -123,7 +123,7 @@ class _CheckListState extends State<CheckList> {
                         MaterialPageRoute(builder: (context) => ChatPage()),
                       );
                     },
-                    child: const Text('RecipeGPT'),
+                    child: const Text('生成食譜'),
                   ),
                 ),
               ],
