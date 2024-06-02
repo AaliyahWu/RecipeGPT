@@ -41,15 +41,15 @@ class _HomePageState extends State<HomePage> {
         index: _currentPageIndex,
         height: 60.0,
         items: <Widget>[
-          Icon(Icons.group, size: 30),
-          Icon(Icons.list, size: 30),
-          Icon(Icons.camera, size: 45),
-          Icon(Icons.history, size: 30),
-          Icon(Icons.perm_identity, size: 30),
+          Icon(Icons.group, size: 30, color: Color(0xFFF4DAB5)),
+          Icon(Icons.list, size: 30, color: Color(0xFFF4DAB5)),
+          Icon(Icons.camera, size: 45, color: Color(0xFFF4DAB5)),
+          Icon(Icons.history, size: 30, color: Color(0xFFF4DAB5)),
+          Icon(Icons.perm_identity, size: 30, color: Color(0xFFF4DAB5)),
         ],
-        color: Color.fromARGB(255, 255, 196, 106),
-        buttonBackgroundColor: Color.fromARGB(255, 255, 196, 106),
-        backgroundColor: Color.fromARGB(255, 247, 238, 163),
+        color: Color(0xFF262520),
+        buttonBackgroundColor: Color(0xFF262520),
+        backgroundColor: Color(0xFFF4DAB5),
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 350),
         onTap: (index) {
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
     switch (_currentPageIndex) {
       case 0:
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163),
+          color: Color(0xFFF4DAB5),
           child: Center(
             child: Text('社群'),
           ),
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
 
       case 1:
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163),
+          color: Color(0xFFF4DAB5),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -173,7 +173,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163),
+          color: Color(0xFFF4DAB5),
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
@@ -456,7 +456,7 @@ class _HomePageState extends State<HomePage> {
         );
       case 4:
         return Scaffold(
-          backgroundColor: Color.fromARGB(255, 247, 238, 163),
+          backgroundColor: Color(0xFFF4DAB5),
           body: Padding(
             padding: const EdgeInsets.only(top: 50.0),
             child: Center(

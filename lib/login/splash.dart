@@ -6,7 +6,7 @@ class MealPlannerSplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255), // 設定背景顏色為綠色
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255), // 設定背景顏色為白色
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -94,6 +94,7 @@ class MealPlannerSplashScreen extends StatelessWidget {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFF2B892),
+                    minimumSize: Size(200, 30),
                     textStyle: TextStyle(
                       letterSpacing: 0,
                     ),
@@ -107,8 +108,7 @@ class MealPlannerSplashScreen extends StatelessWidget {
                     // 點擊事件
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => Login()),
+                      MaterialPageRoute(builder: (context) => Login()),
                     );
                   },
                   child: Padding(
