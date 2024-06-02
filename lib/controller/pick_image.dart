@@ -27,22 +27,35 @@ class _PickImageState extends State<PickImage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('CAMERA'),
+        title: Text(
+          '生成食譜',
+          style: TextStyle(color: Colors.white), // Set text color to white
+        ),
+        backgroundColor: Color(0xFF262520),
+        iconTheme: IconThemeData(color: Colors.white), // Set back button 
       ),
-      backgroundColor: Color.fromARGB(255, 247, 238, 163),
+      backgroundColor: Color(0xFFF4DAB5),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Text(
+              '拍照! 尋找可用食材~',
+              style: TextStyle(
+                fontSize: 28.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 80),
             _image != null
                 ? AspectRatio(
                     aspectRatio: 1, // 固定比例 1:1
                     child: Image.memory(_image!),
                   )
                 : Container(
-                    width: 400,
+                    width: 300,
                     height: 300,
-                    color: Colors.grey[300],
+                    color: Color.fromARGB(225, 255, 248, 216),
                     child: Center(child: Text('還沒有照片哦!')),
                   ),
             SizedBox(height: 20),
@@ -70,14 +83,14 @@ class _PickImageState extends State<PickImage> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            if (_image != null)
-              Text(
-                '目前食材：番茄',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 62, 62, 62),
-                ),
-              ),
+            // SizedBox(height: 20),
+            // if (_image != null)
+            //   Text(
+            //     '目前食材：番茄',
+            //     style: TextStyle(
+            //       color: Color.fromARGB(255, 62, 62, 62),
+            //     ),
+            //   ),
           ],
         ),
       ),
@@ -86,7 +99,7 @@ class _PickImageState extends State<PickImage> {
 
   void showImagePickerOption(BuildContext context) {
     showModalBottomSheet(
-        backgroundColor: Color.fromARGB(255, 255, 196, 106),
+        backgroundColor: Color(0xFF262520),
         context: context,
         builder: (builder) {
           return Padding(
@@ -107,8 +120,9 @@ class _PickImageState extends State<PickImage> {
                             Icon(
                               Icons.image,
                               size: 70,
+                              color: Colors.white, // Set icon color to white
                             ),
-                            Text("Gallery")
+                            Text("相簿", style: TextStyle(color: Colors.white)) // Set text color to white
                           ],
                         ),
                       ),
@@ -125,8 +139,9 @@ class _PickImageState extends State<PickImage> {
                             Icon(
                               Icons.camera_alt,
                               size: 70,
+                              color: Colors.white, // Set icon color to white
                             ),
-                            Text("Camera")
+                            Text("相機", style: TextStyle(color: Colors.white)) // Set text color to white
                           ],
                         ),
                       ),
@@ -162,20 +177,12 @@ class _PickImageState extends State<PickImage> {
     final returnImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (returnImage == null) return;
-
-    final croppedImage = await ImageCropper().cropImage(
-      sourcePath: returnImage.path,
-      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1), // 固定比例 1:1
-    );
-
-    if (croppedImage == null) return;
-
     setState(() {
-      selectedIMage = File(croppedImage.path);
-      _image = File(croppedImage.path).readAsBytesSync();
+      selectedIMage = File(returnImage.path);
+      _image = File(returnImage.path).readAsBytesSync();
       _isNextButtonEnabled = true;
     });
-
+    //ObjectDetector(_image!); // 呼叫物件偵測函式
     Navigator.of(context).pop(); // 關閉模態對話框
   }
 
@@ -184,20 +191,12 @@ class _PickImageState extends State<PickImage> {
     final returnImage =
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (returnImage == null) return;
-
-    final croppedImage = await ImageCropper().cropImage(
-      sourcePath: returnImage.path,
-      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1), // 固定比例 1:1
-    );
-
-    if (croppedImage == null) return;
-
     setState(() {
-      selectedIMage = File(croppedImage.path);
-      _image = File(croppedImage.path).readAsBytesSync();
+      selectedIMage = File(returnImage.path);
+      _image = File(returnImage.path).readAsBytesSync();
       _isNextButtonEnabled = true;
     });
-
+    //ObjectDetector(_image!); // 呼叫物件偵測函式
     Navigator.of(context).pop(); // 關閉模態對話框
   }
 
