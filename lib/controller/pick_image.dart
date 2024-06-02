@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:recipe_gpt/homepage.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
 import 'package:recipe_gpt/checklist.dart';
-
+import 'package:image_cropper/image_cropper.dart';
 
 class PickImage extends StatefulWidget {
   const PickImage({super.key});
@@ -21,6 +21,7 @@ class PickImage extends StatefulWidget {
 class _PickImageState extends State<PickImage> {
   Uint8List? _image;
   File? selectedIMage;
+  bool _isNextButtonEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,17 @@ class _PickImageState extends State<PickImage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _image != null ? Image.memory(_image!) : Text('還沒有照片哦!'),
+            _image != null
+                ? AspectRatio(
+                    aspectRatio: 1, // 固定比例 1:1
+                    child: Image.memory(_image!),
+                  )
+                : Container(
+                    width: 400,
+                    height: 300,
+                    color: Colors.grey[300],
+                    child: Center(child: Text('還沒有照片哦!')),
+                  ),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -45,23 +56,16 @@ class _PickImageState extends State<PickImage> {
                   child: const Icon(Icons.add_a_photo),
                 ),
                 SizedBox(width: 20), // 在兩個按鈕之間增加空間
-                // ElevatedButton(
-                //   onPressed: () {
-                //     // 點擊事件
-                //     Navigator.push(
-                //       context,
-                //       MaterialPageRoute(builder: (context) => ChatPage()), // 生成食譜頁面
-                //     );
-                //   },
-                //   child: const Text('下一步'),
-                // ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CheckList()), // 勾選辨識清單頁面
-                    );
-                  },
+                  onPressed: _isNextButtonEnabled
+                      ? () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CheckList()), // 勾選辨識清單頁面
+                          );
+                        }
+                      : null,
                   child: Text('下一步'),
                 ),
               ],
@@ -158,11 +162,20 @@ class _PickImageState extends State<PickImage> {
     final returnImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (returnImage == null) return;
+
+    final croppedImage = await ImageCropper().cropImage(
+      sourcePath: returnImage.path,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1), // 固定比例 1:1
+    );
+
+    if (croppedImage == null) return;
+
     setState(() {
-      selectedIMage = File(returnImage.path);
-      _image = File(returnImage.path).readAsBytesSync();
+      selectedIMage = File(croppedImage.path);
+      _image = File(croppedImage.path).readAsBytesSync();
+      _isNextButtonEnabled = true;
     });
-    //ObjectDetector(_image!); // 呼叫物件偵測函式
+
     Navigator.of(context).pop(); // 關閉模態對話框
   }
 
@@ -171,11 +184,20 @@ class _PickImageState extends State<PickImage> {
     final returnImage =
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (returnImage == null) return;
+
+    final croppedImage = await ImageCropper().cropImage(
+      sourcePath: returnImage.path,
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1), // 固定比例 1:1
+    );
+
+    if (croppedImage == null) return;
+
     setState(() {
-      selectedIMage = File(returnImage.path);
-      _image = File(returnImage.path).readAsBytesSync();
+      selectedIMage = File(croppedImage.path);
+      _image = File(croppedImage.path).readAsBytesSync();
+      _isNextButtonEnabled = true;
     });
-    //ObjectDetector(_image!); // 呼叫物件偵測函式
+
     Navigator.of(context).pop(); // 關閉模態對話框
   }
 
