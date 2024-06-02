@@ -181,7 +181,7 @@ class _HomePageState extends State<HomePage> {
                 // 新加的 Container 包裹原始的 Column
                 child: Column(
                   children: [
-                    SizedBox(height: 50),
+                    SizedBox(height: 40),
                     Text(
                       '精選食譜',
                       style: TextStyle(
@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 10),
                     Container(
                       child: CarouselSlider(
                         options: CarouselOptions(
@@ -245,20 +245,70 @@ class _HomePageState extends State<HomePage> {
                         }).toList(),
                       ),
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 20),
+                    Positioned(
+                      bottom: 50,
+                      child: SizedBox(
+                        width: 300,
+                        height: 140,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PickImage(),
+                              ),
+                            );
+                          },
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.transparent),
+                            padding: MaterialStateProperty.all<EdgeInsets>(
+                                EdgeInsets.zero),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                          ),
+                          child: Ink(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/images.png'),
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                '生成食譜',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    
+                    SizedBox(height: 15),
                     Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        '　最近做過~',
+                        '   最近做過~',
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 10),
                     Container(
-                      height: 220,
+                      height: 125,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: dummyPopularItems()
@@ -267,11 +317,12 @@ class _HomePageState extends State<HomePage> {
                           PopularItem item = dummyPopularItems()[
                               index]; // 注意這裡也調用了 dummyPopularItems 函數並使用其返回值的索引
                           return Padding(
-                            padding: EdgeInsets.only(left: 5), // 調整左邊填充量
+                            padding: EdgeInsets.only(left: 10), // 調整左邊填充量
                             child: Center(
                               child: Container(
-                                width: 120,
-                                margin: EdgeInsets.symmetric(horizontal: 8),
+                                width: 100,
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 4), // 圖片間間隔
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -307,20 +358,20 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ],
                                     ),
-                                    TextButton(
-                                      onPressed: () {
-                                        // 處理 "View Now" 按鈕點擊事件
-                                      },
-                                      child: Text(
-                                        '查看食譜',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          // fontWeight: FontWeight.bold,
-                                          color: Color(0xFFDD8A62),
-                                        ),
-                                        textAlign: TextAlign.center, // 置中對齊
-                                      ),
-                                    ),
+                                    // TextButton(
+                                    //   onPressed: () {
+                                    //     // 處理 "View Now" 按鈕點擊事件
+                                    //   },
+                                    // child: Text(
+                                    //   '查看食譜',
+                                    //   style: TextStyle(
+                                    //     fontSize: 16,
+                                    //     // fontWeight: FontWeight.bold,
+                                    //     color: Color(0xFFDD8A62),
+                                    //   ),
+                                    //   textAlign: TextAlign.center, // 置中對齊
+                                    // ),
+                                    // ),
                                   ],
                                 ),
                               ),
@@ -345,54 +396,6 @@ class _HomePageState extends State<HomePage> {
               //     ],
               //   ),
               // ),
-
-              Positioned(
-                bottom: 50,
-                child: SizedBox(
-                  width: 300,
-                  height: 150,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PickImage(),
-                        ),
-                      );
-                    },
-                    style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.transparent),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.zero),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                      ),
-                    ),
-                    child: Ink(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images.png'),
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          '生成食譜',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         );
