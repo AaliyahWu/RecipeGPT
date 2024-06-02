@@ -43,7 +43,7 @@ class _OnboardingSlideshowState extends State<OnboardingSlideshow> {
                     '\n你是否曾面對著食材滿當當的冰箱，卻不知道該煮什麼?\n一直一直買新的食材，卻造成許多食物過期而浪費。\n那就快來使用好食在吧！\n',
                     'assets/LOGO.png',
                     '跳過'),
-                buildPage('\n透過可自動生成食譜的功能，輕易解決糧食浪費問題，\n讓你每天都有新菜色，不僅吃的開心還健康。\n',
+                buildPage('\n透過影像辨識及可自動生成食譜的功能，\n輕易解決糧食浪費問題，\n讓你每天都有新菜色，不僅吃的開心還健康。\n',
                     'assets/LOGO.png', '跳過'),
                 buildPage('Page 3', 'assets/LOGO.png', '登入'),
               ],
