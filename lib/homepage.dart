@@ -16,6 +16,15 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+class PopularItem {
+  final String imageUrl;
+  final String title;
+  final double rating;
+
+  PopularItem(
+      {required this.imageUrl, required this.title, required this.rating});
+}
+
 class _HomePageState extends State<HomePage> {
   int _currentPageIndex = 2; // 当前页面索引
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
@@ -108,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                                   });
                                 }
                               : null,
-                          child: Text('送出'),
+                          child: Text('添加'),
                         ),
                       ),
                     ],
@@ -142,97 +151,213 @@ class _HomePageState extends State<HomePage> {
         );
 
       case 2:
+        List<PopularItem> dummyPopularItems() {
+          return [
+            PopularItem(
+              imageUrl: 'assets/image/food.jpg',
+              title: '番茄炒蛋',
+              rating: 4.5,
+            ),
+            PopularItem(
+              imageUrl: 'assets/image/food.jpg',
+              title: '牛肉炒飯',
+              rating: 4.0,
+            ),
+            PopularItem(
+              imageUrl: 'assets/image/food.jpg',
+              title: '炒高麗菜',
+              rating: 4.2,
+            ),
+            // Add more dummy data as needed
+          ];
+        }
+
         return Container(
           color: Color.fromARGB(255, 247, 238, 163),
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
-              Column(
-                children: [
-                  SizedBox(height: 50), // 增加精選食譜文字與上方间距
-                  Text(
-                    '精選食譜',
-                    style: TextStyle(
-                      fontSize: 32.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 15), // 增加间距
-                  Container(
-                    // height: 320.0, // 调整高度
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                        height: 250.0, // 調整圖片高度
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        aspectRatio: 16 / 9,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enableInfiniteScroll: true,
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        viewportFraction: 0.8,
+              Container(
+                // 新加的 Container 包裹原始的 Column
+                child: Column(
+                  children: [
+                    SizedBox(height: 50),
+                    Text(
+                      '精選食譜',
+                      style: TextStyle(
+                        fontSize: 32.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                      items: [
-                        {'image': 'assets/images.png', 'title': '雞肉沙拉'},
-                        {'image': 'assets/image/food.jpg', 'title': '蔬菜湯'},
-                        {'image': 'assets/image/note.jpg', 'title': '水果拼盤'},
-                      ].map((item) {
-                        final imageUrl = item['image'] ?? ''; // 提供默認值 '' 以防止為空
-                        final title = item['title'] ?? ''; // 提供默認值 '' 以防止為空
+                    ),
+                    SizedBox(height: 15),
+                    Container(
+                      child: CarouselSlider(
+                        options: CarouselOptions(
+                          height: 250.0,
+                          autoPlay: true,
+                          enlargeCenterPage: true,
+                          aspectRatio: 16 / 9,
+                          autoPlayCurve: Curves.fastOutSlowIn,
+                          enableInfiniteScroll: true,
+                          autoPlayAnimationDuration:
+                              Duration(milliseconds: 800),
+                          viewportFraction: 0.8,
+                        ),
+                        items: [
+                          {'image': 'assets/images.png', 'title': '雞肉沙拉'},
+                          {'image': 'assets/image/food.jpg', 'title': '蔬菜湯'},
+                          {'image': 'assets/image/note.jpg', 'title': '水果拼盤'},
+                        ].map((item) {
+                          final imageUrl = item['image'] ?? '';
+                          final title = item['title'] ?? '';
 
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin: EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image:
-                                              AssetImage(imageUrl), // 使用檢查過的值
-                                          fit: BoxFit.cover,
+                          return Builder(
+                            builder: (BuildContext context) {
+                              return Container(
+                                width: MediaQuery.of(context).size.width,
+                                margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: AssetImage(imageUrl),
+                                            fit: BoxFit.cover,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    title, // 使用檢查過的值
-                                    style: TextStyle(
-                                      fontSize: 20.0,
-                                      // fontWeight: FontWeight.bold,
+                                    SizedBox(height: 10),
+                                    Text(
+                                      title,
+                                      style: TextStyle(
+                                        fontSize: 20.0,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: SizedBox(),
-                  ), // 使按钮位置靠下
-                ],
+                    SizedBox(height: 30),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '　最近做過~',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    Container(
+                      height: 220,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: dummyPopularItems()
+                            .length, // 使用預先定義的假數據列表的長度 注意這裡調用了 dummyPopularItems 函數並使用其返回值的長度
+                        itemBuilder: (context, index) {
+                          PopularItem item = dummyPopularItems()[
+                              index]; // 注意這裡也調用了 dummyPopularItems 函數並使用其返回值的索引
+                          return Padding(
+                            padding: EdgeInsets.only(left: 5), // 調整左邊填充量
+                            child: Center(
+                              child: Container(
+                                width: 120,
+                                margin: EdgeInsets.symmetric(horizontal: 8),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.asset(
+                                          item.imageUrl,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      item.title,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.favorite,
+                                          color: Colors
+                                              .red, // Change to red for a heart shape
+                                          size: 16,
+                                        ),
+                                        SizedBox(width: 4),
+                                        Text(
+                                          '${item.rating}' + '',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        // 處理 "View Now" 按鈕點擊事件
+                                      },
+                                      child: Text(
+                                        '查看食譜',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          // fontWeight: FontWeight.bold,
+                                          color: Color(0xFFDD8A62),
+                                        ),
+                                        textAlign: TextAlign.center, // 置中對齊
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    Expanded(
+                      child: SizedBox(),
+                    ),
+                  ],
+                ),
               ),
+
+              //  add new container **************************
+              // Container(
+              //   // 新加的 Container 包裹新的 Column
+              //   child: Column(
+              //     children: [
+              //       // Add your content for the second column here
+              //     ],
+              //   ),
+              // ),
+
               Positioned(
-                bottom: 50, // 调整底部位置
+                bottom: 50,
                 child: SizedBox(
-                  width: 300, // 调整宽度
-                  height: 150, // 调整高度
+                  width: 300,
+                  height: 150,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        // MaterialPageRoute(builder: (context) => Camera()), //高的拍照寫死頁面
                         MaterialPageRoute(
-                            builder: (context) => PickImage()), //雅的拍照寫死頁面
-                        // MaterialPageRoute(builder: (context) => MealPlannerSplashScreen()), //雅 測試登入前動畫導覽頁面
+                          builder: (context) => PickImage(),
+                        ),
                       );
                     },
                     style: ButtonStyle(
@@ -249,7 +374,7 @@ class _HomePageState extends State<HomePage> {
                     child: Ink(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage('assets/images.png'), // 替换为您的图片路径
+                          image: AssetImage('assets/images.png'),
                           fit: BoxFit.cover,
                         ),
                         borderRadius: BorderRadius.circular(10.0),
@@ -257,10 +382,10 @@ class _HomePageState extends State<HomePage> {
                       child: Container(
                         alignment: Alignment.center,
                         child: Text(
-                          'Go to Camera',
+                          '生成食譜',
                           style: TextStyle(
-                            color: Colors.white, // 调整文字颜色
-                            fontSize: 16.0,
+                            color: Colors.white,
+                            fontSize: 20.0,
                           ),
                         ),
                       ),
@@ -273,13 +398,59 @@ class _HomePageState extends State<HomePage> {
         );
 
       case 3:
+        List<Map<String, dynamic>> historicalRecipes = [
+          {
+            'imageUrl': 'assets/image/food.jpg',
+            'title': '蔬菜沙拉',
+            'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
+          },
+          {
+            'imageUrl': 'assets/image/food.jpg',
+            'title': '牛肉意面',
+            'description': '香濃美味的牛肉意面,百吃不厭。',
+          },
+          {
+            'imageUrl': 'assets/image/food.jpg',
+            'title': '水果拼盤',
+            'description': '各種新鮮水果的精彩組合。',
+          },
+          // 您可以在這裡添加更多模擬數據
+        ];
+
         return Container(
           color: Color.fromARGB(255, 247, 238, 163),
-          child: Center(
-            child: Text('歷史食譜'),
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              Text(
+                '歷史食譜',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: historicalRecipes.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage:
+                            AssetImage(historicalRecipes[index]['imageUrl']),
+                      ),
+                      title: Text(historicalRecipes[index]['title']),
+                      subtitle: Text(historicalRecipes[index]['description']),
+                      onTap: () {
+                        // 導航至食譜詳情頁面
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         );
-
       case 4:
         return Scaffold(
           backgroundColor: Color.fromARGB(255, 247, 238, 163),
