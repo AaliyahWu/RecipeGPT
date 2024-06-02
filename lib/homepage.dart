@@ -149,11 +149,20 @@ class _HomePageState extends State<HomePage> {
             children: [
               Column(
                 children: [
+                  SizedBox(height: 50), // 增加精選食譜文字與上方间距
+                  Text(
+                    '精選食譜',
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 15), // 增加间距
                   Container(
-                    height: 320.0, // 调整高度
+                    // height: 320.0, // 调整高度
                     child: CarouselSlider(
                       options: CarouselOptions(
-                        height: 200.0,
+                        height: 250.0, // 調整圖片高度
                         autoPlay: true,
                         enlargeCenterPage: true,
                         aspectRatio: 16 / 9,
@@ -163,21 +172,42 @@ class _HomePageState extends State<HomePage> {
                         viewportFraction: 0.8,
                       ),
                       items: [
-                        'assets/images.png',
-                        'assets/image/food.jpg',
-                        'assets/image/note.jpg',
-                      ].map((i) {
+                        {'image': 'assets/images.png', 'title': '雞肉沙拉'},
+                        {'image': 'assets/image/food.jpg', 'title': '蔬菜湯'},
+                        {'image': 'assets/image/note.jpg', 'title': '水果拼盤'},
+                      ].map((item) {
+                        final imageUrl = item['image'] ?? ''; // 提供默認值 '' 以防止為空
+                        final title = item['title'] ?? ''; // 提供默認值 '' 以防止為空
+
                         return Builder(
                           builder: (BuildContext context) {
                             return Container(
                               width: MediaQuery.of(context).size.width,
                               margin: EdgeInsets.symmetric(horizontal: 5.0),
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(i),
-                                  fit: BoxFit.cover,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image:
+                                              AssetImage(imageUrl), // 使用檢查過的值
+                                          fit: BoxFit.cover,
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    title, // 使用檢查過的值
+                                    style: TextStyle(
+                                      fontSize: 20.0,
+                                      // fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },

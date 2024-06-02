@@ -41,6 +41,7 @@ class MealPlannerSplashScreen extends StatelessWidget {
                             style: TextStyle(
                               letterSpacing: 0,
                               color: Colors.black,
+                              fontWeight: FontWeight.bold, // 粗體字型
                             ),
                           ),
                           TextSpan(
@@ -48,6 +49,7 @@ class MealPlannerSplashScreen extends StatelessWidget {
                             style: TextStyle(
                               color: Color(0xFFDD8A62),
                               letterSpacing: 0,
+                              fontWeight: FontWeight.bold, // 粗體字型
                             ),
                           ),
                           TextSpan(
@@ -55,6 +57,7 @@ class MealPlannerSplashScreen extends StatelessWidget {
                             style: TextStyle(
                               letterSpacing: 0,
                               color: Colors.black,
+                              fontWeight: FontWeight.bold, // 粗體字型
                             ),
                           )
                         ],
