@@ -421,7 +421,7 @@ class _HomePageState extends State<HomePage> {
         ];
 
         return Container(
-          color: Color.fromARGB(255, 247, 238, 163),
+          color: Color(0xFFF4DAB5),
           child: Column(
             children: [
               SizedBox(height: 20),
