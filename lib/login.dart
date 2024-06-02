@@ -32,8 +32,8 @@ class Login extends StatelessWidget {
               labelColor: Color(0xFFF2B892),
               unselectedLabelColor: Colors.black,
               tabs: [
-                Tab(text: 'Login'),
-                Tab(text: 'Register'),
+                Tab(text: '登入'),
+                Tab(text: '註冊'),
               ],
             ),
           ),
@@ -68,7 +68,7 @@ class _LoginCardState extends State<LoginCard> {
           [username, password]);
       return results.isNotEmpty;
     } catch (e) {
-      print('Failed to authenticate user: $e');
+      print('驗證失敗: $e');
       return false;
     }
   }
@@ -87,7 +87,7 @@ class _LoginCardState extends State<LoginCard> {
 
     if (result) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Login Successful!'),
+        content: Text('登入成功!'),
         backgroundColor: Colors.green,
       ));
       Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -95,7 +95,7 @@ class _LoginCardState extends State<LoginCard> {
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Invalid username or password'),
+        content: Text('帳號或密碼錯誤'),
         backgroundColor: Colors.red,
       ));
     }
@@ -115,22 +115,22 @@ class _LoginCardState extends State<LoginCard> {
                 TextField(
                   controller: _usernameController,
                   decoration: InputDecoration(
-                    labelText: 'Email Address',
+                    labelText: '電子信箱',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    hintText: 'Enter your email...',
+                    hintText: '輸入電子信箱...',
                   ),
                 ),
                 SizedBox(height: 20),
                 TextField(
                   controller: _passwordController,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: '密碼',
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
-                    hintText: 'Enter your password...',
+                    hintText: '輸入密碼...',
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -159,7 +159,7 @@ class _LoginCardState extends State<LoginCard> {
                             backgroundColor: Color(0xFFF2B892),
                           ),
                           child: const Text(
-                            'Login',
+                            '登入',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -193,16 +193,16 @@ class _SignupCardState extends State<SignupCard> {
         [name, email, password],
       );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Registration Successful!'),
+        content: Text('註冊成功!'),
         backgroundColor: Colors.green,
       ));
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => HomePage(), // Assuming HomePage exists
       ));
     } catch (e) {
-      print('Failed to register user: $e');
+      print('註冊失敗: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Registration Failed'),
+        content: Text('註冊失敗'),
         backgroundColor: Colors.red,
       ));
     } finally {
@@ -236,33 +236,33 @@ class _SignupCardState extends State<SignupCard> {
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Name',
+                  labelText: '暱稱',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  hintText: 'Enter your name...',
+                  hintText: '輸入暱稱...',
                 ),
               ),
               SizedBox(height: 20),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  labelText: 'Email Address',
+                  labelText: '電子信箱',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  hintText: 'Enter your email...',
+                  hintText: '輸入電子信箱...',
                 ),
               ),
               SizedBox(height: 20),
               TextField(
                 controller: _passwordController,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: '密碼',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  hintText: 'Enter your password...',
+                  hintText: '輸入密碼...',
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
@@ -291,7 +291,7 @@ class _SignupCardState extends State<SignupCard> {
                           backgroundColor: Color(0xFFF2B892),
                         ),
                         child: const Text(
-                          'Register',
+                          '註冊',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
