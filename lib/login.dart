@@ -17,26 +17,31 @@ class Login extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('RecipeGPT'),
-            centerTitle: true, //移到中間
-            backgroundColor: Color(0xFFF4DAB5), // TabBar color
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            toolbarHeight: 200, // Increase toolbar height for larger logo
+            flexibleSpace: Center(
+              child: Image.asset(
+                'assets/LOGO.png',
+                height: 150, // Adjust the height as needed
+              ),
+            ),
             bottom: const TabBar(
-              indicatorColor: Colors.white, // Indicator color
-              labelColor: Colors.white, // Label color
+              indicatorColor: Color(0xFFF2B892),
+              labelColor: Color(0xFFF2B892),
+              unselectedLabelColor: Colors.black,
               tabs: [
-                Tab(text: '登入'),
-                Tab(text: '註冊'),
+                Tab(text: 'Login'),
+                Tab(text: 'Register'),
               ],
             ),
           ),
-          body: Container(
-            color: Color(0xFFF2B892),
-            child: const TabBarView(
-              children: [
-                LoginCard(),
-                SignupCard(),
-              ],
-            ),
+          body: TabBarView(
+            children: [
+              LoginCard(),
+              SignupCard(),
+            ],
           ),
         ),
       ),
@@ -45,8 +50,6 @@ class Login extends StatelessWidget {
 }
 
 class LoginCard extends StatefulWidget {
-  const LoginCard({Key? key}) : super(key: key);
-
   @override
   _LoginCardState createState() => _LoginCardState();
 }
@@ -55,6 +58,7 @@ class _LoginCardState extends State<LoginCard> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   Future<bool> authenticateUser(String username, String password) async {
     try {
@@ -83,7 +87,7 @@ class _LoginCardState extends State<LoginCard> {
 
     if (result) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('登入成功！'),
+        content: Text('Login Successful!'),
         backgroundColor: Colors.green,
       ));
       Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -91,7 +95,7 @@ class _LoginCardState extends State<LoginCard> {
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('無效的使用者名稱或密碼'),
+        content: Text('Invalid username or password'),
         backgroundColor: Colors.red,
       ));
     }
@@ -100,31 +104,68 @@ class _LoginCardState extends State<LoginCard> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Card(
-        margin: const EdgeInsets.all(20.0),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: '帳號'),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: '密碼'),
-                obscureText: true,
-              ),
-              SizedBox(height: 20), //按鈕位置
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _handleLogin,
-                      child: const Text('登入'),
-                    ), //跳轉按鈕
-            ],
+      child: FractionallySizedBox(
+        heightFactor: 0.7, // Adjust the height factor to move the form upwards or downwards
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Email Address',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    hintText: 'Enter your email...',
+                  ),
+                ),
+                SizedBox(height: 20),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    hintText: 'Enter your password...',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                  obscureText: _obscurePassword,
+                ),
+                SizedBox(height: 20),
+                _isLoading
+                    ? CircularProgressIndicator()
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _handleLogin,
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            backgroundColor: Color(0xFFF2B892),
+                          ),
+                          child: const Text(
+                            'Login',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+              ],
+            ),
           ),
         ),
       ),
@@ -133,8 +174,6 @@ class _LoginCardState extends State<LoginCard> {
 }
 
 class SignupCard extends StatefulWidget {
-  const SignupCard({Key? key}) : super(key: key);
-
   @override
   _SignupCardState createState() => _SignupCardState();
 }
@@ -144,16 +183,17 @@ class _SignupCardState extends State<SignupCard> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   Future<void> registerUser(String name, String email, String password) async {
     try {
       var conn = await DatabaseService().connection;
       await conn.query(
         'INSERT INTO recipedb.accounts (name, email, password) VALUES (?, ?, ?)',
-        [name, email, password]
+        [name, email, password],
       );
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('註冊成功！'),
+        content: Text('Registration Successful!'),
         backgroundColor: Colors.green,
       ));
       Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -162,7 +202,7 @@ class _SignupCardState extends State<SignupCard> {
     } catch (e) {
       print('Failed to register user: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('註冊失敗'),
+        content: Text('Registration Failed'),
         backgroundColor: Colors.red,
       ));
     } finally {
@@ -186,34 +226,75 @@ class _SignupCardState extends State<SignupCard> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Card(
-        margin: const EdgeInsets.all(20.0),
+      child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              SizedBox(height: 20),
               TextField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: '名字'),
+                decoration: InputDecoration(
+                  labelText: 'Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintText: 'Enter your name...',
+                ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: '電子信箱'),
+                decoration: InputDecoration(
+                  labelText: 'Email Address',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintText: 'Enter your email...',
+                ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 20),
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: '密碼'),
-                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  hintText: 'Enter your password...',
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+                obscureText: _obscurePassword,
               ),
               SizedBox(height: 20),
               _isLoading
                   ? CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: _handleRegister,
-                      child: const Text('註冊'),
+                  : SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _handleRegister,
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          backgroundColor: Color(0xFFF2B892),
+                        ),
+                        child: const Text(
+                          'Register',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
             ],
           ),
@@ -222,7 +303,6 @@ class _SignupCardState extends State<SignupCard> {
     );
   }
 }
-
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
