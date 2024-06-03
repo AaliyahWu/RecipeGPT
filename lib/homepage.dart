@@ -33,6 +33,8 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _controller = TextEditingController();
   List<String> userInputList = [];
 
+  bool _isNotificationEnabled = false; // 管理通知開關狀態
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -417,7 +419,6 @@ class _HomePageState extends State<HomePage> {
             'title': '水果拼盤',
             'description': '各種新鮮水果的精彩組合。',
           },
-          // 您可以在這裡添加更多模擬數據
         ];
 
         return Container(
@@ -458,19 +459,19 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           backgroundColor: Color(0xFFF1E9E6),
           body: Padding(
-            padding: const EdgeInsets.only(top: 50.0),
+            padding: const EdgeInsets.only(top: 1.0),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Stack(
                     children: <Widget>[
                       Container(
-                        width: 150,
-                        height: 150,
+                        width: 130,
+                        height: 130,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 0.5),
+                          border: Border.all(color: Colors.black, width: 0.3),
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.fill,
@@ -480,13 +481,13 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(10),
                       ),
                       Positioned(
-                        bottom: 0,
-                        right: 0,
+                        bottom: 10,
+                        right: 10,
                         child: GestureDetector(
                           onTap: () {},
                           child: Container(
-                            width: 30,
-                            height: 30,
+                            width: 25,
+                            height: 25,
                             decoration: BoxDecoration(
                               color: Colors.blue,
                               shape: BoxShape.circle,
@@ -494,19 +495,91 @@ class _HomePageState extends State<HomePage> {
                             child: Icon(
                               Icons.add,
                               color: Colors.white,
+                              size: 20,
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
+                  // SizedBox(height: 10),
                   Text(
-                    '用戶名稱: Bob\n性別: Man\n電子郵件: Bob@gmail.com',
-                    textAlign: TextAlign.left,
+                    'Test',
+                    style: TextStyle(fontSize: 38),
+                  ),
+                  SizedBox(height: 0),
+                  Text(
+                    'test@test.com',
+                    style: TextStyle(
+                      fontSize: 10,
+                      decoration: TextDecoration.underline,
+                    ),
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                      textStyle: TextStyle(fontSize: 14),
+                    ),
+                    child: Text('編輯個人資料'),
+                    onPressed: () {
+                      //
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '管理通知',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(width: 100),
+                      Transform.scale(
+                        scale: 0.6,
+                        child: Switch(
+                          value: _isNotificationEnabled,
+                          onChanged: (bool value) {
+                            setState(() {
+                              _isNotificationEnabled = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '找朋友',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(width: 100),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 25, vertical: 15),
+                          textStyle: TextStyle(fontSize: 14),
+                        ),
+                        child: Text('分享'),
+                        onPressed: () {
+                          //
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 40),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                      textStyle: TextStyle(fontSize: 16),
+                    ),
                     child: Text('登出'),
                     onPressed: () {
                       Navigator.push(
