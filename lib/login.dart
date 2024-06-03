@@ -13,6 +13,21 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: Color(0xFFF1E9E6),
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFF2B892)),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: Color(0xFFF2B892),
+        ),
+      ),
       home: DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -105,7 +120,7 @@ class _LoginCardState extends State<LoginCard> {
   Widget build(BuildContext context) {
     return Center(
       child: FractionallySizedBox(
-        heightFactor: 0.7, // Adjust the height factor to move the form upwards or downwards
+        heightFactor: 0.9, // Adjust the height factor to move the form upwards or downwards
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -116,9 +131,6 @@ class _LoginCardState extends State<LoginCard> {
                   controller: _usernameController,
                   decoration: InputDecoration(
                     labelText: '電子信箱',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
                     hintText: '輸入電子信箱...',
                   ),
                 ),
@@ -127,9 +139,6 @@ class _LoginCardState extends State<LoginCard> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: '密碼',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
                     hintText: '輸入密碼...',
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -160,7 +169,7 @@ class _LoginCardState extends State<LoginCard> {
                           ),
                           child: const Text(
                             '登入',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
                       ),
@@ -226,77 +235,70 @@ class _SignupCardState extends State<SignupCard> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(height: 20),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: '暱稱',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+      child: FractionallySizedBox(
+        heightFactor: 0.9, // Adjust the height factor to move the form upwards or downwards
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: '暱稱',
+                    hintText: '輸入暱稱...',
                   ),
-                  hintText: '輸入暱稱...',
                 ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: '電子信箱',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                SizedBox(height: 20),
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: '電子信箱',
+                    hintText: '輸入電子信箱...',
                   ),
-                  hintText: '輸入電子信箱...',
                 ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: _passwordController,
-                decoration: InputDecoration(
-                  labelText: '密碼',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  hintText: '輸入密碼...',
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                SizedBox(height: 20),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: '密碼',
+                    hintText: '輸入密碼...',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
                   ),
+                  obscureText: _obscurePassword,
                 ),
-                obscureText: _obscurePassword,
-              ),
-              SizedBox(height: 20),
-              _isLoading
-                  ? CircularProgressIndicator()
-                  : SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _handleRegister,
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 16.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
+                SizedBox(height: 20),
+                _isLoading
+                    ? CircularProgressIndicator()
+                    : SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _handleRegister,
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            backgroundColor: Color(0xFFF2B892),
                           ),
-                          backgroundColor: Color(0xFFF2B892),
-                        ),
-                        child: const Text(
-                          '註冊',
-                          style: TextStyle(color: Colors.white),
+                          child: const Text(
+                            '註冊',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
-                    ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

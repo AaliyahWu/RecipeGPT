@@ -41,15 +41,15 @@ class _HomePageState extends State<HomePage> {
         index: _currentPageIndex,
         height: 60.0,
         items: <Widget>[
-          Icon(Icons.group, size: 30, color: Color(0xFFF4DAB5)),
-          Icon(Icons.list, size: 30, color: Color(0xFFF4DAB5)),
-          Icon(Icons.camera, size: 45, color: Color(0xFFF4DAB5)),
-          Icon(Icons.history, size: 30, color: Color(0xFFF4DAB5)),
-          Icon(Icons.perm_identity, size: 30, color: Color(0xFFF4DAB5)),
+          Icon(Icons.group, size: 30, color: Color(0xFFF1E9E6)),
+          Icon(Icons.list, size: 30, color: Color(0xFFF1E9E6)),
+          Icon(Icons.camera, size: 45, color: Color(0xFFF1E9E6)),
+          Icon(Icons.history, size: 30, color: Color(0xFFF1E9E6)),
+          Icon(Icons.perm_identity, size: 30, color: Color(0xFFF1E9E6)),
         ],
-        color: Color(0xFF262520),
-        buttonBackgroundColor: Color(0xFF262520),
-        backgroundColor: Color(0xFFF4DAB5),
+        color: Color(0xFFDD8A62),
+        buttonBackgroundColor: Color(0xFFDD8A62),
+        backgroundColor: Color(0xFFF1E9E6), // 設定背景顏色
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 350),
         onTap: (index) {
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
     switch (_currentPageIndex) {
       case 0:
         return Container(
-          color: Color(0xFFF4DAB5),
+          color: Color(0xFFF1E9E6),
           child: Center(
             child: Text('社群'),
           ),
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
 
       case 1:
         return Container(
-          color: Color(0xFFF4DAB5),
+          color: Color(0xFFF1E9E6),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -173,7 +173,7 @@ class _HomePageState extends State<HomePage> {
         }
 
         return Container(
-          color: Color(0xFFF4DAB5),
+          color: Color(0xFFF1E9E6),
           child: Stack(
             alignment: Alignment.bottomCenter,
             children: [
@@ -204,9 +204,9 @@ class _HomePageState extends State<HomePage> {
                           viewportFraction: 0.8,
                         ),
                         items: [
-                          {'image': 'assets/images.png', 'title': '雞肉沙拉'},
+                          {'image': 'assets/image/food.jpg', 'title': '雞肉沙拉'},
                           {'image': 'assets/image/food.jpg', 'title': '蔬菜湯'},
-                          {'image': 'assets/image/note.jpg', 'title': '水果拼盤'},
+                          {'image': 'assets/image/food.jpg', 'title': '水果拼盤'},
                         ].map((item) {
                           final imageUrl = item['image'] ?? '';
                           final title = item['title'] ?? '';
@@ -421,7 +421,7 @@ class _HomePageState extends State<HomePage> {
         ];
 
         return Container(
-          color: Color(0xFFF4DAB5),
+          color: Color(0xFFF1E9E6),
           child: Column(
             children: [
               SizedBox(height: 20),
@@ -456,7 +456,7 @@ class _HomePageState extends State<HomePage> {
         );
       case 4:
         return Scaffold(
-          backgroundColor: Color(0xFFF4DAB5),
+          backgroundColor: Color(0xFFF1E9E6),
           body: Padding(
             padding: const EdgeInsets.only(top: 50.0),
             child: Center(

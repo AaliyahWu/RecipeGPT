@@ -15,7 +15,9 @@ class _OnboardingSlideshowState extends State<OnboardingSlideshow> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF1E9E6), // 設定背景顏色
       appBar: AppBar(
+        backgroundColor: const Color(0xFFF1E9E6), // 設定 AppBar 顏色
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -41,11 +43,11 @@ class _OnboardingSlideshowState extends State<OnboardingSlideshow> {
               children: <Widget>[
                 buildPage(
                     '\n你是否曾面對著食材滿當當的冰箱，卻不知道該煮什麼?\n一直一直買新的食材，卻造成許多食物過期而浪費。\n那就快來使用好食在吧！\n',
-                    'assets/LOGO.png',
+                    'assets/Page1.png',
                     '跳過'),
-                buildPage('\n透過影像辨識及可自動生成食譜的功能，\n輕易解決糧食浪費問題，\n讓你每天都有新菜色，不僅吃的開心還健康。\n',
-                    'assets/LOGO.png', '跳過'),
-                buildPage('Page 3', 'assets/LOGO.png', '登入'),
+                buildPage('\n透過影像辨識及可自動生成食譜的功能\n輕易解決糧食浪費問題\n讓你每天都有新菜色，不僅吃的開心還健康。\n',
+                    'assets/Page2.png', '跳過'),
+                buildPage('\n感興趣嗎！快點擊下方按鈕\n立即加入「好食在」這個大家庭吧！', 'assets/Page3.png', '登入'),
               ],
             ),
           ),
@@ -100,8 +102,8 @@ class _OnboardingSlideshowState extends State<OnboardingSlideshow> {
         children: <Widget>[
           Image.asset(
             imagePath,
-            width: 150,
-            height: 150,
+            width: 200,
+            height: 200,
           ), // 添加圖片
           Text(
             text,

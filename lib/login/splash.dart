@@ -6,7 +6,7 @@ class MealPlannerSplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255), // 設定背景顏色為白色
+      backgroundColor: const Color(0xFFF1E9E6), // 設定背景顏色
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -33,41 +33,52 @@ class MealPlannerSplashScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 24, 0, 0),
-                    child: RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: '好',
+                    child: Column(
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '好',
+                                style: TextStyle(
+                                  letterSpacing: 0,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold, // 粗體字型
+                                ),
+                              ),
+                              TextSpan(
+                                text: '食',
+                                style: TextStyle(
+                                  color: Color(0xFFDD8A62),
+                                  letterSpacing: 0,
+                                  fontWeight: FontWeight.bold, // 粗體字型
+                                ),
+                              ),
+                              TextSpan(
+                                text: '在',
+                                style: TextStyle(
+                                  letterSpacing: 0,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold, // 粗體字型
+                                ),
+                              )
+                            ],
                             style: TextStyle(
+                              fontSize: 32,
                               letterSpacing: 0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold, // 粗體字型
                             ),
                           ),
-                          TextSpan(
-                            text: '食',
-                            style: TextStyle(
-                              color: Color(0xFFDD8A62),
-                              letterSpacing: 0,
-                              fontWeight: FontWeight.bold, // 粗體字型
-                            ),
-                          ),
-                          TextSpan(
-                            text: '在',
-                            style: TextStyle(
-                              letterSpacing: 0,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold, // 粗體字型
-                            ),
-                          )
-                        ],
-                        style: TextStyle(
-                          fontSize: 32,
-                          letterSpacing: 0,
                         ),
-                      ),
+                        Text(
+                          'Anyone can cook!',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
