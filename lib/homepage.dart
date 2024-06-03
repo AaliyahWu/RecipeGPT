@@ -72,83 +72,126 @@ class _HomePageState extends State<HomePage> {
             child: Text('社群'),
           ),
         );
-
       case 1:
-        return Container(
-          color: Color(0xFFF1E9E6),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(height: 50),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 50,
-                          child: TextFormField(
-                            controller: _controller,
-                            decoration: InputDecoration(
-                              hintText: '輸入偏好',
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 10),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                userInput = value;
-                              });
-                            },
-                          ),
-                        ),
+  return Container(
+    color: Color(0xFFF1E9E6),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(height: 50),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 50,
+                  child: TextFormField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: '輸入偏好',
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFF2B892)),
                       ),
-                      SizedBox(width: 10),
-                      Container(
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: userInput.isNotEmpty
-                              ? () {
-                                  setState(() {
-                                    userInputList.add(userInput);
-                                    _controller.clear();
-                                    userInput = '';
-                                  });
-                                }
-                              : null,
-                          child: Text('添加'),
-                        ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFF2B892)),
                       ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 20),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: userInputList.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text(
-                          userInputList[index],
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () {
-                            setState(() {
-                              userInputList.removeAt(index);
-                            });
-                          },
-                        ),
-                      );
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Color(0xFFF2B892)),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 10),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        userInput = value;
+                      });
                     },
                   ),
                 ),
-              ],
-            ),
+              ),
+              SizedBox(width: 10),
+              Container(
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: userInput.isNotEmpty
+                      ? () {
+                          setState(() {
+                            userInputList.add(userInput);
+                            _controller.clear();
+                            userInput = '';
+                          });
+                        }
+                      : null,
+                  child: Text('添加'),
+                ),
+              ),
+            ],
           ),
-        );
+        ),
+        SizedBox(height: 20),
+        Expanded(
+          child: ListView.builder(
+            itemCount: userInputList.length + 1, // Including the pre-saved data
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                // Pre-saved data
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      title: Text(
+                        '高蛋白質',
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
+                        onPressed: () {
+                          setState(() {
+                            // Handle delete action for pre-saved data if needed
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                // User input data
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(10),
+                      title: Text(
+                        userInputList[index - 1],
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
+                        onPressed: () {
+                          setState(() {
+                            userInputList.removeAt(index - 1);
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+
 
       case 2:
         List<PopularItem> dummyPopularItems() {
@@ -399,101 +442,46 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         );
-
-      // case 3:
-      //   List<Map<String, dynamic>> historicalRecipes = [
-      //     {
-      //       'imageUrl': 'assets/image/food.jpg',
-      //       'title': '蔬菜沙拉',
-      //       'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
-      //     },
-      //     {
-      //       'imageUrl': 'assets/image/food.jpg',
-      //       'title': '牛肉意面',
-      //       'description': '香濃美味的牛肉意面,百吃不厭。',
-      //     },
-      //     {
-      //       'imageUrl': 'assets/image/food.jpg',
-      //       'title': '水果拼盤',
-      //       'description': '各種新鮮水果的精彩組合。',
-      //     },
-      //     // 您可以在這裡添加更多模擬數據
-      //   ];
-
-      //   return Container(
-      //     color: Color(0xFFF1E9E6),
-      //     child: Column(
-      //       children: [
-      //         SizedBox(height: 20),
-      //         Text(
-      //           '歷史食譜',
-      //           style: TextStyle(
-      //             fontSize: 24,
-      //             fontWeight: FontWeight.bold,
-      //           ),
-      //         ),
-      //         SizedBox(height: 20),
-      //         Expanded(
-      //           child: ListView.builder(
-      //             itemCount: historicalRecipes.length,
-      //             itemBuilder: (context, index) {
-      //               return ListTile(
-      //                 leading: CircleAvatar(
-      //                   backgroundImage:
-      //                       AssetImage(historicalRecipes[index]['imageUrl']),
-      //                 ),
-      //                 title: Text(historicalRecipes[index]['title']),
-      //                 subtitle: Text(historicalRecipes[index]['description']),
-      //                 onTap: () {
-      //                   // 導航至食譜詳情頁面
-      //                 },
-      //               );
-      //             },
-      //           ),
-      //         ),
-      //       ],
-      //     ),
-      //   );
-        case 3:
-  List<Map<String, dynamic>> historicalRecipes = [
-    {
-      'imageUrl': 'assets/image/food.jpg',
-      'title': '蔬菜沙拉',
-      'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
-      'rating': 9.1,
-    },
-    {
-      'imageUrl': 'assets/image/food.jpg',
-      'title': '牛肉意面',
-      'description': '香濃美味的牛肉意面,百吃不厭。',
-      'rating': 8.6,
-    },
-    {
-      'imageUrl': 'assets/image/food.jpg',
-      'title': '水果拼盤',
-      'description': '各種新鮮水果的精彩組合。',
-      'rating': 8.2,
-    },
-    {
-      'imageUrl': 'assets/image/food.jpg',
-      'title': '番茄炒蛋',
-      'description': '簡單易做的番茄炒蛋，營養豐富。',
-      'rating': 8.8,
-    },
-    {
-      'imageUrl': 'assets/image/food.jpg',
-      'title': '香菇炒麵',
-      'description': '香氣四溢的香菇炒麵，美味可口。',
-      'rating': 9.0,
-    },
-    {
-      'imageUrl': 'assets/image/food.jpg',
-      'title': '鮮蝦沙拉',
-      'description': '清爽可口的鮮蝦沙拉，滿滿的海鮮風味。',
-      'rating': 8.9,
-    },
-    // 可以在這裡添加更多模擬數據
-  ];
+          case 3:
+    List<Map<String, dynamic>> historicalRecipes = [
+      {
+        'imageUrl': 'assets/image/food.jpg',
+        'title': '蔬菜沙拉',
+        'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
+        'rating': 9.1,
+      },
+      {
+        'imageUrl': 'assets/image/food.jpg',
+        'title': '牛肉意面',
+        'description': '香濃美味的牛肉意面,百吃不厭。',
+        'rating': 8.6,
+      },
+      {
+        'imageUrl': 'assets/image/food.jpg',
+        'title': '水果拼盤',
+        'description': '各種新鮮水果的精彩組合。',
+        'rating': 8.2,
+      },
+      {
+        'imageUrl': 'assets/image/food.jpg',
+        'title': '番茄炒蛋',
+        'description': '簡單易做的番茄炒蛋，營養豐富。',
+        'rating': 8.8,
+      },
+      {
+        'imageUrl': 'assets/image/food.jpg',
+        'title': '香菇炒麵',
+        'description': '香氣四溢的香菇炒麵，美味可口。',
+        'rating': 9.0,
+      },
+      {
+        'imageUrl': 'assets/image/food.jpg',
+        'title': '鮮蝦沙拉',
+        'description': '清爽可口的鮮蝦沙拉，滿滿的海鮮風味。',
+        'rating': 8.9,
+      },
+      // 可以在這裡添加更多模擬數據
+    ];
 
   return Container(
     color: Color(0xFFF1E9E6),

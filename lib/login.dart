@@ -293,7 +293,7 @@ class _SignupCardState extends State<SignupCard> {
                           ),
                           child: const Text(
                             '註冊',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
                       ),
