@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _controller = TextEditingController();
   List<String> userInputList = [];
 
-  bool _isNotificationEnabled = false; // 管理通知開關狀態
+  bool _isNotificationEnabled = true; // 管理通知開關狀態(預設開)
 
   @override
   Widget build(BuildContext context) {
@@ -75,262 +75,266 @@ class _HomePageState extends State<HomePage> {
           ),
         );
 
-    case 1:
-  return Container(
-    color: Color(0xFFF1E9E6),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        SizedBox(height: 50),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: Row(
+      case 1:
+        return Container(
+          color: Color(0xFFF1E9E6),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Expanded(
-                child: Container(
-                  height: 50,
-                  child: TextFormField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: '輸入偏好',
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFFF2B892)),
+              SizedBox(height: 50),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 50,
+                        child: TextFormField(
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            hintText: '輸入偏好',
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFFF2B892)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFFF2B892)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Color(0xFFF2B892)),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 10),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              userInput = value;
+                            });
+                          },
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFFF2B892)),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Color(0xFFF2B892)),
-                      ),
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        userInput = value;
-                      });
-                    },
-                  ),
+                    SizedBox(width: 10),
+                    Container(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: userInput.isNotEmpty
+                            ? () {
+                                setState(() {
+                                  userInputList.add(userInput);
+                                  _controller.clear();
+                                  userInput = '';
+                                });
+                              }
+                            : null,
+                        child: Text('添加'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(width: 10),
-              Container(
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: userInput.isNotEmpty
-                      ? () {
-                          setState(() {
-                            userInputList.add(userInput);
-                            _controller.clear();
-                            userInput = '';
-                          });
-                        }
-                      : null,
-                  child: Text('添加'),
+              SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount:
+                      userInputList.length + 1, // Including the pre-saved data
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      // Pre-saved data
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(10),
+                            title: Text(
+                              '高蛋白質',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            trailing: IconButton(
+                              icon:
+                                  Icon(Icons.delete, color: Color(0xFFF2B892)),
+                              onPressed: () {
+                                setState(() {
+                                  // Handle delete action for pre-saved data if needed
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      );
+                    } else {
+                      // User input data
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(10),
+                            title: Text(
+                              userInputList[index - 1],
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            trailing: IconButton(
+                              icon:
+                                  Icon(Icons.delete, color: Color(0xFFF2B892)),
+                              onPressed: () {
+                                setState(() {
+                                  userInputList.removeAt(index - 1);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 ),
               ),
             ],
           ),
-        ),
-        SizedBox(height: 20),
-        Expanded(
-          child: ListView.builder(
-            itemCount: userInputList.length + 1, // Including the pre-saved data
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                // Pre-saved data
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      title: Text(
-                        '高蛋白質',
-                        style: TextStyle(fontSize: 18.0),
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
-                        onPressed: () {
-                          setState(() {
-                            // Handle delete action for pre-saved data if needed
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                );
-              } else {
-                // User input data
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: ListTile(
-                      contentPadding: EdgeInsets.all(10),
-                      title: Text(
-                        userInputList[index - 1],
-                        style: TextStyle(fontSize: 18.0),
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
-                        onPressed: () {
-                          setState(() {
-                            userInputList.removeAt(index - 1);
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                );
-              }
-            },
-          ),
-        ),
-      ],
-    ),
-  );
+        );
 
-  //     case 1:
-  // return Container(
-  //   color: Color(0xFFF1E9E6),
-  //   child: Column(
-  //     mainAxisAlignment: MainAxisAlignment.start,
-  //     children: [
-  //       SizedBox(height: 50),
-  //       Padding(
-  //         padding: EdgeInsets.symmetric(horizontal: 20.0),
-  //         child: Row(
-  //           children: [
-  //             Expanded(
-  //               child: Container(
-  //                 height: 50,
-  //                 child: TextFormField(
-  //                   controller: _controller,
-  //                   decoration: InputDecoration(
-  //                     hintText: '輸入偏好',
-  //                     border: OutlineInputBorder(
-  //                       borderSide: BorderSide(color: Color(0xFFF2B892)),
-  //                     ),
-  //                     enabledBorder: OutlineInputBorder(
-  //                       borderSide: BorderSide(color: Color(0xFFF2B892)),
-  //                     ),
-  //                     focusedBorder: OutlineInputBorder(
-  //                       borderSide: BorderSide(color: Color(0xFFF2B892)),
-  //                     ),
-  //                     contentPadding: EdgeInsets.symmetric(
-  //                         vertical: 10, horizontal: 10),
-  //                   ),
-  //                   onChanged: (value) {
-  //                     setState(() {
-  //                       userInput = value;
-  //                     });
-  //                   },
-  //                 ),
-  //               ),
-  //             ),
-  //             SizedBox(width: 10),
-  //             Container(
-  //               height: 50,
-  //               child: ElevatedButton(
-  //                 onPressed: userInput.isNotEmpty
-  //                     ? () {
-  //                         setState(() {
-  //                           userInputList.add(userInput);
-  //                           _controller.clear();
-  //                           userInput = '';
-  //                         });
-  //                       }
-  //                     : null,
-  //                 child: Text('添加'),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       SizedBox(height: 20),
-  //       Expanded(
-  //         child: ListView.builder(
-  //           itemCount: userInputList.length + 1, // Including the pre-saved data
-  //           itemBuilder: (context, index) {
-  //             if (index == 0) {
-  //               // Pre-saved data
-  //               return Padding(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-  //                 child: Card(
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //                   child: ListTile(
-  //                     contentPadding: EdgeInsets.all(10),
-  //                     title: Text(
-  //                       '高蛋白質',
-  //                       style: TextStyle(fontSize: 18.0),
-  //                     ),
-  //                     trailing: IconButton(
-  //                       icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
-  //                       onPressed: () {
-  //                         setState(() {
-  //                           // Handle delete action for pre-saved data if needed
-  //                         });
-  //                       },
-  //                     ),
-  //                   ),
-  //                 ),
-  //               );
-  //             } else {
-  //               // User input data
-  //               return Padding(
-  //                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-  //                 child: Card(
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(10),
-  //                   ),
-  //                   child: ListTile(
-  //                     contentPadding: EdgeInsets.all(10),
-  //                     title: Text(
-  //                       userInputList[index - 1],
-  //                       style: TextStyle(fontSize: 18.0),
-  //                     ),
-  //                     trailing: IconButton(
-  //                       icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
-  //                       onPressed: () {
-  //                         setState(() {
-  //                           userInputList.removeAt(index - 1);
-  //                         });
-  //                       },
-  //                     ),
-  //                   ),
-  //                 ),
-  //               );
-  //             }
-  //           },
-  //         ),
-  //       ),
-  //     ],
-  //   ),
-  // );
-
+      //     case 1:
+      // return Container(
+      //   color: Color(0xFFF1E9E6),
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.start,
+      //     children: [
+      //       SizedBox(height: 50),
+      //       Padding(
+      //         padding: EdgeInsets.symmetric(horizontal: 20.0),
+      //         child: Row(
+      //           children: [
+      //             Expanded(
+      //               child: Container(
+      //                 height: 50,
+      //                 child: TextFormField(
+      //                   controller: _controller,
+      //                   decoration: InputDecoration(
+      //                     hintText: '輸入偏好',
+      //                     border: OutlineInputBorder(
+      //                       borderSide: BorderSide(color: Color(0xFFF2B892)),
+      //                     ),
+      //                     enabledBorder: OutlineInputBorder(
+      //                       borderSide: BorderSide(color: Color(0xFFF2B892)),
+      //                     ),
+      //                     focusedBorder: OutlineInputBorder(
+      //                       borderSide: BorderSide(color: Color(0xFFF2B892)),
+      //                     ),
+      //                     contentPadding: EdgeInsets.symmetric(
+      //                         vertical: 10, horizontal: 10),
+      //                   ),
+      //                   onChanged: (value) {
+      //                     setState(() {
+      //                       userInput = value;
+      //                     });
+      //                   },
+      //                 ),
+      //               ),
+      //             ),
+      //             SizedBox(width: 10),
+      //             Container(
+      //               height: 50,
+      //               child: ElevatedButton(
+      //                 onPressed: userInput.isNotEmpty
+      //                     ? () {
+      //                         setState(() {
+      //                           userInputList.add(userInput);
+      //                           _controller.clear();
+      //                           userInput = '';
+      //                         });
+      //                       }
+      //                     : null,
+      //                 child: Text('添加'),
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //       SizedBox(height: 20),
+      //       Expanded(
+      //         child: ListView.builder(
+      //           itemCount: userInputList.length + 1, // Including the pre-saved data
+      //           itemBuilder: (context, index) {
+      //             if (index == 0) {
+      //               // Pre-saved data
+      //               return Padding(
+      //                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      //                 child: Card(
+      //                   shape: RoundedRectangleBorder(
+      //                     borderRadius: BorderRadius.circular(10),
+      //                   ),
+      //                   child: ListTile(
+      //                     contentPadding: EdgeInsets.all(10),
+      //                     title: Text(
+      //                       '高蛋白質',
+      //                       style: TextStyle(fontSize: 18.0),
+      //                     ),
+      //                     trailing: IconButton(
+      //                       icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
+      //                       onPressed: () {
+      //                         setState(() {
+      //                           // Handle delete action for pre-saved data if needed
+      //                         });
+      //                       },
+      //                     ),
+      //                   ),
+      //                 ),
+      //               );
+      //             } else {
+      //               // User input data
+      //               return Padding(
+      //                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      //                 child: Card(
+      //                   shape: RoundedRectangleBorder(
+      //                     borderRadius: BorderRadius.circular(10),
+      //                   ),
+      //                   child: ListTile(
+      //                     contentPadding: EdgeInsets.all(10),
+      //                     title: Text(
+      //                       userInputList[index - 1],
+      //                       style: TextStyle(fontSize: 18.0),
+      //                     ),
+      //                     trailing: IconButton(
+      //                       icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
+      //                       onPressed: () {
+      //                         setState(() {
+      //                           userInputList.removeAt(index - 1);
+      //                         });
+      //                       },
+      //                     ),
+      //                   ),
+      //                 ),
+      //               );
+      //             }
+      //           },
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // );
 
       case 2:
         List<PopularItem> dummyPopularItems() {
           return [
             PopularItem(
-              imageUrl: 'assets/image/food.jpg',
+              imageUrl: 'assets/food/food1.jpg',
               title: '番茄炒蛋',
               rating: 4.5,
             ),
             PopularItem(
-              imageUrl: 'assets/image/food.jpg',
+              imageUrl: 'assets/food/food2.jpg',
               title: '牛肉炒飯',
               rating: 4.0,
             ),
             PopularItem(
-              imageUrl: 'assets/image/food.jpg',
+              imageUrl: 'assets/food/food3.jpg',
               title: '炒高麗菜',
               rating: 4.2,
             ),
@@ -370,9 +374,9 @@ class _HomePageState extends State<HomePage> {
                           viewportFraction: 0.8,
                         ),
                         items: [
-                          {'image': 'assets/image/food.jpg', 'title': '雞肉沙拉'},
-                          {'image': 'assets/image/food.jpg', 'title': '蔬菜湯'},
-                          {'image': 'assets/image/food.jpg', 'title': '水果拼盤'},
+                          {'image': 'assets/food/food4.jpg', 'title': '雞肉沙拉'},
+                          {'image': 'assets/food/food5.jpg', 'title': '蔬菜湯'},
+                          {'image': 'assets/food/food6.jpg', 'title': '早餐水果拼盤'},
                         ].map((item) {
                           final imageUrl = item['image'] ?? '';
                           final title = item['title'] ?? '';
@@ -564,41 +568,41 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         );
-        
+
       case 3:
         List<Map<String, dynamic>> historicalRecipes = [
           {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '蔬菜沙拉',
-            'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
+            'imageUrl': 'assets/food/food4.jpg',
+            'title': '雞肉沙拉',
+            'description': '健康清爽的雞肉沙拉,適合夏日輕食。',
             'rating': 9.1,
           },
           {
-            'imageUrl': 'assets/image/food.jpg',
+            'imageUrl': 'assets/food/food7.jpg',
             'title': '牛肉意面',
             'description': '香濃美味的牛肉意面,百吃不厭。',
             'rating': 8.6,
           },
           {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '水果拼盤',
+            'imageUrl': 'assets/food/food6.jpg',
+            'title': '早餐水果拼盤',
             'description': '各種新鮮水果的精彩組合。',
             'rating': 8.2,
           },
           {
-            'imageUrl': 'assets/image/food.jpg',
+            'imageUrl': 'assets/food/food1.jpg',
             'title': '番茄炒蛋',
             'description': '簡單易做的番茄炒蛋，營養豐富。',
             'rating': 8.8,
           },
           {
-            'imageUrl': 'assets/image/food.jpg',
+            'imageUrl': 'assets/food/food8.jpg',
             'title': '香菇炒麵',
             'description': '香氣四溢的香菇炒麵，美味可口。',
             'rating': 9.0,
           },
           {
-            'imageUrl': 'assets/image/food.jpg',
+            'imageUrl': 'assets/food/food9.jpg',
             'title': '鮮蝦沙拉',
             'description': '清爽可口的鮮蝦沙拉，滿滿的海鮮風味。',
             'rating': 8.9,
@@ -628,6 +632,7 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
                       child: Card(
+                        //color: Color(0xFFf1e9e6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -698,7 +703,7 @@ class _HomePageState extends State<HomePage> {
                             width: 25,
                             height: 25,
                             decoration: BoxDecoration(
-                              color: Colors.blue,
+                              color: Color(0xFF252620),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -728,10 +733,11 @@ class _HomePageState extends State<HomePage> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                          EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                       textStyle: TextStyle(fontSize: 14),
                     ),
-                    child: Text('編輯個人資料'),
+                    child: Text('編輯個人資料',
+                        style: TextStyle(color: Color(0xFFDD8A62))),
                     onPressed: () {
                       //
                     },
@@ -749,6 +755,9 @@ class _HomePageState extends State<HomePage> {
                         scale: 0.6,
                         child: Switch(
                           value: _isNotificationEnabled,
+                          //activeColor: Color(0xFFDD8A62), // 這裡是開啟狀態下的顏色
+                          inactiveThumbColor: Color(0xFFF2B892), // 這裡是關閉狀態下的顏色
+                          //inactiveTrackColor: Color(0xFFF2B892), // 這裡是背景顏色
                           onChanged: (bool value) {
                             setState(() {
                               _isNotificationEnabled = value;
@@ -767,18 +776,41 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(width: 100),
+                      // ElevatedButton(
+                      //   style: ElevatedButton.styleFrom(
+                      //     backgroundColor: Color(0xFFF2B892),
+                      //     foregroundColor: Colors.white,
+                      //     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      //     textStyle: TextStyle(fontSize: 14),
+                      //   ),
+                      //   child: Text('分享'),
+                      //   onPressed: () {
+                      //     //
+                      //   },
+                      // ),
+
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 25, vertical: 15),
-                          textStyle: TextStyle(fontSize: 14),
-                        ),
-                        child: Text('分享'),
-                        onPressed: () {
-                          //
+                        onPressed: () async {
+                          // 點擊事件
                         },
+                        child: Text(
+                          '分享',
+                          style: TextStyle(
+                            color: Colors.white, // 文字顏色
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFF2B892),
+                          foregroundColor: Colors.white,
+                          minimumSize: Size(52, 30),
+                          textStyle: TextStyle(
+                            letterSpacing: 0,
+                            fontSize: 13,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -786,10 +818,11 @@ class _HomePageState extends State<HomePage> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                          EdgeInsets.symmetric(horizontal: 110, vertical: 10),
                       textStyle: TextStyle(fontSize: 16),
                     ),
-                    child: Text('登出'),
+                    child:
+                        Text('登出', style: TextStyle(color: Color(0xFFDD8A62))),
                     onPressed: () {
                       Navigator.push(
                         context,

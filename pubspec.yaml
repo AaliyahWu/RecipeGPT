@@ -81,10 +81,18 @@ flutter:
     - assets/labels.txt
     - assets/image/food.jpg
     - assets/image/note.jpg
+    - assets/food/food1.jpg
+    - assets/food/food2.jpg
+    - assets/food/food3.jpg
+    - assets/food/food4.jpg
+    - assets/food/food5.jpg
+    - assets/food/food6.jpg
+    - assets/food/food7.jpg
+    - assets/food/food8.jpg
+    - assets/food/food9.jpg
     - assets/images.png
     - assets/LOGO.png
     # - jsonfile.json
-    - assets/labels_cn.txt
     - assets/
 
 

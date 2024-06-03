@@ -81,6 +81,7 @@ class _OnboardingSlideshowState extends State<OnboardingSlideshow> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFF2B892),
+                    foregroundColor: Colors.white,
                     minimumSize: Size(200, 30),
                     textStyle: TextStyle(
                       letterSpacing: 0,
