@@ -20,8 +20,21 @@ class CheckList extends StatefulWidget {
 }
 
 class _CheckListState extends State<CheckList> {
+  // TextEditingController _textController = TextEditingController();
+  // List<ListItem> _items = [];
+  // bool _isButtonEnabled = false;
+
+  String _chatResponse = '';
+  TextEditingController _textEditingController = TextEditingController();
+  int _selectedPeople = 1; // 選擇的人數，預設為1
+  ScrollController _scrollController = ScrollController();
+
   TextEditingController _textController = TextEditingController();
-  List<ListItem> _items = [];
+  List<ListItem> _items = [
+    ListItem(title: '雞肉'),
+    ListItem(title: '高麗菜'),
+    ListItem(title: '胡蘿蔔'),
+  ];
   bool _isButtonEnabled = false;
 
   @override
@@ -30,10 +43,10 @@ class _CheckListState extends State<CheckList> {
       appBar: AppBar(
         title: Text(
           '食材清單',
-          style: TextStyle(color: Colors.white), // Set text color to white
+          style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Color(0xFF262520),
-        iconTheme: IconThemeData(color: Colors.white), // Set back button
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       backgroundColor: Color(0xFFF4DAB5),
       body: Column(
@@ -55,7 +68,7 @@ class _CheckListState extends State<CheckList> {
                       offset: Offset(0, 3),
                     ),
                   ],
-                  color: Color.fromRGBO(255, 255, 255, 0.8), // 圖片透明度
+                  color: Color.fromRGBO(255, 255, 255, 0.8),
                   image: DecorationImage(
                     image: AssetImage('assets/image/note.jpg'),
                     fit: BoxFit.cover,
@@ -67,7 +80,7 @@ class _CheckListState extends State<CheckList> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 8.0), // Add spacing at the top
+                    SizedBox(height: 8.0),
                     Expanded(
                       child: ListView.builder(
                         itemCount: _items.length,
@@ -90,21 +103,56 @@ class _CheckListState extends State<CheckList> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              '飲食偏好：高蛋白質, 雞肉',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0,
-                color: Colors.white, //字體顏色
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
             child: Row(
               children: [
                 Expanded(
+                  child: DropdownButtonFormField<int>(
+                    value: _selectedPeople,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedPeople = value!;
+                      });
+                    },
+                    items: List.generate(10, (index) {
+                      return DropdownMenuItem<int>(
+                        value: index + 1,
+                        child: Text('${index + 1} 人份'),
+                      );
+                    }),
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(horizontal: 13.0),
+                      border: OutlineInputBorder(),
+                      hintText: '選擇人數',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _textController,
+                    onChanged: (text) {
+                      setState(() {
+                        _isButtonEnabled = text.isNotEmpty;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: '輸入食材',
+                    ),
+                  ),
+                ),
+                SizedBox(width: 8.0),
+                SizedBox(
+                  height: 60.0, // 你可以根據需要調整這個值
                   child: ElevatedButton(
                     onPressed: _isButtonEnabled
                         ? () {
@@ -118,42 +166,40 @@ class _CheckListState extends State<CheckList> {
                     child: Text('添加食材'),
                   ),
                 ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => ChatPage()),
-                      );
-                    },
-                    child: const Text('生成食譜'),
-                  ),
-                ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 15.0,
-                vertical: 20.0), // Adjust both horizontal and vertical padding
-            child: TextField(
-              controller: _textController,
-              onChanged: (text) {
-                setState(() {
-                  _isButtonEnabled = text.isNotEmpty;
-                });
-              },
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: '輸入食材',
-                // filled: true,
-                // fillColor: Colors.white,
-              ),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 60.0, // 你可以根據需要調整這個值
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ChatPage()),
+                        );
+                      },
+                      child: Text('生成食譜'),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+}
+
+
+void main() {
+  runApp(MaterialApp(
+    home: CheckList(),
+  ));
 }
