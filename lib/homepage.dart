@@ -400,60 +400,158 @@ class _HomePageState extends State<HomePage> {
           ),
         );
 
-      case 3:
-        List<Map<String, dynamic>> historicalRecipes = [
-          {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '蔬菜沙拉',
-            'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
-          },
-          {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '牛肉意面',
-            'description': '香濃美味的牛肉意面,百吃不厭。',
-          },
-          {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '水果拼盤',
-            'description': '各種新鮮水果的精彩組合。',
-          },
-          // 您可以在這裡添加更多模擬數據
-        ];
+      // case 3:
+      //   List<Map<String, dynamic>> historicalRecipes = [
+      //     {
+      //       'imageUrl': 'assets/image/food.jpg',
+      //       'title': '蔬菜沙拉',
+      //       'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
+      //     },
+      //     {
+      //       'imageUrl': 'assets/image/food.jpg',
+      //       'title': '牛肉意面',
+      //       'description': '香濃美味的牛肉意面,百吃不厭。',
+      //     },
+      //     {
+      //       'imageUrl': 'assets/image/food.jpg',
+      //       'title': '水果拼盤',
+      //       'description': '各種新鮮水果的精彩組合。',
+      //     },
+      //     // 您可以在這裡添加更多模擬數據
+      //   ];
 
-        return Container(
-          color: Color(0xFFF1E9E6),
-          child: Column(
-            children: [
-              SizedBox(height: 20),
-              Text(
-                '歷史食譜',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: historicalRecipes.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage:
-                            AssetImage(historicalRecipes[index]['imageUrl']),
-                      ),
-                      title: Text(historicalRecipes[index]['title']),
-                      subtitle: Text(historicalRecipes[index]['description']),
-                      onTap: () {
-                        // 導航至食譜詳情頁面
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
+      //   return Container(
+      //     color: Color(0xFFF1E9E6),
+      //     child: Column(
+      //       children: [
+      //         SizedBox(height: 20),
+      //         Text(
+      //           '歷史食譜',
+      //           style: TextStyle(
+      //             fontSize: 24,
+      //             fontWeight: FontWeight.bold,
+      //           ),
+      //         ),
+      //         SizedBox(height: 20),
+      //         Expanded(
+      //           child: ListView.builder(
+      //             itemCount: historicalRecipes.length,
+      //             itemBuilder: (context, index) {
+      //               return ListTile(
+      //                 leading: CircleAvatar(
+      //                   backgroundImage:
+      //                       AssetImage(historicalRecipes[index]['imageUrl']),
+      //                 ),
+      //                 title: Text(historicalRecipes[index]['title']),
+      //                 subtitle: Text(historicalRecipes[index]['description']),
+      //                 onTap: () {
+      //                   // 導航至食譜詳情頁面
+      //                 },
+      //               );
+      //             },
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   );
+        case 3:
+  List<Map<String, dynamic>> historicalRecipes = [
+    {
+      'imageUrl': 'assets/image/food.jpg',
+      'title': '蔬菜沙拉',
+      'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
+      'rating': 9.1,
+    },
+    {
+      'imageUrl': 'assets/image/food.jpg',
+      'title': '牛肉意面',
+      'description': '香濃美味的牛肉意面,百吃不厭。',
+      'rating': 8.6,
+    },
+    {
+      'imageUrl': 'assets/image/food.jpg',
+      'title': '水果拼盤',
+      'description': '各種新鮮水果的精彩組合。',
+      'rating': 8.2,
+    },
+    {
+      'imageUrl': 'assets/image/food.jpg',
+      'title': '番茄炒蛋',
+      'description': '簡單易做的番茄炒蛋，營養豐富。',
+      'rating': 8.8,
+    },
+    {
+      'imageUrl': 'assets/image/food.jpg',
+      'title': '香菇炒麵',
+      'description': '香氣四溢的香菇炒麵，美味可口。',
+      'rating': 9.0,
+    },
+    {
+      'imageUrl': 'assets/image/food.jpg',
+      'title': '鮮蝦沙拉',
+      'description': '清爽可口的鮮蝦沙拉，滿滿的海鮮風味。',
+      'rating': 8.9,
+    },
+    // 可以在這裡添加更多模擬數據
+  ];
+
+  return Container(
+    color: Color(0xFFF1E9E6),
+    child: Column(
+      children: [
+        SizedBox(height: 20),
+        Text(
+          '為您準備的食譜',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
           ),
-        );
+        ),
+        SizedBox(height: 20),
+        Expanded(
+          child: ListView.builder(
+            itemCount: historicalRecipes.length,
+            itemBuilder: (context, index) {
+              var recipe = historicalRecipes[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(10),
+                    leading: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        recipe['imageUrl'],
+                        fit: BoxFit.cover,
+                        width: 50,
+                        height: 50,
+                      ),
+                    ),
+                    title: Text(recipe['title']),
+                    subtitle: Text(recipe['description']),
+                    trailing: CircleAvatar(
+                      backgroundColor: Color(0xFFF2B892),
+                      child: Text(
+                        recipe['rating'].toString(),
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ),
+                    onTap: () {
+                      // 導航至食譜詳情頁面
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    ),
+  );
+
       case 4:
         return Scaffold(
           backgroundColor: Color(0xFFF1E9E6),
