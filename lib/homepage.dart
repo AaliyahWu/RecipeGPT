@@ -401,24 +401,24 @@ class _HomePageState extends State<HomePage> {
           ),
         );
 
-      case 3:
-        List<Map<String, dynamic>> historicalRecipes = [
-          {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '蔬菜沙拉',
-            'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
-          },
-          {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '牛肉意面',
-            'description': '香濃美味的牛肉意面,百吃不厭。',
-          },
-          {
-            'imageUrl': 'assets/image/food.jpg',
-            'title': '水果拼盤',
-            'description': '各種新鮮水果的精彩組合。',
-          },
-        ];
+      // case 3:
+      //   List<Map<String, dynamic>> historicalRecipes = [
+      //     {
+      //       'imageUrl': 'assets/image/food.jpg',
+      //       'title': '蔬菜沙拉',
+      //       'description': '健康清爽的蔬菜沙拉,適合夏日輕食。',
+      //     },
+      //     {
+      //       'imageUrl': 'assets/image/food.jpg',
+      //       'title': '牛肉意面',
+      //       'description': '香濃美味的牛肉意面,百吃不厭。',
+      //     },
+      //     {
+      //       'imageUrl': 'assets/image/food.jpg',
+      //       'title': '水果拼盤',
+      //       'description': '各種新鮮水果的精彩組合。',
+      //     },
+      //   ];
       // case 3:
       //   List<Map<String, dynamic>> historicalRecipes = [
       //     {
