@@ -296,7 +296,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    
                     SizedBox(height: 15),
                     Container(
                       alignment: Alignment.centerLeft,
