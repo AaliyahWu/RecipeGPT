@@ -28,10 +28,14 @@ class _CheckListState extends State<CheckList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CheckList'),
-        backgroundColor: Color.fromARGB(255, 255, 196, 106),
+        title: Text(
+          '食材清單',
+          style: TextStyle(color: Colors.white), // Set text color to white
+        ),
+        backgroundColor: Color(0xFF262520),
+        iconTheme: IconThemeData(color: Colors.white), // Set back button
       ),
-      backgroundColor: Color.fromARGB(255, 247, 238, 163),
+      backgroundColor: Color(0xFFF4DAB5),
       body: Column(
         children: [
           Expanded(
@@ -88,7 +92,7 @@ class _CheckListState extends State<CheckList> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              '飲食偏好:豬肉 高蛋白質',
+              '飲食偏好：高蛋白質, 雞肉',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0,
@@ -111,7 +115,7 @@ class _CheckListState extends State<CheckList> {
                             });
                           }
                         : null,
-                    child: Text('送出'),
+                    child: Text('添加食材'),
                   ),
                 ),
                 SizedBox(width: 10),
@@ -130,7 +134,9 @@ class _CheckListState extends State<CheckList> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(
+                horizontal: 15.0,
+                vertical: 20.0), // Adjust both horizontal and vertical padding
             child: TextField(
               controller: _textController,
               onChanged: (text) {
