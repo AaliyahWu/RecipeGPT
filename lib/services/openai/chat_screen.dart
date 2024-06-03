@@ -1,16 +1,27 @@
+// this is chat_screen.dart
+
 import 'package:flutter/material.dart';
 import 'chat_service.dart';
 
 class ChatPage extends StatefulWidget {
+  final String prompt;
+  final int people;
+
+  ChatPage({required this.prompt, required this.people});
+
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
   String _chatResponse = '';
-  TextEditingController _textEditingController = TextEditingController();
-  int _selectedPeople = 1; // 選擇的人數，預設為1
   ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _startChat(widget.prompt, widget.people);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +63,7 @@ class _ChatPageState extends State<ChatPage> {
                           child: Text(
                             _chatResponse.isNotEmpty
                                 ? _chatResponse
-                                : '輸入食材，產生食譜吧!',
+                                : '食譜生成中...',
                             style: TextStyle(fontSize: 18.0),
                           ),
                         ),
@@ -62,46 +73,14 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
             ),
-            SizedBox(height: 20.0),
-            DropdownButtonFormField<int>(
-              value: _selectedPeople,
-              onChanged: (value) {
-                setState(() {
-                  _selectedPeople = value!;
-                });
-              },
-              items: List.generate(10, (index) {
-                return DropdownMenuItem<int>(
-                  value: index + 1,
-                  child: Text('${index + 1} 人份'),
-                );
-              }),
-            ),
-            SizedBox(height: 20.0),
-            TextField(
-              controller: _textEditingController,
-              decoration: InputDecoration(
-                hintText: '請輸入食材...',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                _startChat(_textEditingController.text);
-              },
-              child: Text('產生食譜'),
-            ),
           ],
         ),
       ),
     );
   }
 
-  void _startChat(String prompt) async {
-    // String? response = await ChatService().request(prompt); //原本只有食材內容
-    String? response = await ChatService().request(prompt,
-        _selectedPeople); //在 _startChat 方法中，將 _selectedPeople 傳遞給 ChatService 的 request 方法
+  void _startChat(String prompt, int people) async {
+    String? response = await ChatService().request(prompt, people);
     setState(() {
       _chatResponse = response ?? 'No response';
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
