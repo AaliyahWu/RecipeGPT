@@ -136,8 +136,9 @@ class _HomePageState extends State<HomePage> {
                         // ],
                       ),
                       child: ElevatedButton(
+                        //Color: Color(0xFFF2B892),
                         style: ElevatedButton.styleFrom(
-                          //backgroundColor: Color(0xFFF2B892),
+                          backgroundColor: Color(0xFFF2B892),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15.0),
                           ),
@@ -154,7 +155,9 @@ class _HomePageState extends State<HomePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.add),
+                            userInput.isNotEmpty
+                                ? Icon(Icons.add, color: Colors.white)
+                                : Icon(Icons.add),
                             //SizedBox(width: 1),
                             // Text(
                             //   '添加',
@@ -452,54 +455,93 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    Positioned(
-                      bottom: 50,
-                      child: SizedBox(
+                    InkResponse(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PickImage(),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        //foregroundColor: Colors.white,
                         width: 300,
                         height: 140,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PickImage(),
-                              ),
-                            );
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.transparent),
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                                EdgeInsets.zero),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15), // 圓角
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                              //offset: Offset(0, 3),
                             ),
-                          ),
-                          child: Ink(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('assets/images.png'),
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: Text(
-                                '生成食譜',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.asset('assets/Camera.jpg',
+                              fit: BoxFit.cover),
                         ),
                       ),
                     ),
+                    // Positioned(
+                    //   bottom: 50,
+                    //   child: SizedBox(
+                    //     width: 300,
+                    //     height: 140,
+                    //     child: ElevatedButton(
+                    //       onPressed: () {
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //             builder: (context) => PickImage(),
+                    //           ),
+                    //         );
+                    //       },
+                    //       style: ButtonStyle(
+                    //         backgroundColor: MaterialStateProperty.all<Color>(
+                    //             Colors.transparent),
+                    //         padding: MaterialStateProperty.all<EdgeInsets>(
+                    //             EdgeInsets.zero),
+                    //         shape: MaterialStateProperty.all<
+                    //             RoundedRectangleBorder>(
+                    //           RoundedRectangleBorder(
+                    //             borderRadius: BorderRadius.circular(10.0),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //       child: Ink(
+                    //         decoration: BoxDecoration(
+                    //           image: DecorationImage(
+                    //             image: AssetImage('assets/Camera.jpg'),
+                    //             fit: BoxFit.cover,
+                    //           ),
+                    //           borderRadius: BorderRadius.circular(10.0),
+                    //           boxShadow: [
+                    //             BoxShadow(
+                    //               color: Colors.grey.withOpacity(0.5),
+                    //               spreadRadius: 5,
+                    //               blurRadius: 7,
+                    //               offset: Offset(0, 3),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //         child: Container(
+                    //           alignment: Alignment.center,
+                    //           // child: Text(
+                    //           //   '生成食譜',
+                    //           //   style: TextStyle(
+                    //           //     color: Colors.black,
+                    //           //     fontSize: 20.0,
+                    //           //   ),
+                    //           // ),
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(height: 20),
                     Container(
                       alignment: Alignment.centerLeft,
@@ -670,7 +712,7 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              //SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
                   itemCount: historicalRecipes.length,

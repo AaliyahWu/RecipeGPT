@@ -90,6 +90,8 @@ flutter:
     - assets/food/food7.jpg
     - assets/food/food8.jpg
     - assets/food/food9.jpg
+    - assets/Camera.jpg
+    - assets/Camera1.jpg
     - assets/images.png
     - assets/LOGO.png
     # - jsonfile.json
