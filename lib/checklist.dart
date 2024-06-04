@@ -99,9 +99,14 @@ class _CheckListState extends State<CheckList> {
               ),
             ),
           ),
+          SizedBox(height: 10.0),
+          const Text(
+            '飲食偏好: 高蛋白質、雞肉',
+            style: TextStyle(fontSize: 16),
+          ),
           Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 20.0),
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
             child: Row(
               children: [
                 Expanded(
