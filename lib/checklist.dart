@@ -132,7 +132,7 @@ class _CheckListState extends State<CheckList> {
           ),
           Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+                const EdgeInsets.symmetric(horizontal: 25.0, vertical: 5.0),
             child: Row(
               children: [
                 Expanded(
@@ -179,7 +179,7 @@ class _CheckListState extends State<CheckList> {
               children: [
                 Expanded(
                   child: SizedBox(
-                    height: 60.0, // 你可以根據需要調整這個值
+                    height: 40.0, // 你可以根據需要調整這個值
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFDD8A62), // 背景顏色
@@ -204,10 +204,11 @@ class _CheckListState extends State<CheckList> {
                           ),
                         );
                       },
-                      child: Text('生成食譜'),
+                      child: Text('生成食譜', style: TextStyle(fontSize: 16)),
                     ),
                   ),
                 ),
+                SizedBox(height: 80),
               ],
             ),
           ),

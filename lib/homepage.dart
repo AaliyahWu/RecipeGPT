@@ -81,7 +81,12 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: 50),
+              SizedBox(height: 40),
+              Text(
+                '飲食偏好',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.0),
                 child: Row(
@@ -93,17 +98,21 @@ class _HomePageState extends State<HomePage> {
                           controller: _controller,
                           decoration: InputDecoration(
                             hintText: '輸入偏好',
+                            //hintStyle: TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
                               borderSide: BorderSide(color: Color(0xFFF2B892)),
                             ),
                             enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
                               borderSide: BorderSide(color: Color(0xFFF2B892)),
                             ),
                             focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
                               borderSide: BorderSide(color: Color(0xFFF2B892)),
                             ),
                             contentPadding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
+                                vertical: 10, horizontal: 20),
                           ),
                           onChanged: (value) {
                             setState(() {
@@ -115,8 +124,24 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(width: 10),
                     Container(
-                      height: 50,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15.0),
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: Color(0xFFF2B892),
+                        //     spreadRadius: 3,
+                        //     blurRadius: 5,
+                        //   ),
+                        // ],
+                      ),
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          //backgroundColor: Color(0xFFF2B892),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                        ),
                         onPressed: userInput.isNotEmpty
                             ? () {
                                 setState(() {
@@ -126,7 +151,17 @@ class _HomePageState extends State<HomePage> {
                                 });
                               }
                             : null,
-                        child: Text('添加'),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add),
+                            //SizedBox(width: 1),
+                            // Text(
+                            //   '添加',
+                            //   style: TextStyle(color: Colors.white),
+                            // ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -144,6 +179,7 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16.0, vertical: 8.0),
                         child: Card(
+                          color: Color(0xFFFFFAF5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -326,17 +362,17 @@ class _HomePageState extends State<HomePage> {
             PopularItem(
               imageUrl: 'assets/food/food1.jpg',
               title: '番茄炒蛋',
-              rating: 4.5,
+              rating: 8.8,
             ),
             PopularItem(
               imageUrl: 'assets/food/food2.jpg',
               title: '牛肉炒飯',
-              rating: 4.0,
+              rating: 8.1,
             ),
             PopularItem(
               imageUrl: 'assets/food/food3.jpg',
               title: '炒高麗菜',
-              rating: 4.2,
+              rating: 9.2,
             ),
             // Add more dummy data as needed
           ];
@@ -355,7 +391,7 @@ class _HomePageState extends State<HomePage> {
                     Text(
                       '精選食譜',
                       style: TextStyle(
-                        fontSize: 32.0,
+                        fontSize: 24.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -404,7 +440,7 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       title,
                                       style: TextStyle(
-                                        fontSize: 20.0,
+                                        fontSize: 16.0,
                                       ),
                                     ),
                                   ],
@@ -455,7 +491,7 @@ class _HomePageState extends State<HomePage> {
                               child: Text(
                                 '生成食譜',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontSize: 20.0,
                                 ),
                               ),
@@ -464,18 +500,18 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 20),
                     Container(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        '   最近做過~',
+                        '    最近做過~',
                         style: TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 15),
                     Container(
                       height: 125,
                       child: ListView.builder(
@@ -508,7 +544,7 @@ class _HomePageState extends State<HomePage> {
                                     Text(
                                       item.title,
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -518,7 +554,7 @@ class _HomePageState extends State<HomePage> {
                                           Icons.favorite,
                                           color: Colors
                                               .red, // Change to red for a heart shape
-                                          size: 16,
+                                          size: 14,
                                         ),
                                         SizedBox(width: 4),
                                         Text(
@@ -790,7 +826,7 @@ class _HomePageState extends State<HomePage> {
                   //     //
                   //   },
                   // ),
-                  SizedBox(height: 20),
+                  SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

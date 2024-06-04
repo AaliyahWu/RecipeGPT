@@ -44,7 +44,15 @@ class _ChatPageState extends State<ChatPage> {
                 child: Container(
                   padding: EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Color(0xFFFFF2EB),
+                    color: Color.fromRGBO(255, 255, 255, 0.8),
+                    image: DecorationImage(
+                        image: AssetImage('assets/image/note.jpg'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.5),
+                          BlendMode.dstATop,
+                        ),
+                      ),
                     borderRadius: BorderRadius.circular(20.0),
                     boxShadow: [
                       BoxShadow(

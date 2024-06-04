@@ -53,11 +53,44 @@ class _PickImageState extends State<PickImage> {
                     child: Image.memory(_image!),
                   )
                 : Container(
-                    width: 300,
-                    height: 400,
-                    color: Color(0xFFFFF2EB),
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                      color: Color.fromRGBO(255, 255, 255, 0.8),
+                      image: DecorationImage(
+                        image: AssetImage('assets/image/note.jpg'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.5),
+                          BlendMode.dstATop,
+                        ),
+                      ),
+                    ),
                     child: Center(child: Text('還沒有照片哦!')),
                   ),
+            // : Container(
+            //     width: 300,
+            //     height: 400,
+            //     color: Colors.white,
+            //     // decoration: BoxDecoration(
+            //     //   image: DecorationImage(
+            //     //     image: AssetImage('assets/image/note.jpg'),
+            //     //     fit: BoxFit.cover,
+            //     //   ),
+            //     // ),
+            //     child: Center(child: Text('還沒有照片哦!')),
+            //   ),
+
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -67,8 +100,8 @@ class _PickImageState extends State<PickImage> {
                     showImagePickerOption(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
-                    foregroundColor : Colors.white, // 文字顏色
+                    backgroundColor: Color(0xFFDD8A62), // 背景顏色
+                    foregroundColor: Colors.white, // 文字顏色
                   ),
                   child: const Icon(Icons.add_a_photo,
                       color: Colors.white), // 調整圖標顏色
@@ -85,8 +118,8 @@ class _PickImageState extends State<PickImage> {
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
-                    foregroundColor : Colors.white, // 文字顏色
+                    backgroundColor: Color(0xFFDD8A62), // 背景顏色
+                    foregroundColor: Colors.white, // 文字顏色
                   ),
                   child: Text('下一步'),
                 ),
