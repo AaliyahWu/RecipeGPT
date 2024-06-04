@@ -29,10 +29,10 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 255, 196, 106),
+        backgroundColor: const Color(0xFFF1E9E6),
         title: Text('生成食譜'),
       ),
-      backgroundColor: Color.fromARGB(255, 247, 238, 163),
+      backgroundColor: Color(0xFFF1E9E6),
       body: Padding(
         padding: EdgeInsets.all(20.0),
         child: Column(
@@ -44,7 +44,7 @@ class _ChatPageState extends State<ChatPage> {
                 child: Container(
                   padding: EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 255, 216, 157),
+                    color: Color(0xFFFFF2EB),
                     borderRadius: BorderRadius.circular(20.0),
                     boxShadow: [
                       BoxShadow(
