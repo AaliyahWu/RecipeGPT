@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'chat_service.dart';
+import 'package:recipe_gpt/homepage.dart'; // 假設HomePage的widget在homepage.dart中定義
 
 class ChatPage extends StatefulWidget {
   final String prompt;
@@ -74,12 +75,36 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
             ),
+            SizedBox(height: 16.0), // 添加一些間隔
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    // 導航回首頁
+                    // 導航回首頁
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomePage()),
+                      (route) => false,
+                    );
+                  },
+                  child: Text('完成'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    // 分享食譜
+                    // Share.share(_chatResponse);
+                  },
+                  child: Text('分享'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
-
   // void _startChat(String prompt, int people) async {
   //   String? response = await ChatService().request(prompt, people);
   //   setState(() {
@@ -88,9 +113,8 @@ class _ChatPageState extends State<ChatPage> {
   //   });
   // }
 
-    void _startChat(String recipe, String prompt, int people) async {
-    String? response =
-        await ChatService().request(recipe, prompt, people);
+  void _startChat(String recipe, String prompt, int people) async {
+    String? response = await ChatService().request(recipe, prompt, people);
     setState(() {
       _chatResponse = response ?? 'No response';
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
