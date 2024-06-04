@@ -29,12 +29,12 @@ class _PickImageState extends State<PickImage> {
       appBar: AppBar(
         title: Text(
           '生成食譜',
-          style: TextStyle(color: Colors.white), // Set text color to white
+          style: TextStyle(color: Colors.black), // Set text color to white
         ),
-        backgroundColor: Color(0xFF262520),
-        iconTheme: IconThemeData(color: Colors.white), // Set back button 
+        backgroundColor: Color(0xFFF1E9E6),
+        iconTheme: IconThemeData(color: Colors.black), // Set back button 
       ),
-      backgroundColor: Color(0xFFF4DAB5),
+      backgroundColor: Color(0xFFF1E9E6),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +55,7 @@ class _PickImageState extends State<PickImage> {
                 : Container(
                     width: 300,
                     height: 300,
-                    color: Color.fromARGB(225, 255, 248, 216),
+                    color: Color(0xFFFFF2EB),
                     child: Center(child: Text('還沒有照片哦!')),
                   ),
             SizedBox(height: 20),
@@ -99,7 +99,7 @@ class _PickImageState extends State<PickImage> {
 
   void showImagePickerOption(BuildContext context) {
     showModalBottomSheet(
-        backgroundColor: Color(0xFF262520),
+        backgroundColor: Color(0xFFDD8A62),
         context: context,
         builder: (builder) {
           return Padding(

@@ -647,15 +647,49 @@ class _HomePageState extends State<HomePage> {
                               height: 50,
                             ),
                           ),
-                          title: Text(recipe['title']),
-                          subtitle: Text(recipe['description']),
-                          trailing: CircleAvatar(
-                            backgroundColor: Color(0xFFF2B892),
-                            child: Text(
-                              recipe['rating'].toString(),
-                              style: TextStyle(color: Colors.black),
+                          title: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                recipe['title'],
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.favorite,
+                                      color: Colors.red, size: 20),
+                                  Text(
+                                    ' ${recipe['rating']}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          subtitle: Text(
+                            recipe['description'],
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
                             ),
                           ),
+                          // trailing: CircleAvatar(
+                          //   backgroundColor: Color(0xFFF2B892),
+                          //   child: Text(
+                          //     recipe['rating'].toString(),
+                          //     style: TextStyle(
+                          //       fontSize: 16,
+                          //       fontWeight: FontWeight.bold,
+                          //       color: Colors.black,
+                          //     ),
+                          //   ),
+                          // ),
                           onTap: () {
                             // 導航至食譜詳情頁面
                           },

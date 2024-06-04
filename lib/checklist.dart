@@ -1,6 +1,7 @@
 // this is checklist.dart
 
 import 'package:flutter/material.dart';
+import 'package:recipe_gpt/chooseRecipes.dart';
 import 'package:recipe_gpt/homepage.dart';
 import 'package:recipe_gpt/camerafunction.dart';
 import 'package:recipe_gpt/checklist.dart';
@@ -182,10 +183,14 @@ class _CheckListState extends State<CheckList> {
                        Navigator.push(
                          context,
                          MaterialPageRoute(
-                           builder: (context) => ChatPage(
-                             prompt: prompt,
-                             people: _selectedPeople,
-                           ),
+                          //  builder: (context) => ChatPage(
+                          //    prompt: prompt,
+                          //    people: _selectedPeople,
+                          //  ),
+                          builder: (context) => RecipeListPage(
+                            prompt: prompt,
+                            people: _selectedPeople,
+                          ),
                          ),
                        );
                      },
