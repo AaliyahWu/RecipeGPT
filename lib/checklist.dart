@@ -153,6 +153,10 @@ class _CheckListState extends State<CheckList> {
                 SizedBox(
                   height: 60.0, // 你可以根據需要調整這個值
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFDD8A62), // 背景顏色
+                      foregroundColor: Colors.white, // 文字顏色
+                    ),
                     onPressed: _isButtonEnabled
                         ? () {
                             setState(() {
@@ -177,6 +181,10 @@ class _CheckListState extends State<CheckList> {
                   child: SizedBox(
                     height: 60.0, // 你可以根據需要調整這個值
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFDD8A62), // 背景顏色
+                        foregroundColor: Colors.white, // 文字顏色
+                      ),
                       onPressed: () {
                         String prompt = _items
                             .where((item) => item.isChecked)

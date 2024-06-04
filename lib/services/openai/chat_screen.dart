@@ -80,6 +80,10 @@ class _ChatPageState extends State<ChatPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
+                    foregroundColor : Colors.white, // 文字顏色
+                  ),
                   onPressed: () {
                     // 導航回首頁
                     // 導航回首頁
@@ -92,6 +96,10 @@ class _ChatPageState extends State<ChatPage> {
                   child: Text('完成'),
                 ),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
+                    foregroundColor : Colors.white, // 文字顏色
+                  ),
                   onPressed: () {
                     // 分享食譜
                     // Share.share(_chatResponse);

@@ -741,19 +741,19 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(10),
                       ),
                       Positioned(
-                        bottom: 10,
-                        right: 10,
+                        bottom: 5,
+                        right: 5,
                         child: GestureDetector(
                           onTap: () {},
                           child: Container(
-                            width: 25,
-                            height: 25,
+                            width: 35,
+                            height: 35,
                             decoration: BoxDecoration(
-                              color: Color(0xFF252620),
+                              color: Color(0xFFDD8A62),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
-                              Icons.add,
+                              Icons.edit,
                               color: Colors.white,
                               size: 20,
                             ),
@@ -775,19 +775,21 @@ class _HomePageState extends State<HomePage> {
                       decoration: TextDecoration.underline,
                     ),
                   ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                      textStyle: TextStyle(fontSize: 14),
-                    ),
-                    child: Text('編輯個人資料',
-                        style: TextStyle(color: Color(0xFFDD8A62))),
-                    onPressed: () {
-                      //
-                    },
-                  ),
+                  // SizedBox(height: 20),
+                  // ElevatedButton(
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: Color(0xFFDD8A62),
+                  //     padding:
+                  //         EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  //     textStyle: TextStyle(fontSize: 14),
+                  //   ),
+                  //   child: Text('編輯個人資料',
+                  //       // style: TextStyle(color: Color(0xFFDD8A62))),
+                  //       style: TextStyle(color: Colors.white)),
+                  //   onPressed: () {
+                  //     //
+                  //   },
+                  // ),
                   SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -843,6 +845,7 @@ class _HomePageState extends State<HomePage> {
                           '分享',
                           style: TextStyle(
                             color: Colors.white, // 文字顏色
+                            // color: Colors.black, // 文字顏色
                           ),
                         ),
                         style: ElevatedButton.styleFrom(
@@ -863,12 +866,14 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 40),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFDD8A62),
                       padding:
                           EdgeInsets.symmetric(horizontal: 110, vertical: 10),
                       textStyle: TextStyle(fontSize: 16),
                     ),
                     child:
-                        Text('登出', style: TextStyle(color: Color(0xFFDD8A62))),
+                        // Text('登出', style: TextStyle(color: Color(0xFFDD8A62))),
+                        Text('登出', style: TextStyle(color: Colors.white)),
                     onPressed: () {
                       Navigator.push(
                         context,

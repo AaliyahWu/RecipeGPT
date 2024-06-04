@@ -32,7 +32,7 @@ class _PickImageState extends State<PickImage> {
           style: TextStyle(color: Colors.black), // Set text color to white
         ),
         backgroundColor: Color(0xFFF1E9E6),
-        iconTheme: IconThemeData(color: Colors.black), // Set back button 
+        iconTheme: IconThemeData(color: Colors.black), // Set back button
       ),
       backgroundColor: Color(0xFFF1E9E6),
       body: Center(
@@ -54,7 +54,7 @@ class _PickImageState extends State<PickImage> {
                   )
                 : Container(
                     width: 300,
-                    height: 300,
+                    height: 400,
                     color: Color(0xFFFFF2EB),
                     child: Center(child: Text('還沒有照片哦!')),
                   ),
@@ -66,7 +66,12 @@ class _PickImageState extends State<PickImage> {
                   onPressed: () {
                     showImagePickerOption(context);
                   },
-                  child: const Icon(Icons.add_a_photo),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
+                    foregroundColor : Colors.white, // 文字顏色
+                  ),
+                  child: const Icon(Icons.add_a_photo,
+                      color: Colors.white), // 調整圖標顏色
                 ),
                 SizedBox(width: 20), // 在兩個按鈕之間增加空間
                 ElevatedButton(
@@ -79,6 +84,10 @@ class _PickImageState extends State<PickImage> {
                           );
                         }
                       : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
+                    foregroundColor : Colors.white, // 文字顏色
+                  ),
                   child: Text('下一步'),
                 ),
               ],
@@ -122,7 +131,10 @@ class _PickImageState extends State<PickImage> {
                               size: 70,
                               color: Colors.white, // Set icon color to white
                             ),
-                            Text("相簿", style: TextStyle(color: Colors.white)) // Set text color to white
+                            Text("相簿",
+                                style: TextStyle(
+                                    color: Colors
+                                        .white)) // Set text color to white
                           ],
                         ),
                       ),
@@ -141,7 +153,10 @@ class _PickImageState extends State<PickImage> {
                               size: 70,
                               color: Colors.white, // Set icon color to white
                             ),
-                            Text("相機", style: TextStyle(color: Colors.white)) // Set text color to white
+                            Text("相機",
+                                style: TextStyle(
+                                    color: Colors
+                                        .white)) // Set text color to white
                           ],
                         ),
                       ),
