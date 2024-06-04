@@ -572,6 +572,24 @@ class _HomePageState extends State<HomePage> {
       case 3:
         List<Map<String, dynamic>> historicalRecipes = [
           {
+            'imageUrl': 'assets/food/food1.jpg',
+            'title': '番茄炒蛋',
+            'description': '簡單易做的番茄炒蛋，營養豐富。',
+            'rating': 8.8,
+          },
+          {
+            'imageUrl': 'assets/food/food2.jpg',
+            'title': '牛肉炒飯',
+            'description': '新鮮的牛肉與香脆的蔬菜完美結合，豐富的層次感。',
+            'rating': 8.1,
+          },
+          {
+            'imageUrl': 'assets/food/food3.jpg',
+            'title': '炒高麗菜',
+            'description': '口感鮮嫩，營養豐富的炒高麗菜。',
+            'rating': 9.2,
+          },
+          {
             'imageUrl': 'assets/food/food4.jpg',
             'title': '雞肉沙拉',
             'description': '健康清爽的雞肉沙拉,適合夏日輕食。',
@@ -588,12 +606,6 @@ class _HomePageState extends State<HomePage> {
             'title': '早餐水果拼盤',
             'description': '各種新鮮水果的精彩組合。',
             'rating': 8.2,
-          },
-          {
-            'imageUrl': 'assets/food/food1.jpg',
-            'title': '番茄炒蛋',
-            'description': '簡單易做的番茄炒蛋，營養豐富。',
-            'rating': 8.8,
           },
           {
             'imageUrl': 'assets/food/food8.jpg',
@@ -632,7 +644,7 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16.0, vertical: 8.0),
                       child: Card(
-                        //color: Color(0xFFf1e9e6),
+                        color: Color(0xFFFFFAF5),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

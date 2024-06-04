@@ -17,8 +17,7 @@ class RecipeListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    backgroundColor:
-    const Color(0xFFF1E9E6); // 設定背景顏色
+    backgroundColor:const Color(0xFFF1E9E6); // 設定背景顏色
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1E9E6), // 設定背景顏色
@@ -28,7 +27,7 @@ class RecipeListPage extends StatelessWidget {
         itemCount: recipes.length,
         itemBuilder: (context, index) {
           return Card(
-            color: Color(0xFFFFF2EB),
+            color: Color(0xFFFFFAF5),
             margin: EdgeInsets.all(8.0),
             child: ListTile(
               leading: Icon(Icons.restaurant_menu, color: Color(0xFFF2B892)),
