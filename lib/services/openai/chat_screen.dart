@@ -6,8 +6,9 @@ import 'chat_service.dart';
 class ChatPage extends StatefulWidget {
   final String prompt;
   final int people;
+  final String recipe;
 
-  ChatPage({required this.prompt, required this.people});
+  ChatPage({required this.prompt, required this.people, required this.recipe});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -20,7 +21,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _startChat(widget.prompt, widget.people);
+    _startChat(widget.recipe, widget.prompt, widget.people);
   }
 
   @override
@@ -79,8 +80,17 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  void _startChat(String prompt, int people) async {
-    String? response = await ChatService().request(prompt, people);
+  // void _startChat(String prompt, int people) async {
+  //   String? response = await ChatService().request(prompt, people);
+  //   setState(() {
+  //     _chatResponse = response ?? 'No response';
+  //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+  //   });
+  // }
+
+    void _startChat(String recipe, String prompt, int people) async {
+    String? response =
+        await ChatService().request(recipe, prompt, people);
     setState(() {
       _chatResponse = response ?? 'No response';
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
