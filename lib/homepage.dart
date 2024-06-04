@@ -785,7 +785,7 @@ class _HomePageState extends State<HomePage> {
                             width: 35,
                             height: 35,
                             decoration: BoxDecoration(
-                              color: Color(0xFFDD8A62),
+                              color: Color(0xFFF2B892),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(
@@ -902,7 +902,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 40),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFDD8A62),
+                      backgroundColor: Color(0xFFF2B892),
                       padding:
                           EdgeInsets.symmetric(horizontal: 110, vertical: 10),
                       textStyle: TextStyle(fontSize: 16),

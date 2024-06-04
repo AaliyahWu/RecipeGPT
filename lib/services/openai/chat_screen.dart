@@ -89,7 +89,7 @@ class _ChatPageState extends State<ChatPage> {
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
+                    backgroundColor  : Color(0xFFF2B892), // 背景顏色
                     foregroundColor : Colors.white, // 文字顏色
                   ),
                   onPressed: () {
@@ -105,7 +105,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor  : Color(0xFFDD8A62), // 背景顏色
+                    backgroundColor  : Color(0xFFF2B892), // 背景顏色
                     foregroundColor : Colors.white, // 文字顏色
                   ),
                   onPressed: () {

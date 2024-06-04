@@ -100,7 +100,7 @@ class _PickImageState extends State<PickImage> {
                     showImagePickerOption(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFDD8A62), // 背景顏色
+                    backgroundColor: Color(0xFFF2B892), // 背景顏色
                     foregroundColor: Colors.white, // 文字顏色
                   ),
                   child: const Icon(Icons.add_a_photo,
@@ -118,7 +118,7 @@ class _PickImageState extends State<PickImage> {
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFDD8A62), // 背景顏色
+                    backgroundColor: Color(0xFFF2B892), // 背景顏色
                     foregroundColor: Colors.white, // 文字顏色
                   ),
                   child: Text('下一步'),
@@ -141,7 +141,7 @@ class _PickImageState extends State<PickImage> {
 
   void showImagePickerOption(BuildContext context) {
     showModalBottomSheet(
-        backgroundColor: Color(0xFFDD8A62),
+        backgroundColor: Color(0xFFF2B892),
         context: context,
         builder: (builder) {
           return Padding(

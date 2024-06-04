@@ -182,7 +182,7 @@ class _CheckListState extends State<CheckList> {
                     height: 40.0, // 你可以根據需要調整這個值
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFDD8A62), // 背景顏色
+                        backgroundColor: Color(0xFFF2B892), // 背景顏色
                         foregroundColor: Colors.white, // 文字顏色
                       ),
                       onPressed: () {
