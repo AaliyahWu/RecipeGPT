@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:recipe_gpt/checklist.dart';
+import 'package:recipe_gpt/services/openai/api_key.dart';
 
 class PickImage extends StatefulWidget {
   const PickImage({super.key});
@@ -80,9 +81,11 @@ class _PickImageState extends State<PickImage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ElevatedButton(
-                  onPressed: _isProcessing ? null : () {
-                    showImagePickerOption(context);
-                  },
+                  onPressed: _isProcessing
+                      ? null
+                      : () {
+                          showImagePickerOption(context);
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFF2B892), // 背景顏色
                     foregroundColor: Colors.white, // 文字顏色
@@ -143,10 +146,7 @@ class _PickImageState extends State<PickImage> {
                               size: 70,
                               color: Colors.white,
                             ),
-                            Text("相簿",
-                                style: TextStyle(
-                                    color: Colors
-                                        .white))
+                            Text("相簿", style: TextStyle(color: Colors.white))
                           ],
                         ),
                       ),
@@ -165,10 +165,7 @@ class _PickImageState extends State<PickImage> {
                               size: 70,
                               color: Colors.white,
                             ),
-                            Text("相機",
-                                style: TextStyle(
-                                    color: Colors
-                                        .white))
+                            Text("相機", style: TextStyle(color: Colors.white))
                           ],
                         ),
                       ),
@@ -189,8 +186,8 @@ class _PickImageState extends State<PickImage> {
     setState(() {
       selectedImage = File(returnImage.path);
       _image = File(returnImage.path).readAsBytesSync();
-      _isProcessing = true; 
-      _statusText = '辨識中...'; 
+      _isProcessing = true;
+      _statusText = '辨識中...';
     });
     Navigator.of(context).pop(); // 關閉modal對話框
     await _uploadImage(); // 開始影像辨識
@@ -221,8 +218,7 @@ class _PickImageState extends State<PickImage> {
       Uri.parse('https://api.ultralytics.com/v1/predict/wiO6EHycTaKvnqiDyUeB'),
     );
 
-    request.headers['x-api-key'] = ''; // API key
-    //request.headers['x-api-key'] = '3ee96bf87dca54cbc273eaeb0d2e5323c3069c9a5e'; // API key
+    request.headers['x-api-key'] = ApiKey.ultralyticsApiKey; // API key
     request.fields['size'] = '640';
     request.fields['confidence'] = '0.2';
     request.fields['iou'] = '0.5';
@@ -232,31 +228,83 @@ class _PickImageState extends State<PickImage> {
       selectedImage!.path,
     ));
 
-    final response = await request.send();
-    if (response.statusCode == 200) {
+    try {
+      final response = await request.send();
       final responseBody = await response.stream.bytesToString();
       final decodedResponse = json.decode(responseBody);
-      setState(() {
-        if (decodedResponse['success'] == true) {
-          _resultItems = List<String>.from(decodedResponse['data'].map((item) => item['name']));
-          _resultItems = _removeDuplicates(_resultItems); // 移除重複
+
+      print('API Response: $responseBody'); //print出完整的辨識内容
+
+      if (response.statusCode == 200) {
+        final results =
+            decodedResponse['images'][0]['results'] as List<dynamic>;
+        final detectedItems = results.isNotEmpty
+            ? List<String>.from(results.map((item) => item['name']))
+            : ['No items detected'];
+
+        //移除重複的項目
+        final uniqueItems = _removeDuplicates(detectedItems);
+
+        // 翻譯為中文
+        // List<String> translatedItems = [];
+        // for (String item in detectedItems) {
+        //   String translated = await _translateToChinese(item);
+        //   translatedItems.add(translated);
+        // }
+
+        setState(() {
+          _resultItems = uniqueItems;
           _isNextButtonEnabled = true;
           _statusText = '辨識完成';
-        } else {
-          _resultItems = ['Inference failed: ${decodedResponse['message']}'];
-          _statusText = '辨識失敗'; 
-        }
-      });
-    } else {
+        });
+      } else {
+        setState(() {
+          _resultItems = ['Image upload failed: ${response.statusCode}'];
+          _statusText = '辨識失敗';
+        });
+      }
+    } catch (e) {
+      print('Error during image upload: $e');
       setState(() {
-        _resultItems = ['Image upload failed: ${response.statusCode}'];
+        _resultItems = ['Image upload failed'];
         _statusText = '辨識失敗';
       });
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
+  }
 
-    setState(() {
-      _isProcessing = false;
-    });
+  static final Uri openaiUri =
+      Uri.parse('https://api.openai.com/v1/chat/completions');
+  static final Map<String, String> headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ${ApiKey.openAIApiKey}',
+  };
+
+  Future<String> _translateToChinese(String text) async {
+    final response = await http.post(
+      openaiUri,
+      headers: headers,
+      body: jsonEncode({
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+          {
+            'role': 'system',
+            'content': 'Translate the following English text to Chinese.'
+          },
+          {'role': 'user', 'content': text}
+        ],
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['choices'][0]['message']['content'].trim();
+    } else {
+      throw Exception('Failed to translate text');
+    }
   }
 
   List<String> _removeDuplicates(List<String> items) {
