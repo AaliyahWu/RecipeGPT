@@ -221,7 +221,8 @@ class _PickImageState extends State<PickImage> {
       Uri.parse('https://api.ultralytics.com/v1/predict/wiO6EHycTaKvnqiDyUeB'),
     );
 
-    request.headers['x-api-key'] = '3ee96bf87dca54cbc273eaeb0d2e5323c3069c9a5e'; // API key
+    request.headers['x-api-key'] = ''; // API key
+    //request.headers['x-api-key'] = '3ee96bf87dca54cbc273eaeb0d2e5323c3069c9a5e'; // API key
     request.fields['size'] = '640';
     request.fields['confidence'] = '0.2';
     request.fields['iou'] = '0.5';
