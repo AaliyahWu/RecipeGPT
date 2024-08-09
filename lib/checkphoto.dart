@@ -53,10 +53,10 @@ class CheckPhoto extends StatelessWidget {
               ),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CheckList()),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => CheckList()),
+                  // );
                 },
                 child: Text('沒問題下一步'),
               ),

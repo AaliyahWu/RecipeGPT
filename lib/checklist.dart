@@ -1,14 +1,5 @@
-// this is checklist.dart
-
 import 'package:flutter/material.dart';
 import 'package:recipe_gpt/chooseRecipes.dart';
-import 'package:recipe_gpt/homepage.dart';
-import 'package:recipe_gpt/camerafunction.dart';
-import 'package:recipe_gpt/checklist.dart';
-import 'package:recipe_gpt/checkphoto.dart';
-import 'package:recipe_gpt/services/openai/chat_screen.dart';
-
-// this is checklist.dart
 
 class ListItem {
   String title;
@@ -18,7 +9,9 @@ class ListItem {
 }
 
 class CheckList extends StatefulWidget {
-  const CheckList({Key? key}) : super(key: key);
+  final List<String> resultItems; // 從PickImage接收的食材清單
+
+  const CheckList({Key? key, required this.resultItems}) : super(key: key);
 
   @override
   _CheckListState createState() => _CheckListState();
@@ -26,13 +19,20 @@ class CheckList extends StatefulWidget {
 
 class _CheckListState extends State<CheckList> {
   TextEditingController _textController = TextEditingController();
-  List<ListItem> _items = [
-    ListItem(title: '雞肉', isChecked: true),
-    ListItem(title: '高麗菜', isChecked: true),
-    ListItem(title: '胡蘿蔔', isChecked: true),
-  ];
+  late List<ListItem> _items; // 初始化
+
+  @override
+  void initState() {
+    super.initState();
+    _items = _convertResultItemsToListItems(widget.resultItems);
+  }
+
+  List<ListItem> _convertResultItemsToListItems(List<String> resultItems) {
+    return resultItems.map((item) => ListItem(title: item)).toSet().toList();
+  }
+
   bool _isButtonEnabled = false;
-  int _selectedPeople = 1; // 選擇的人數，預設為1
+  int _selectedPeople = 1; // 人數，預設為1
 
   @override
   Widget build(BuildContext context) {
@@ -40,10 +40,10 @@ class _CheckListState extends State<CheckList> {
       appBar: AppBar(
         title: Text(
           '食材清單',
-          style: TextStyle(color: Colors.black), // Set text color to white
+          style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Color(0xFFF1E9E6),
-        iconTheme: IconThemeData(color: Colors.black), // Set back button
+        iconTheme: IconThemeData(color: Colors.black),
       ),
       backgroundColor: Color(0xFFF1E9E6),
       body: Column(
@@ -124,7 +124,7 @@ class _CheckListState extends State<CheckList> {
                       );
                     }),
                     dropdownColor: Color(0xFFFFF2EB), // 添加這一行設置展開時的背景顏色
-                    itemHeight: 50.0, // 設置每個選項的高度為 60
+                    itemHeight: 50.0, // 設置每個選項的高度為 50
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
                       border: OutlineInputBorder(),
@@ -156,7 +156,7 @@ class _CheckListState extends State<CheckList> {
                 ),
                 SizedBox(width: 8.0),
                 SizedBox(
-                  height: 60.0, // 你可以根據需要調整這個值
+                  height: 60.0,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFF2B892), // 背景顏色
@@ -184,7 +184,7 @@ class _CheckListState extends State<CheckList> {
               children: [
                 Expanded(
                   child: SizedBox(
-                    height: 40.0, // 你可以根據需要調整這個值
+                    height: 40.0,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFFF2B892), // 背景顏色
@@ -197,11 +197,7 @@ class _CheckListState extends State<CheckList> {
                             .join(', ');
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            //  builder: (context) => ChatPage(
-                            //    prompt: prompt,
-                            //    people: _selectedPeople,
-                            //  ),
+                          MaterialPageRoute(                          
                             builder: (context) => RecipeListPage(
                               prompt: prompt,
                               people: _selectedPeople,
@@ -221,10 +217,4 @@ class _CheckListState extends State<CheckList> {
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: CheckList(),
-  ));
 }

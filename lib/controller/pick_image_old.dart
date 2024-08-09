@@ -1,24 +1,27 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
-import 'package:recipe_gpt/checklist.dart';
+// ignore_for_file: use_build_context_synchronously
 
-class PickImage extends StatefulWidget {
-  const PickImage({super.key});
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_tflite/flutter_tflite.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:recipe_gpt/homepage.dart';
+import 'package:recipe_gpt/services/openai/chat_screen.dart';
+import 'package:recipe_gpt/checklist.dart';
+import 'package:image_cropper/image_cropper.dart';
+
+class PickImage1 extends StatefulWidget {
+  const PickImage1({super.key});
 
   @override
-  State<PickImage> createState() => _PickImageState();
+  State<PickImage1> createState() => _PickImageState();
 }
 
-class _PickImageState extends State<PickImage> {
+class _PickImageState extends State<PickImage1> {
   Uint8List? _image;
-  File? selectedImage;
+  File? selectedIMage;
   bool _isNextButtonEnabled = false;
-  bool _isProcessing = false; // 是否正在辨識
-  String _statusText = '拍照! 尋找可用食材~';
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +29,10 @@ class _PickImageState extends State<PickImage> {
       appBar: AppBar(
         title: Text(
           '生成食譜',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black), // Set text color to white
         ),
         backgroundColor: Color(0xFFF1E9E6),
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.black), // Set back button
       ),
       backgroundColor: Color(0xFFF1E9E6),
       body: Center(
@@ -37,7 +40,7 @@ class _PickImageState extends State<PickImage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              _statusText,
+              '拍照! 尋找可用食材~',
               style: TextStyle(
                 fontSize: 28.0,
                 fontWeight: FontWeight.bold,
@@ -75,12 +78,13 @@ class _PickImageState extends State<PickImage> {
                     ),
                     child: Center(child: Text('還沒有照片哦!')),
                   ),
+
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ElevatedButton(
-                  onPressed: _isProcessing ? null : () {
+                  onPressed: () {
                     showImagePickerOption(context);
                   },
                   style: ElevatedButton.styleFrom(
@@ -92,16 +96,13 @@ class _PickImageState extends State<PickImage> {
                 ),
                 SizedBox(width: 20), // 在兩個按鈕之間增加空間
                 ElevatedButton(
-                  onPressed: _isNextButtonEnabled && !_isProcessing
+                  onPressed: _isNextButtonEnabled
                       ? () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CheckList(
-                                resultItems: _resultItems,
-                              ),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) => CheckList()), // 勾選辨識清單頁面
+                          // );
                         }
                       : null,
                   style: ElevatedButton.styleFrom(
@@ -141,12 +142,12 @@ class _PickImageState extends State<PickImage> {
                             Icon(
                               Icons.image,
                               size: 70,
-                              color: Colors.white,
+                              color: Colors.white, // Set icon color to white
                             ),
                             Text("相簿",
                                 style: TextStyle(
                                     color: Colors
-                                        .white))
+                                        .white)) // Set text color to white
                           ],
                         ),
                       ),
@@ -163,12 +164,12 @@ class _PickImageState extends State<PickImage> {
                             Icon(
                               Icons.camera_alt,
                               size: 70,
-                              color: Colors.white,
+                              color: Colors.white, // Set icon color to white
                             ),
                             Text("相機",
                                 style: TextStyle(
                                     color: Colors
-                                        .white))
+                                        .white)) // Set text color to white
                           ],
                         ),
                       ),
@@ -181,84 +182,47 @@ class _PickImageState extends State<PickImage> {
         });
   }
 
-  // Gallery
+  @override
+  void onInit() {
+    // TODO: implement onInit
+    //super.onInit();
+    //initCamera();
+    initTFLite();
+  }
+
+  Future<void> initTFLite() async {
+    await Tflite.loadModel(
+      model: "assets/model.tflite",
+      labels: "assets/labels.txt",
+      isAsset: true,
+      numThreads: 1,
+      useGpuDelegate: false,
+    );
+  }
+
+  //Gallery
   Future<void> _pickImageFromGallery() async {
     final returnImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (returnImage == null) return;
     setState(() {
-      selectedImage = File(returnImage.path);
+      selectedIMage = File(returnImage.path);
       _image = File(returnImage.path).readAsBytesSync();
-      _isProcessing = true; 
-      _statusText = '辨識中...'; 
+      _isNextButtonEnabled = true;
     });
-    Navigator.of(context).pop(); // 關閉modal對話框
-    await _uploadImage(); // 開始影像辨識
+    Navigator.of(context).pop(); // 關閉模態對話框
   }
 
-  // Camera
+  //Camera
   Future<void> _pickImageFromCamera() async {
     final returnImage =
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (returnImage == null) return;
     setState(() {
-      selectedImage = File(returnImage.path);
+      selectedIMage = File(returnImage.path);
       _image = File(returnImage.path).readAsBytesSync();
-      _isProcessing = true;
-      _statusText = '辨識中...';
+      _isNextButtonEnabled = true;
     });
-    Navigator.of(context).pop(); // 關閉modal對話框
-    await _uploadImage(); // 開始影像辨識
-  }
-
-  List<String> _resultItems = []; // 儲存辨識結果
-
-  Future<void> _uploadImage() async {
-    if (selectedImage == null) return;
-
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('https://api.ultralytics.com/v1/predict/wiO6EHycTaKvnqiDyUeB'),
-    );
-
-    request.headers['x-api-key'] = '3ee96bf87dca54cbc273eaeb0d2e5323c3069c9a5e'; // API key
-    request.fields['size'] = '640';
-    request.fields['confidence'] = '0.2';
-    request.fields['iou'] = '0.5';
-
-    request.files.add(await http.MultipartFile.fromPath(
-      'image',
-      selectedImage!.path,
-    ));
-
-    final response = await request.send();
-    if (response.statusCode == 200) {
-      final responseBody = await response.stream.bytesToString();
-      final decodedResponse = json.decode(responseBody);
-      setState(() {
-        if (decodedResponse['success'] == true) {
-          _resultItems = List<String>.from(decodedResponse['data'].map((item) => item['name']));
-          _resultItems = _removeDuplicates(_resultItems); // 移除重複
-          _isNextButtonEnabled = true;
-          _statusText = '辨識完成';
-        } else {
-          _resultItems = ['Inference failed: ${decodedResponse['message']}'];
-          _statusText = '辨識失敗'; 
-        }
-      });
-    } else {
-      setState(() {
-        _resultItems = ['Image upload failed: ${response.statusCode}'];
-        _statusText = '辨識失敗';
-      });
-    }
-
-    setState(() {
-      _isProcessing = false;
-    });
-  }
-
-  List<String> _removeDuplicates(List<String> items) {
-    return items.toSet().toList();
+    Navigator.of(context).pop(); // 關閉模態對話框
   }
 }
