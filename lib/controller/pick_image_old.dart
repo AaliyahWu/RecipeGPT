@@ -226,3 +226,53 @@ class _PickImageState extends State<PickImage1> {
     Navigator.of(context).pop(); // 關閉模態對話框
   }
 }
+
+
+
+    //   try {
+    //     final response = await request.send();
+    //     final responseBody = await response.stream.bytesToString();
+    //     final decodedResponse = json.decode(responseBody);
+
+    //     print('API Response: $responseBody'); //print出完整的辨識内容
+
+    //     if (response.statusCode == 200) {
+    //       final results =
+    //           decodedResponse['images'][0]['results'] as List<dynamic>;
+    //       final detectedItems = results.isNotEmpty
+    //           ? List<String>.from(results.map((item) => item['name']))
+    //           : ['No items detected'];
+
+    //       //移除重複的項目
+    //       final uniqueItems = _removeDuplicates(detectedItems);
+
+    //       // 翻譯為中文
+    //       // List<String> translatedItems = [];
+    //       // for (String item in detectedItems) {
+    //       //   String translated = await _translateToChinese(item);
+    //       //   translatedItems.add(translated);
+    //       // }
+
+    //       setState(() {
+    //         _resultItems = uniqueItems;
+    //         _isNextButtonEnabled = true;
+    //         _statusText = '辨識完成';
+    //       });
+    //     } else {
+    //       setState(() {
+    //         _resultItems = ['Image upload failed: ${response.statusCode}'];
+    //         _statusText = '辨識失敗';
+    //       });
+    //     }
+    //   } catch (e) {
+    //     print('Error during image upload: $e');
+    //     setState(() {
+    //       _resultItems = ['Image upload failed'];
+    //       _statusText = '辨識失敗';
+    //     });
+    //   } finally {
+    //     setState(() {
+    //       _isProcessing = false;
+    //     });
+    //   }
+    // }

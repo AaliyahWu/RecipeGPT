@@ -238,37 +238,36 @@ class _PickImageState extends State<PickImage> {
       if (response.statusCode == 200) {
         final results =
             decodedResponse['images'][0]['results'] as List<dynamic>;
-        final detectedItems = results.isNotEmpty
-            ? List<String>.from(results.map((item) => item['name']))
-            : ['No items detected'];
+        if (results.isNotEmpty) {
+          final detectedItems =
+              List<String>.from(results.map((item) => item['name']));
+          _resultItems = _removeDuplicates(detectedItems); // 移除重複的項目
 
-        //移除重複的項目
-        final uniqueItems = _removeDuplicates(detectedItems);
+          // 翻譯為中文
+          // List<String> translatedItems = [];
+          // for (String item in detectedItems) {
+          //   String translated = await _translateToChinese(item);
+          //   translatedItems.add(translated);
+          // }
 
-        // 翻譯為中文
-        // List<String> translatedItems = [];
-        // for (String item in detectedItems) {
-        //   String translated = await _translateToChinese(item);
-        //   translatedItems.add(translated);
-        // }
-
-        setState(() {
-          _resultItems = uniqueItems;
-          _isNextButtonEnabled = true;
           _statusText = '辨識完成';
-        });
+          _isNextButtonEnabled = true;
+        } else {
+          // 未偵測到食材
+          _resultItems = [];
+          _statusText = '再試一次';
+          _isNextButtonEnabled = false;
+        }
       } else {
-        setState(() {
-          _resultItems = ['Image upload failed: ${response.statusCode}'];
-          _statusText = '辨識失敗';
-        });
+        _resultItems = ['Image upload failed: ${response.statusCode}'];
+        _statusText = '辨識失敗';
+        _isNextButtonEnabled = false;
       }
     } catch (e) {
       print('Error during image upload: $e');
-      setState(() {
-        _resultItems = ['Image upload failed'];
-        _statusText = '辨識失敗';
-      });
+      _resultItems = ['Image upload failed'];
+      _statusText = '辨識失敗';
+      _isNextButtonEnabled = false;
     } finally {
       setState(() {
         _isProcessing = false;
