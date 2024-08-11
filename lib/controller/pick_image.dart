@@ -241,14 +241,11 @@ class _PickImageState extends State<PickImage> {
         if (results.isNotEmpty) {
           final detectedItems =
               List<String>.from(results.map((item) => item['name']));
-          _resultItems = _removeDuplicates(detectedItems); // 移除重複的項目
 
-          // 翻譯為中文
-          // List<String> translatedItems = [];
-          // for (String item in detectedItems) {
-          //   String translated = await _translateToChinese(item);
-          //   translatedItems.add(translated);
-          // }
+          // 移除重複的項目
+          _resultItems = _removeDuplicates(detectedItems);
+          // 翻譯成中文
+          _resultItems = await _translateItemsToChinese(_resultItems);
 
           _statusText = '辨識完成';
           _isNextButtonEnabled = true;
@@ -275,38 +272,56 @@ class _PickImageState extends State<PickImage> {
     }
   }
 
-  static final Uri openaiUri =
-      Uri.parse('https://api.openai.com/v1/chat/completions');
-  static final Map<String, String> headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${ApiKey.openAIApiKey}',
-  };
-
-  Future<String> _translateToChinese(String text) async {
-    final response = await http.post(
-      openaiUri,
-      headers: headers,
-      body: jsonEncode({
-        'model': 'gpt-3.5-turbo',
-        'messages': [
-          {
-            'role': 'system',
-            'content': 'Translate the following English text to Chinese.'
-          },
-          {'role': 'user', 'content': text}
-        ],
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['choices'][0]['message']['content'].trim();
-    } else {
-      throw Exception('Failed to translate text');
-    }
-  }
-
   List<String> _removeDuplicates(List<String> items) {
     return items.toSet().toList();
+  }
+
+  Map<String, String> _translationCache = {};
+
+  Future<List<String>> _translateItemsToChinese(List<String> items) async {
+    final apiKey = ApiKey.openAIApiKey;
+    List<String> translatedItems = [];
+    int delay = 5000; // 延遲5秒開始 (在短時間內發送了多個API請求觸發了速率限制failed: 429)
+
+    for (String item in items) {
+      if (_translationCache.containsKey(item)) {
+        translatedItems.add(_translationCache[item]!);
+      } else {
+        final response = await http.post(
+          Uri.parse('https://api.openai.com/v1/chat/completions'),
+          headers: {
+            'Authorization': 'Bearer $apiKey',
+            'Content-Type': 'application/json',
+          },
+          body: json.encode({
+            'model': 'gpt-3.5-turbo',
+            'messages': [
+              {
+                'role': 'system',
+                'content': '將下面的文字翻譯成繁體中文： $item',
+              }
+            ],
+            'temperature': 0.5,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          final jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+          final translatedText =
+              jsonResponse['choices'][0]['message']['content'];
+          _translationCache[item] = translatedText;
+          translatedItems.add(translatedText);
+        } else if (response.statusCode == 429) {
+          print(
+              'Translation failed: ${response.statusCode}. Retrying in ${delay} ms...');
+          await Future.delayed(Duration(milliseconds: delay));
+          delay *= 2;
+        } else {
+          print('Translation failed: ${response.statusCode}');
+          translatedItems.add(item); // 如果翻譯失敗，使用原始文字
+        }
+      }
+    }
+    return translatedItems;
   }
 }
