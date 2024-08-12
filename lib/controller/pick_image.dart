@@ -218,7 +218,7 @@ class _PickImageState extends State<PickImage> {
       Uri.parse('https://api.ultralytics.com/v1/predict/wiO6EHycTaKvnqiDyUeB'),
     );
 
-    request.headers['x-api-key'] = ApiKey.ultralyticsApiKey; // API key
+    // request.headers['x-api-key'] = ApiKey.ultralyticsApiKey; // API key
     request.fields['size'] = '640';
     request.fields['confidence'] = '0.2';
     request.fields['iou'] = '0.5';
