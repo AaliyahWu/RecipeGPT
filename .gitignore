@@ -42,4 +42,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# 手動新增內容
 /lib/services/openai/api_key.dart
+/lib/db/db.dart
