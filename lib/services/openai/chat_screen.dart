@@ -94,10 +94,9 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   onPressed: () {
                     // 導航回首頁
-                    // 導航回首頁
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
+                      MaterialPageRoute(builder: (context) => HomePage(accountId: 1)),
                       (route) => false,
                     );
                   },

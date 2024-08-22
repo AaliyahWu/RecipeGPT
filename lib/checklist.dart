@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:recipe_gpt/chooseRecipes.dart';
+import 'db/db.dart';
 
 class ListItem {
   String title;
@@ -10,8 +11,11 @@ class ListItem {
 
 class CheckList extends StatefulWidget {
   final List<String> resultItems; // 從PickImage接收的食材清單
+  final int accountId; // 接收目前登入使用者的 accountId
 
-  const CheckList({Key? key, required this.resultItems}) : super(key: key);
+  const CheckList({Key? key, required this.resultItems, required this.accountId}) : super(key: key);
+
+  // const CheckList({Key? key, required this.resultItems}) : super(key: key);
 
   @override
   _CheckListState createState() => _CheckListState();
@@ -20,11 +24,34 @@ class CheckList extends StatefulWidget {
 class _CheckListState extends State<CheckList> {
   TextEditingController _textController = TextEditingController();
   late List<ListItem> _items; // 初始化
+  String _preferences = ''; // 用來顯示使用者的飲食偏好
 
   @override
   void initState() {
     super.initState();
     _items = _convertResultItemsToListItems(widget.resultItems);
+    _loadUserPreferences(); // 初始化時載入使用者偏好
+  }
+
+  Future<void> _loadUserPreferences() async {
+    try {
+      var conn = await DatabaseService().connection;
+      var results = await conn.query(
+          'SELECT name FROM recipedb.preference WHERE accountId = ?',
+          [widget.accountId]);
+
+      if (results.isNotEmpty) {
+        setState(() {
+          _preferences = results.map((row) => row['name']).join(', ');
+        });
+      } else {
+        setState(() {
+          _preferences = '無偏好資料';
+        });
+      }
+    } catch (e) {
+      print('加載偏好失敗: $e');
+    }
   }
 
   List<ListItem> _convertResultItemsToListItems(List<String> resultItems) {
@@ -100,8 +127,12 @@ class _CheckListState extends State<CheckList> {
             ),
           ),
           SizedBox(height: 10.0),
-          const Text(
-            '飲食偏好: 高蛋白質、雞肉',
+          // const Text(
+          //   '飲食偏好: 高蛋白質、雞肉',
+          //   style: TextStyle(fontSize: 16),
+          // ),
+          Text(
+            '飲食偏好: $_preferences',
             style: TextStyle(fontSize: 16),
           ),
           Padding(

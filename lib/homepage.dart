@@ -12,6 +12,9 @@ import 'package:recipe_gpt/camerafunction.dart';
 void main() => runApp(MaterialApp(home: LoginCard()));
 
 class HomePage extends StatefulWidget {
+  final int accountId;
+  HomePage({Key? key, required this.accountId}) : super(key: key); //向父繼承accountId資料
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -643,7 +646,7 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PickImage(),
+                            builder: (context) => PickImage(accountId: widget.accountId),
                           ),
                         );
                       },

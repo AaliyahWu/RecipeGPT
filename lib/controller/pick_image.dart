@@ -8,7 +8,10 @@ import 'package:recipe_gpt/checklist.dart';
 import 'package:recipe_gpt/services/openai/api_key.dart';
 
 class PickImage extends StatefulWidget {
-  const PickImage({super.key});
+   final int accountId; // 新增此行以接收 accountId
+   PickImage({Key? key, required this.accountId}) : super(key: key); // 修改構造函數以接受 accountId
+
+  // const PickImage({super.key});
 
   @override
   State<PickImage> createState() => _PickImageState();
@@ -101,6 +104,7 @@ class _PickImageState extends State<PickImage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => CheckList(
+                                accountId: widget.accountId,
                                 resultItems: _resultItems,
                               ),
                             ),

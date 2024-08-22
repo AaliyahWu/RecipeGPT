@@ -93,6 +93,12 @@ class _LoginCardState extends State<LoginCard> {
     setState(() {
       _isLoading = true;
     });
+
+    var conn = await DatabaseService().connection;
+    var accounts = await conn.query(
+      'SELECT accountId FROM recipedb.accounts WHERE email = ? AND password = ?',
+      [_usernameController.text, _passwordController.text]);
+
     bool result = await authenticateUser(
       _usernameController.text,
       _passwordController.text,
@@ -102,12 +108,13 @@ class _LoginCardState extends State<LoginCard> {
     });
 
     if (result) {
+      var accountId = accounts.first['accountId'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('登入成功!'),
         backgroundColor: Colors.green,
       ));
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(), // 導航到 HomePage
+        builder: (context) => HomePage(accountId: accountId), // 導航到 HomePage
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -202,12 +209,18 @@ class _SignupCardState extends State<SignupCard> {
         'INSERT INTO recipedb.accounts (name, email, password) VALUES (?, ?, ?)',
         [name, email, password],
       );
+
+      var accounts = await conn.query(
+      'SELECT accountId FROM recipedb.accounts WHERE email = ? AND password = ?',
+      [email, _passwordController.text]);
+      var accountId = accounts.first['accountId'];
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('註冊成功!'),
         backgroundColor: Colors.green,
       ));
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(), // Assuming HomePage exists
+        builder: (context) => HomePage(accountId: accountId), // Assuming HomePage exists
       ));
     } catch (e) {
       print('註冊失敗: $e');
