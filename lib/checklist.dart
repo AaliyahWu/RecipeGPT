@@ -13,7 +13,7 @@ class CheckList extends StatefulWidget {
   final List<String> resultItems; // 從PickImage接收的食材清單
   final int accountId; // 接收目前登入使用者的 accountId
 
-  const CheckList({Key? key, required this.resultItems, required this.accountId}) : super(key: key);
+  const CheckList({Key? key, required this.accountId, required this.resultItems,}) : super(key: key);
 
   // const CheckList({Key? key, required this.resultItems}) : super(key: key);
 
@@ -230,7 +230,9 @@ class _CheckListState extends State<CheckList> {
                           context,
                           MaterialPageRoute(                          
                             builder: (context) => RecipeListPage(
-                              prompt: prompt,
+                              accountId: widget.accountId,
+                              preferences: _preferences,
+                              prompt: prompt, //食材
                               people: _selectedPeople,
                             ),
                           ),

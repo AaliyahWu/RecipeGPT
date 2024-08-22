@@ -3,13 +3,16 @@
 import 'package:flutter/material.dart';
 import 'chat_service.dart';
 import 'package:recipe_gpt/homepage.dart'; // 假設HomePage的widget在homepage.dart中定義
+import '/db/db.dart';
 
 class ChatPage extends StatefulWidget {
   final String prompt;
   final int people;
   final String recipe;
+  final int accountId;
+  final String preferences;
 
-  ChatPage({required this.prompt, required this.people, required this.recipe});
+  ChatPage({required this.accountId, required this.preferences, required this.prompt, required this.people, required this.recipe});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -22,7 +25,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _startChat(widget.recipe, widget.prompt, widget.people);
+    _startChat(widget.recipe, widget.prompt, widget.people, widget.preferences);
   }
 
   @override
@@ -96,7 +99,7 @@ class _ChatPageState extends State<ChatPage> {
                     // 導航回首頁
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage(accountId: 1)),
+                      MaterialPageRoute(builder: (context) => HomePage(accountId: widget.accountId)),
                       (route) => false,
                     );
                   },
@@ -120,20 +123,41 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-  // void _startChat(String prompt, int people) async {
-  //   String? response = await ChatService().request(prompt, people);
-  //   setState(() {
-  //     _chatResponse = response ?? 'No response';
-  //     _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
-  //   });
-  // }
 
-  void _startChat(String recipe, String prompt, int people) async {
-    String? response = await ChatService().request(recipe, prompt, people);
+
+  void _startChat(String recipe, String prompt, int people, String preferences) async {
+    String? response = await ChatService().request(recipe, prompt, people, preferences);
     setState(() {
+       // 確保 response 不為
       _chatResponse = response ?? 'No response';
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
+
+    // 如果有 response，保存到数据库
+    if (response != null && response.isNotEmpty) {
+      await _saveRecipeToDatabase(widget.accountId, recipe, response);
+    }
+
+  }
+
+  // 新增這個方法，用來存儲食譜到資料庫
+  Future<void> _saveRecipeToDatabase(int accountId, String recipeName, String recipeText) async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // // 从第四个字符开始截取 recipeName
+      // String truncatedRecipeName = recipeName.length > 3 ? recipeName.substring(0) : '';
+
+      // 插入新的食譜記錄到 `recipes` 表
+      await conn.query(
+        'INSERT INTO recipedb.recipes (accountId, recipeName, recipeText, createDate) VALUES (?, ?, ?, NOW())',
+        [accountId, recipeName, recipeText],
+      );
+
+      print('食譜成功保存到資料庫中');
+    } catch (e) {
+      print('保存食譜到資料庫時出錯: $e');
+    }
   }
 
   @override

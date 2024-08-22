@@ -5,10 +5,13 @@ import 'package:recipe_gpt/services/openai/chat_screen.dart';
 import 'package:recipe_gpt/services/openai/chat_service.dart';
 
 class RecipeListPage extends StatefulWidget {
+  final int accountId;
+  final String preferences;
   final String prompt;
   final int people;
 
-  RecipeListPage({required this.prompt, required this.people});
+
+  RecipeListPage({required this.accountId, required this.preferences, required this.prompt, required this.people});
 
   @override
   _RecipeListPageState createState() => _RecipeListPageState();
@@ -25,7 +28,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
 
   Future<void> _generateRecipeList() async {
     String? response =
-        await ChatService().requestRecipeList(widget.prompt, widget.people);
+        await ChatService().requestRecipeList(widget.prompt, widget.people, widget.preferences);
     if (response != null) {
       setState(() {
         recipes = response.split('\n');
@@ -59,6 +62,8 @@ class _RecipeListPageState extends State<RecipeListPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ChatPage(
+                            accountId: widget.accountId,
+                            preferences: widget.preferences,
                             recipe: recipes[index],
                             prompt: widget.prompt,
                             people: widget.people,
