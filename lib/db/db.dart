@@ -29,4 +29,3 @@ class DatabaseService {
     _connection = null;
   }
 }
-

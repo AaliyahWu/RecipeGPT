@@ -8,12 +8,14 @@ import 'package:recipe_gpt/main.dart';
 import 'package:recipe_gpt/services/openai/chat_response.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
 import 'package:recipe_gpt/camerafunction.dart';
+import 'package:recipe_gpt/history.dart';
 
 void main() => runApp(MaterialApp(home: LoginCard()));
 
 class HomePage extends StatefulWidget {
   final int accountId;
-  HomePage({Key? key, required this.accountId}) : super(key: key); //向父繼承accountId資料
+  HomePage({Key? key, required this.accountId})
+      : super(key: key); //向父繼承accountId資料
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -646,7 +648,8 @@ class _HomePageState extends State<HomePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PickImage(accountId: widget.accountId),
+                            builder: (context) =>
+                                PickImage(accountId: widget.accountId),
                           ),
                         );
                       },
@@ -886,6 +889,7 @@ class _HomePageState extends State<HomePage> {
           // 可以在這裡添加更多模擬數據
         ];
 
+// 你的代码
         return Container(
           color: Color(0xFFF1E9E6),
           child: Column(
@@ -898,7 +902,6 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              //SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
                   itemCount: historicalRecipes.length,
@@ -955,19 +958,12 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.grey[600],
                             ),
                           ),
-                          // trailing: CircleAvatar(
-                          //   backgroundColor: Color(0xFFF2B892),
-                          //   child: Text(
-                          //     recipe['rating'].toString(),
-                          //     style: TextStyle(
-                          //       fontSize: 16,
-                          //       fontWeight: FontWeight.bold,
-                          //       color: Colors.black,
-                          //     ),
-                          //   ),
-                          // ),
                           onTap: () {
-                            // 導航至食譜詳情頁面
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => HistoryPage()),
+                            );
                           },
                         ),
                       ),
