@@ -99,7 +99,8 @@ class _ChatPageState extends State<ChatPage> {
                     // 導航回首頁
                     Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => HomePage(accountId: widget.accountId)),
+                      // MaterialPageRoute(builder: (context) => HomePage(accountId: widget.accountId)),
+                      MaterialPageRoute(builder: (context) => HomePage()),//測試新登入模組
                       (route) => false,
                     );
                   },

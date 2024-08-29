@@ -3,20 +3,18 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recipe_gpt/controller/pick_image.dart';
 import 'package:recipe_gpt/login.dart';
-import 'package:recipe_gpt/login/splash.dart';
-import 'package:recipe_gpt/main.dart';
-import 'package:recipe_gpt/services/openai/chat_response.dart';
-import 'package:recipe_gpt/services/openai/chat_screen.dart';
-import 'package:recipe_gpt/camerafunction.dart';
+import 'package:provider/provider.dart';
+import 'package:recipe_gpt/user/user_provider.dart';
+// import 'package:recipe_gpt/login/splash.dart';
+// import 'package:recipe_gpt/main.dart';
+// import 'package:recipe_gpt/services/openai/chat_response.dart';
+// import 'package:recipe_gpt/services/openai/chat_screen.dart';
+// import 'package:recipe_gpt/camerafunction.dart';
 import 'package:recipe_gpt/history.dart';
 
-void main() => runApp(MaterialApp(home: LoginCard()));
+void main() => runApp(MaterialApp(home: HomePage()));
 
 class HomePage extends StatefulWidget {
-  final int accountId;
-  HomePage({Key? key, required this.accountId})
-      : super(key: key); //向父繼承accountId資料
-
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -42,6 +40,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Access the current user from the UserProvider
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+
     return Scaffold(
       bottomNavigationBar: CurvedNavigationBar(
         key: _bottomNavigationKey,
@@ -56,7 +58,7 @@ class _HomePageState extends State<HomePage> {
         ],
         color: Color(0xFFDD8A62),
         buttonBackgroundColor: Color(0xFFDD8A62),
-        backgroundColor: Color(0xFFF1E9E6), // 設定背景顏色
+        backgroundColor: Color(0xFFF1E9E6),
         animationCurve: Curves.easeInOut,
         animationDuration: Duration(milliseconds: 350),
         onTap: (index) {
@@ -66,11 +68,11 @@ class _HomePageState extends State<HomePage> {
         },
         letIndexChange: (index) => true,
       ),
-      body: _buildBody(),
+      body: _buildBody(context, user),
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(BuildContext context, User? user) {
     switch (_currentPageIndex) {
       case 0:
         return Scaffold(
@@ -649,7 +651,8 @@ class _HomePageState extends State<HomePage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                PickImage(accountId: widget.accountId),
+                                // PickImage(accountId: widget.accountId),
+                                PickImage(accountId: 1),
                           ),
                         );
                       },
@@ -1127,15 +1130,14 @@ class _HomePageState extends State<HomePage> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFFF2B892),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 110, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 110, vertical: 10),
                       textStyle: TextStyle(fontSize: 16),
                     ),
-                    child:
-                        // Text('登出', style: TextStyle(color: Color(0xFFDD8A62))),
-                        Text('登出', style: TextStyle(color: Colors.white)),
+                    child: Text('登出', style: TextStyle(color: Colors.white)),
                     onPressed: () {
-                      Navigator.push(
+                      // Log out the user
+                      Provider.of<UserProvider>(context, listen: false).logout();
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => Login()),
                       );
