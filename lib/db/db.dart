@@ -28,4 +28,25 @@ class DatabaseService {
     await _connection?.close();
     _connection = null;
   }
+  // Fetch recipes by account ID
+//   Future<List<Map<String, dynamic>>> fetchRecipes(int accountId) async {
+//     var conn = await connection;
+    
+//     // Use accountId in the query to fetch only that user's recipes
+//     var results = await conn.query(
+//         'SELECT imageUrl, title, description, rating FROM recipes WHERE account_id = ?', 
+//         [accountId]
+//     );
+
+//     List<Map<String, dynamic>> recipes = [];
+//     for (var row in results) {
+//       recipes.add({
+//         'imageUrl': row[0],
+//         'title': row[1],
+//         'description': row[2],
+//         'rating': row[3],
+//       });
+//     }
+//     return recipes;
+//   }
 }

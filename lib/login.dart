@@ -6,57 +6,39 @@ import 'package:recipe_gpt/homepage.dart';
 import 'package:recipe_gpt/db/db.dart';
 
 class Login extends StatelessWidget {
-  const Login({Key? key});
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFF1E9E6),
-        inputDecorationTheme: InputDecorationTheme(
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFF2B892)),
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-          primary: Color(0xFFF2B892),
-        ),
-      ),
-      home: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            toolbarHeight: 200,
-            flexibleSpace: Center(
-              child: Image.asset(
-                'assets/LOGO.png',
-                height: 150,
-              ),
-            ),
-            bottom: const TabBar(
-              indicatorColor: Color(0xFFF2B892),
-              labelColor: Color(0xFFF2B892),
-              unselectedLabelColor: Colors.black,
-              tabs: [
-                Tab(text: '登入'),
-                Tab(text: '註冊'),
-              ],
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          toolbarHeight: 200,
+          flexibleSpace: Center(
+            child: Image.asset(
+              'assets/LOGO.png',
+              height: 150,
             ),
           ),
-          body: TabBarView(
-            children: [
-              LoginCard(),
-              SignupCard(),
+          bottom: const TabBar(
+            indicatorColor: Color(0xFFF2B892),
+            labelColor: Color(0xFFF2B892),
+            unselectedLabelColor: Colors.black,
+            tabs: [
+              Tab(text: '登入'),
+              Tab(text: '註冊'),
             ],
           ),
+        ),
+        body: TabBarView(
+          children: [
+            LoginCard(),
+            SignupCard(),
+          ],
         ),
       ),
     );
@@ -74,6 +56,7 @@ class _LoginCardState extends State<LoginCard> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  // Function to authenticate the user based on username and password
   Future<User?> authenticateUser(String username, String password) async {
     try {
       var conn = await DatabaseService().connection;
@@ -95,11 +78,13 @@ class _LoginCardState extends State<LoginCard> {
     }
   }
 
+  // Handle login function
   void _handleLogin() async {
     setState(() {
       _isLoading = true;
     });
 
+    // Authenticate user and get the user details
     User? user = await authenticateUser(
       _usernameController.text,
       _passwordController.text,
@@ -110,16 +95,21 @@ class _LoginCardState extends State<LoginCard> {
     });
 
     if (user != null) {
+      // Set the user data in the provider
       Provider.of<UserProvider>(context, listen: false).setUser(user);
 
+      // Show success message
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('登入成功!'),
         backgroundColor: Colors.green,
       ));
+
+      // Navigate to HomePage and pass the accountId
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(),
+        builder: (context) => HomePage(accountId: user.id),
       ));
     } else {
+      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('帳號或密碼錯誤'),
         backgroundColor: Colors.red,
@@ -245,7 +235,7 @@ class _SignupCardState extends State<SignupCard> {
         backgroundColor: Colors.green,
       ));
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(),
+        builder: (context) => HomePage(accountId: user.id),
       ));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
