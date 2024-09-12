@@ -1,44 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:mysql1/mysql1.dart';
-import 'package:provider/provider.dart';
-import 'package:recipe_gpt/user/user_provider.dart';
-import 'package:recipe_gpt/homepage.dart';
-import 'package:recipe_gpt/db/db.dart';
+import 'homepage.dart'; // 假設HomePage的widget在homepage.dart中定義
+import 'db/db.dart';
+
+void main() {
+  runApp(const Login());
+}
 
 class Login extends StatelessWidget {
-  const Login({Key? key}) : super(key: key);
+  const Login({Key? key});
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          toolbarHeight: 200,
-          flexibleSpace: Center(
-            child: Image.asset(
-              'assets/LOGO.png',
-              height: 150,
-            ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: Color(0xFFF1E9E6),
+        inputDecorationTheme: InputDecorationTheme(
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFFF2B892)),
+            borderRadius: BorderRadius.circular(10.0),
           ),
-          bottom: const TabBar(
-            indicatorColor: Color(0xFFF2B892),
-            labelColor: Color(0xFFF2B892),
-            unselectedLabelColor: Colors.black,
-            tabs: [
-              Tab(text: '登入'),
-              Tab(text: '註冊'),
-            ],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
           ),
         ),
-        body: TabBarView(
-          children: [
-            LoginCard(),
-            SignupCard(),
-          ],
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          primary: Color(0xFFF2B892),
+        ),
+      ),
+      home: DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            toolbarHeight: 200, // Increase toolbar height for larger logo
+            flexibleSpace: Center(
+              child: Image.asset(
+                'assets/LOGO.png',
+                height: 150, // Adjust the height as needed
+              ),
+            ),
+            bottom: const TabBar(
+              indicatorColor: Color(0xFFF2B892),
+              labelColor: Color(0xFFF2B892),
+              unselectedLabelColor: Colors.black,
+              tabs: [
+                Tab(text: '登入'),
+                Tab(text: '註冊'),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              LoginCard(),
+              SignupCard(),
+            ],
+          ),
         ),
       ),
     );
@@ -56,60 +76,47 @@ class _LoginCardState extends State<LoginCard> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
-  // Function to authenticate the user based on username and password
-  Future<User?> authenticateUser(String username, String password) async {
+  Future<bool> authenticateUser(String username, String password) async {
     try {
       var conn = await DatabaseService().connection;
       var results = await conn.query(
-          'SELECT accountId, name, email FROM recipedb.accounts WHERE email = ? AND password = ?',
+          'SELECT * FROM recipedb.accounts WHERE email = ? AND password = ?',
           [username, password]);
-      if (results.isNotEmpty) {
-        var row = results.first;
-        return User(
-          id: row['accountId'],
-          name: row['name'],
-          email: row['email'],
-        );
-      }
-      return null;
+      return results.isNotEmpty;
     } catch (e) {
       print('驗證失敗: $e');
-      return null;
+      return false;
     }
   }
 
-  // Handle login function
   void _handleLogin() async {
     setState(() {
       _isLoading = true;
     });
 
-    // Authenticate user and get the user details
-    User? user = await authenticateUser(
+    var conn = await DatabaseService().connection;
+    var accounts = await conn.query(
+      'SELECT accountId FROM recipedb.accounts WHERE email = ? AND password = ?',
+      [_usernameController.text, _passwordController.text]);
+
+    bool result = await authenticateUser(
       _usernameController.text,
       _passwordController.text,
     );
-
     setState(() {
       _isLoading = false;
     });
 
-    if (user != null) {
-      // Set the user data in the provider
-      Provider.of<UserProvider>(context, listen: false).setUser(user);
-
-      // Show success message
+    if (result) {
+      var accountId = accounts.first['accountId'];
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('登入成功!'),
         backgroundColor: Colors.green,
       ));
-
-      // Navigate to HomePage and pass the accountId
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(accountId: user.id),
+        builder: (context) => HomePage(accountId: accountId), // 導航到 HomePage
       ));
     } else {
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('帳號或密碼錯誤'),
         backgroundColor: Colors.red,
@@ -121,7 +128,7 @@ class _LoginCardState extends State<LoginCard> {
   Widget build(BuildContext context) {
     return Center(
       child: FractionallySizedBox(
-        heightFactor: 0.9,
+        heightFactor: 0.9, // Adjust the height factor to move the form upwards or downwards
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -195,20 +202,36 @@ class _SignupCardState extends State<SignupCard> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
-  Future<User?> registerUser(String name, String email, String password) async {
+  Future<void> registerUser(String name, String email, String password) async {
     try {
       var conn = await DatabaseService().connection;
-      var result = await conn.query(
+      await conn.query(
         'INSERT INTO recipedb.accounts (name, email, password) VALUES (?, ?, ?)',
         [name, email, password],
       );
-      
-      int accountId = result.insertId!;
-      
-      return User(id: accountId, name: name, email: email);
+
+      var accounts = await conn.query(
+      'SELECT accountId FROM recipedb.accounts WHERE email = ? AND password = ?',
+      [email, _passwordController.text]);
+      var accountId = accounts.first['accountId'];
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('註冊成功!'),
+        backgroundColor: Colors.green,
+      ));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => HomePage(accountId: accountId), // Assuming HomePage exists
+      ));
     } catch (e) {
       print('註冊失敗: $e');
-      return null;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('註冊失敗'),
+        backgroundColor: Colors.red,
+      ));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -216,40 +239,18 @@ class _SignupCardState extends State<SignupCard> {
     setState(() {
       _isLoading = true;
     });
-    
-    User? user = await registerUser(
+    await registerUser(
       _nameController.text,
       _emailController.text,
       _passwordController.text,
     );
-    
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (user != null) {
-      Provider.of<UserProvider>(context, listen: false).setUser(user);
-
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('註冊成功!'),
-        backgroundColor: Colors.green,
-      ));
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => HomePage(accountId: user.id),
-      ));
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('註冊失敗'),
-        backgroundColor: Colors.red,
-      ));
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: FractionallySizedBox(
-        heightFactor: 0.9,
+        heightFactor: 0.9, // Adjust the height factor to move the form upwards or downwards
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32.0),
@@ -318,3 +319,37 @@ class _SignupCardState extends State<SignupCard> {
     );
   }
 }
+
+
+// 舊的資料庫連線資訊，目前已統整到 'db/db.dart';
+// class DatabaseService {
+//   static final DatabaseService _instance = DatabaseService._internal();
+//   MySqlConnection? _connection;
+
+//   factory DatabaseService() {
+//     return _instance;
+//   }
+
+//   DatabaseService._internal();
+
+//   Future<MySqlConnection> get connection async {
+//     if (_connection == null) {
+//       final settings = ConnectionSettings(
+//         host: 'recipe.mysql.database.azure.com',
+//         port: 3306,
+//         user: 'recipe',
+//         password: '112_RGPT',
+//         db: 'recipedb',
+        
+//       );
+//       _connection = await MySqlConnection.connect(settings);
+//     }
+//     return _connection!;
+//   }
+
+//   Future<void> closeConnection() async {
+//     await _connection?.close();
+//     _connection = null;
+//   }
+// }
+

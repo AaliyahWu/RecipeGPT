@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:recipe_gpt/user/user_provider.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:recipe_gpt/homepage.dart';
+// import 'screen/openai_entry_screen.dart';
+import 'package:recipe_gpt/login.dart';
 import 'package:recipe_gpt/login/splash.dart';
 
 void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => UserProvider(),
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // title: 'Flutter Demo',
       initialRoute: '/',
       routes: {
-        // Add any additional routes here
+        // '/openai': (context) => const OpenAIEntryScreen(), //新增連到食譜產生畫面的路徑
       },
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: false, //右上角紅色東東去掉
       home: MealPlannerSplashScreen(),
+      //home: HomePage(),
     );
   }
 }
+
