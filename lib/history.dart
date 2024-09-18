@@ -120,6 +120,21 @@ class HistoryPage extends StatelessWidget {
                       hintText: '在這裡寫下你的備註...',
                     ),
                   ),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Spacer(), // 這個 Spacer 會將按鈕推到右邊
+                      ElevatedButton(
+                        onPressed: () {
+                          // 這裡加入儲存備註的邏輯
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('備註已儲存')),
+                          );
+                        },
+                        child: Text('儲存'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
