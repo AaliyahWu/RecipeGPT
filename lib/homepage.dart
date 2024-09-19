@@ -9,6 +9,7 @@ import 'package:recipe_gpt/services/openai/chat_response.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
 import 'package:recipe_gpt/camerafunction.dart';
 import 'package:recipe_gpt/history.dart';
+import 'package:mysql1/mysql1.dart';
 import 'package:recipe_gpt/db/db.dart';
 
 void main() => runApp(MaterialApp(home: LoginCard()));
@@ -25,7 +26,7 @@ class HomePage extends StatefulWidget {
 class PopularItem {
   final String imageUrl;
   final String title;
-  final double rating;
+  final String rating;
 
   PopularItem(
       {required this.imageUrl, required this.title, required this.rating});
@@ -38,9 +39,11 @@ class _HomePageState extends State<HomePage> {
   String userInput = '';
   TextEditingController _controller = TextEditingController();
   List<String> userInputList = [];
+  List<PopularItem> popularItems = [];
   @override
   void initState() {
     super.initState();
+    _loadTopRecipes();
     _loadPreferences(); // Load preferences when the page is opened
   }
 
@@ -75,6 +78,31 @@ class _HomePageState extends State<HomePage> {
       body: _buildBody(),
     );
   }
+
+  // Method to fetch top 3 recipes from the database based on 'share' column
+  Future<void> _loadTopRecipes() async {
+    try {
+      var conn = await DatabaseService().connection;
+      var results = await conn.query(
+        'SELECT recipeName, rating, url FROM recipedb.recipes ORDER BY shared DESC LIMIT 3',
+      );
+
+      setState(() {
+        popularItems = results
+            .map((row) => PopularItem(
+                  imageUrl: row['url'], // URL for the image
+                  title: row['recipeName'], // Title of the recipe
+                  rating: row['rating'], // Rating of the recipe
+                ))
+            .toList();
+      });
+
+      print('Top recipes loaded from database.');
+    } catch (e) {
+      print('Error loading recipes from database: $e');
+    }
+  }
+
   Future<void> _savePreferenceToDatabase(String preference) async {
     try {
       var conn = await DatabaseService().connection;
@@ -449,217 +477,387 @@ class _HomePageState extends State<HomePage> {
   
 
       case 2:
-        List<PopularItem> dummyPopularItems() {
-          return [
-            PopularItem(
-              imageUrl: 'assets/food/food1.jpg',
-              title: '番茄炒蛋',
-              rating: 8.8,
-            ),
-            PopularItem(
-              imageUrl: 'assets/food/food2.jpg',
-              title: '牛肉炒飯',
-              rating: 8.1,
-            ),
-            PopularItem(
-              imageUrl: 'assets/food/food3.jpg',
-              title: '炒高麗菜',
-              rating: 9.2,
-            ),
-            // Add more dummy data as needed
-          ];
-        }
+        // List<PopularItem> dummyPopularItems() {
+        //   return [
+        //     PopularItem(
+        //       imageUrl: 'assets/food/food1.jpg',
+        //       title: '番茄炒蛋',
+        //       rating: 8.8,
+        //     ),
+        //     PopularItem(
+        //       imageUrl: 'assets/food/food2.jpg',
+        //       title: '牛肉炒飯',
+        //       rating: 8.1,
+        //     ),
+        //     PopularItem(
+        //       imageUrl: 'assets/food/food3.jpg',
+        //       title: '炒高麗菜',
+        //       rating: 9.2,
+        //     ),
+        //     // Add more dummy data as needed
+        //   ];
+        // }
 
         return Container(
-          color: Color(0xFFF1E9E6),
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              Container(
-                // 新加的 Container 包裹原始的 Column
-                child: Column(
-                  children: [
-                    SizedBox(height: 40),
-                    Text(
-                      '精選食譜',
-                      style: TextStyle(
-                        fontSize: 24.0,
-                        fontWeight: FontWeight.bold,
+      color: Color(0xFFF1E9E6),
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            child: Column(
+              children: [
+                SizedBox(height: 40),
+                Text(
+                  '精選食譜',
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
+                if (popularItems.isNotEmpty) // Only display carousel if items are loaded
+                  Container(
+                    child: CarouselSlider(
+                      options: CarouselOptions(
+                        height: 250.0,
+                        autoPlay: true,
+                        enlargeCenterPage: true,
+                        aspectRatio: 16 / 9,
+                        autoPlayCurve: Curves.fastOutSlowIn,
+                        enableInfiniteScroll: true,
+                        autoPlayAnimationDuration: Duration(milliseconds: 800),
+                        viewportFraction: 0.8,
                       ),
-                    ),
-                    SizedBox(height: 10),
-                    Container(
-                      child: CarouselSlider(
-                        options: CarouselOptions(
-                          height: 250.0,
-                          autoPlay: true,
-                          enlargeCenterPage: true,
-                          aspectRatio: 16 / 9,
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          enableInfiniteScroll: true,
-                          autoPlayAnimationDuration:
-                              Duration(milliseconds: 800),
-                          viewportFraction: 0.8,
-                        ),
-                        items: [
-                          {'image': 'assets/food/food4.jpg', 'title': '雞肉沙拉'},
-                          {'image': 'assets/food/food5.jpg', 'title': '蔬菜湯'},
-                          {'image': 'assets/food/food6.jpg', 'title': '早餐水果拼盤'},
-                        ].map((item) {
-                          final imageUrl = item['image'] ?? '';
-                          final title = item['title'] ?? '';
-
-                          return Builder(
-                            builder: (BuildContext context) {
-                              return Container(
-                                width: MediaQuery.of(context).size.width,
-                                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(imageUrl),
-                                            fit: BoxFit.cover,
-                                          ),
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text(
-                                      title,
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    InkResponse(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PickImage(accountId: widget.accountId),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        //foregroundColor: Colors.white,
-                        width: 300,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15), // 圓角
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              //offset: Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.asset('assets/Camera.jpg',
-                              fit: BoxFit.cover),
-                        ),
-                      ),
-                    ),
-                    
-                    SizedBox(height: 20),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        '    最近做過~',
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    Container(
-                      height: 125,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: dummyPopularItems()
-                            .length, // 使用預先定義的假數據列表的長度 注意這裡調用了 dummyPopularItems 函數並使用其返回值的長度
-                        itemBuilder: (context, index) {
-                          PopularItem item = dummyPopularItems()[
-                              index]; // 注意這裡也調用了 dummyPopularItems 函數並使用其返回值的索引
-                          return Padding(
-                            padding: EdgeInsets.only(left: 10), // 調整左邊填充量
-                            child: Center(
-                              child: Container(
-                                width: 100,
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 4), // 圖片間間隔
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: Image.asset(
-                                          item.imageUrl,
+                      items: popularItems.map((item) {
+                        return Builder(
+                          builder: (BuildContext context) {
+                            return Container(
+                              width: MediaQuery.of(context).size.width,
+                              margin: EdgeInsets.symmetric(horizontal: 5.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: NetworkImage(item.imageUrl), // Load image from URL
                                           fit: BoxFit.cover,
                                         ),
+                                        borderRadius: BorderRadius.circular(10.0),
                                       ),
                                     ),
-                                    SizedBox(height: 5),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    item.title,
+                                    style: TextStyle(
+                                      fontSize: 16.0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                SizedBox(height: 20),
+                InkResponse(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PickImage(accountId: widget.accountId),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 300,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15), // 圓角
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Image.asset('assets/Camera.jpg', fit: BoxFit.cover),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    '    最近做過~',
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15),
+                Container(
+                  height: 125,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: popularItems.length,
+                    itemBuilder: (context, index) {
+                      PopularItem item = popularItems[index];
+                      return Padding(
+                        padding: EdgeInsets.only(left: 10), // 調整左邊填充量
+                        child: Center(
+                          child: Container(
+                            width: 100,
+                            margin: EdgeInsets.symmetric(horizontal: 4), // 圖片間間隔
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      item.imageUrl,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  item.title,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.favorite,
+                                      color: Colors.red, // Change to red for a heart shape
+                                      size: 14,
+                                    ),
+                                    SizedBox(width: 4),
                                     Text(
-                                      item.title,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      '${item.rating}',
+                                      style: TextStyle(fontSize: 14),
                                     ),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.favorite,
-                                          color: Colors
-                                              .red, // Change to red for a heart shape
-                                          size: 14,
-                                        ),
-                                        SizedBox(width: 4),
-                                        Text(
-                                          '${item.rating}' + '',
-                                          style: TextStyle(fontSize: 14),
-                                        ),
-                                      ],
-                                    ),
-                                    
                                   ],
                                 ),
-                              ),
+                              ],
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    Expanded(
-                      child: SizedBox(),
-                    ),
-                  ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: SizedBox(),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+        // return Container(
+        //   color: Color(0xFFF1E9E6),
+        //   child: Stack(
+        //     alignment: Alignment.bottomCenter,
+        //     children: [
+        //       Container(
+        //         // 新加的 Container 包裹原始的 Column
+        //         child: Column(
+        //           children: [
+        //             SizedBox(height: 40),
+        //             Text(
+        //               '精選食譜',
+        //               style: TextStyle(
+        //                 fontSize: 24.0,
+        //                 fontWeight: FontWeight.bold,
+        //               ),
+        //             ),
+        //             SizedBox(height: 10),
+        //             Container(
+        //               child: CarouselSlider(
+        //                 options: CarouselOptions(
+        //                   height: 250.0,
+        //                   autoPlay: true,
+        //                   enlargeCenterPage: true,
+        //                   aspectRatio: 16 / 9,
+        //                   autoPlayCurve: Curves.fastOutSlowIn,
+        //                   enableInfiniteScroll: true,
+        //                   autoPlayAnimationDuration:
+        //                       Duration(milliseconds: 800),
+        //                   viewportFraction: 0.8,
+        //                 ),
+        //                 items: [
+        //                   {'image': 'assets/food/food4.jpg', 'title': '雞肉沙拉'},
+        //                   {'image': 'assets/food/food5.jpg', 'title': '蔬菜湯'},
+        //                   {'image': 'assets/food/food6.jpg', 'title': '早餐水果拼盤'},
+        //                 ].map((item) {
+        //                   final imageUrl = item['image'] ?? '';
+        //                   final title = item['title'] ?? '';
+
+        //                   return Builder(
+        //                     builder: (BuildContext context) {
+        //                       return Container(
+        //                         width: MediaQuery.of(context).size.width,
+        //                         margin: EdgeInsets.symmetric(horizontal: 5.0),
+        //                         child: Column(
+        //                           children: [
+        //                             Expanded(
+        //                               child: Container(
+        //                                 decoration: BoxDecoration(
+        //                                   image: DecorationImage(
+        //                                     image: AssetImage(imageUrl),
+        //                                     fit: BoxFit.cover,
+        //                                   ),
+        //                                   borderRadius:
+        //                                       BorderRadius.circular(10.0),
+        //                                 ),
+        //                               ),
+        //                             ),
+        //                             SizedBox(height: 10),
+        //                             Text(
+        //                               title,
+        //                               style: TextStyle(
+        //                                 fontSize: 16.0,
+        //                               ),
+        //                             ),
+        //                           ],
+        //                         ),
+        //                       );
+        //                     },
+        //                   );
+        //                 }).toList(),
+        //               ),
+        //             ),
+        //             SizedBox(height: 20),
+        //             InkResponse(
+        //               onTap: () {
+        //                 Navigator.push(
+        //                   context,
+        //                   MaterialPageRoute(
+        //                     builder: (context) =>
+        //                         PickImage(accountId: widget.accountId),
+        //                   ),
+        //                 );
+        //               },
+        //               child: Container(
+        //                 //foregroundColor: Colors.white,
+        //                 width: 300,
+        //                 height: 140,
+        //                 decoration: BoxDecoration(
+        //                   borderRadius: BorderRadius.circular(15), // 圓角
+        //                   boxShadow: [
+        //                     BoxShadow(
+        //                       color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
+        //                       spreadRadius: 5,
+        //                       blurRadius: 7,
+        //                       //offset: Offset(0, 3),
+        //                     ),
+        //                   ],
+        //                 ),
+        //                 child: ClipRRect(
+        //                   borderRadius: BorderRadius.circular(15),
+        //                   child: Image.asset('assets/Camera.jpg',
+        //                       fit: BoxFit.cover),
+        //                 ),
+        //               ),
+        //             ),
+                    
+        //             SizedBox(height: 20),
+        //             Container(
+        //               alignment: Alignment.centerLeft,
+        //               child: Text(
+        //                 '    最近做過~',
+        //                 style: TextStyle(
+        //                   fontSize: 20.0,
+        //                   fontWeight: FontWeight.bold,
+        //                 ),
+        //               ),
+        //             ),
+        //             SizedBox(height: 15),
+        //             Container(
+        //               height: 125,
+        //               child: ListView.builder(
+        //                 scrollDirection: Axis.horizontal,
+        //                 itemCount: dummyPopularItems()
+        //                     .length, // 使用預先定義的假數據列表的長度 注意這裡調用了 dummyPopularItems 函數並使用其返回值的長度
+        //                 itemBuilder: (context, index) {
+        //                   PopularItem item = dummyPopularItems()[
+        //                       index]; // 注意這裡也調用了 dummyPopularItems 函數並使用其返回值的索引
+        //                   return Padding(
+        //                     padding: EdgeInsets.only(left: 10), // 調整左邊填充量
+        //                     child: Center(
+        //                       child: Container(
+        //                         width: 100,
+        //                         margin: EdgeInsets.symmetric(
+        //                             horizontal: 4), // 圖片間間隔
+        //                         child: Column(
+        //                           crossAxisAlignment: CrossAxisAlignment.start,
+        //                           children: [
+        //                             Expanded(
+        //                               child: ClipRRect(
+        //                                 borderRadius: BorderRadius.circular(10),
+        //                                 child: Image.asset(
+        //                                   item.imageUrl,
+        //                                   fit: BoxFit.cover,
+        //                                 ),
+        //                               ),
+        //                             ),
+        //                             SizedBox(height: 5),
+        //                             Text(
+        //                               item.title,
+        //                               style: TextStyle(
+        //                                 fontSize: 14,
+        //                                 fontWeight: FontWeight.bold,
+        //                               ),
+        //                             ),
+        //                             Row(
+        //                               children: [
+        //                                 Icon(
+        //                                   Icons.favorite,
+        //                                   color: Colors
+        //                                       .red, // Change to red for a heart shape
+        //                                   size: 14,
+        //                                 ),
+        //                                 SizedBox(width: 4),
+        //                                 Text(
+        //                                   '${item.rating}' + '',
+        //                                   style: TextStyle(fontSize: 14),
+        //                                 ),
+        //                               ],
+        //                             ),
+                                    
+        //                           ],
+        //                         ),
+        //                       ),
+        //                     ),
+        //                   );
+        //                 },
+        //               ),
+        //             ),
+        //             Expanded(
+        //               child: SizedBox(),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
 
              
-            ],
-          ),
-        );
+        //     ],
+        //   ),
+        // );
 
       case 3:
         List<Map<String, dynamic>> historicalRecipes = [
