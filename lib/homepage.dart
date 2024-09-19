@@ -40,9 +40,11 @@ class _HomePageState extends State<HomePage> {
   TextEditingController _controller = TextEditingController();
   List<String> userInputList = [];
   List<PopularItem> popularItems = [];
+  List<PopularItem> recentItems = [];
   @override
   void initState() {
     super.initState();
+    _loadRecentRecipes();
     _loadTopRecipes();
     _loadPreferences(); // Load preferences when the page is opened
   }
@@ -77,6 +79,30 @@ class _HomePageState extends State<HomePage> {
       ),
       body: _buildBody(),
     );
+  }
+
+  Future<void> _loadRecentRecipes() async {
+    try {
+      var conn = await DatabaseService().connection;
+      var results = await conn.query(
+        'SELECT recipeName, rating, url FROM recipedb.recipes WHERE accountId = ? ORDER BY createDate DESC LIMIT 4',
+        [widget.accountId], // Use the accountId to filter
+      );
+
+      setState(() {
+        recentItems = results
+            .map((row) => PopularItem(
+                  imageUrl: row['url'], // URL for the image
+                  title: row['recipeName'], // Title of the recipe
+                  rating: row['rating'], // Rating of the recipe
+                ))
+            .toList();
+      });
+
+      print('Recent recipes loaded for accountId: ${widget.accountId}');
+    } catch (e) {
+      print('Error loading recent recipes from database: $e');
+    }
   }
 
   // Method to fetch top 3 recipes from the database based on 'share' column
@@ -603,61 +629,64 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 SizedBox(height: 15),
-                Container(
-                  height: 125,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: popularItems.length,
-                    itemBuilder: (context, index) {
-                      PopularItem item = popularItems[index];
-                      return Padding(
-                        padding: EdgeInsets.only(left: 10), // 調整左邊填充量
-                        child: Center(
-                          child: Container(
-                            width: 100,
-                            margin: EdgeInsets.symmetric(horizontal: 4), // 圖片間間隔
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: Image.network(
-                                      item.imageUrl,
-                                      fit: BoxFit.cover,
+                if (recentItems.isNotEmpty)
+                  Container(
+                    height: 125,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: recentItems.length,
+                      itemBuilder: (context, index) {
+                        PopularItem item = recentItems[index];
+                        return Padding(
+                          padding: EdgeInsets.only(left: 10), // Adjust left padding
+                          child: Center(
+                            child: Container(
+                              width: 100,
+                              margin: EdgeInsets.symmetric(horizontal: 4), // Spacing between images
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.network(
+                                        item.imageUrl,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  item.title,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                                  SizedBox(height: 5),
+                                  Text(
+                                    item.title,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.favorite,
-                                      color: Colors.red, // Change to red for a heart shape
-                                      size: 14,
-                                    ),
-                                    SizedBox(width: 4),
-                                    Text(
-                                      '${item.rating}',
-                                      style: TextStyle(fontSize: 14),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.favorite,
+                                        color: Colors.red, // Change to red for a heart shape
+                                        size: 14,
+                                      ),
+                                      SizedBox(width: 4),
+                                      Text(
+                                        '${item.rating}',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                        );
+                      },
+                    ),
+                  )
+                else
+                  Text('No recent recipes found.'),
                 Expanded(
                   child: SizedBox(),
                 ),
