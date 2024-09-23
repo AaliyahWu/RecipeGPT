@@ -686,7 +686,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   )
                 else
-                  Text('No recent recipes found.'),
+                  Text('目前還沒生成過任何食譜～'),
                 Expanded(
                   child: SizedBox(),
                 ),
