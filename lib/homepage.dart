@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-   Future<void> _loadPreferences() async {
+  Future<void> _loadPreferences() async {
     try {
       var conn = await DatabaseService().connection;
 
@@ -194,6 +194,13 @@ class _HomePageState extends State<HomePage> {
                     const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
                 child: Column(
                   children: [
+                    SizedBox(height: 20),
+                    Text(
+                      '社群',
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Container(
@@ -353,7 +360,7 @@ class _HomePageState extends State<HomePage> {
                               Spacer(),
                               Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8.0, vertical: 8.0),
+                                    horizontal: 6.0, vertical: 2.0),
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
@@ -389,118 +396,116 @@ class _HomePageState extends State<HomePage> {
         );
 
       case 1:
-      return Container(
-        color: Color(0xFFF1E9E6), // Background color of the container
-        padding: EdgeInsets.all(16.0), // Padding for the container
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            Text(
-              '飲食偏好',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      child: TextFormField(
-                        controller: _controller,
-                        decoration: InputDecoration(
-                          hintText: '輸入偏好',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(color: Color(0xFFF2B892)),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(color: Color(0xFFF2B892)),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                            borderSide: BorderSide(color: Color(0xFFF2B892)),
-                          ),
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 20),
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            userInput = value;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Container(
-                    height: 45,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFF2B892),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                      ),
-                      onPressed: userInput.isNotEmpty
-                          ? () {
-                              setState(() {
-                                userInputList.add(userInput);
-                                _savePreferenceToDatabase(userInput);
-                                _controller.clear();
-                                userInput = '';
-                              });
-                            }
-                          : null,
-                      child: Icon(Icons.add, color: Colors.white),
-                    ),
-                  ),
-                ],
+        return Container(
+          color: Color(0xFFF1E9E6), // Background color of the container
+          padding: EdgeInsets.all(16.0), // Padding for the container
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 20),
+              Text(
+                '飲食偏好',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: userInputList.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 8.0),
-                    child: Card(
-                      color: Color(0xFFFFFAF5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.all(10),
-                        title: Text(
-                          userInputList[index],
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                        trailing: IconButton(
-                          icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
-                          onPressed: () {
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 50,
+                        child: TextFormField(
+                          controller: _controller,
+                          decoration: InputDecoration(
+                            hintText: '輸入偏好',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                              borderSide: BorderSide(color: Color(0xFFF2B892)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                              borderSide: BorderSide(color: Color(0xFFF2B892)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15.0),
+                              borderSide: BorderSide(color: Color(0xFFF2B892)),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                          ),
+                          onChanged: (value) {
                             setState(() {
-                              _deletePreferenceFromDatabase(userInputList[index]);
-                              userInputList.removeAt(index);
+                              userInput = value;
                             });
                           },
                         ),
                       ),
                     ),
-                  );
-                },
+                    SizedBox(width: 10),
+                    Container(
+                      height: 45,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFF2B892),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                        ),
+                        onPressed: userInput.isNotEmpty
+                            ? () {
+                                setState(() {
+                                  userInputList.add(userInput);
+                                  _savePreferenceToDatabase(userInput);
+                                  _controller.clear();
+                                  userInput = '';
+                                });
+                              }
+                            : null,
+                        child: Icon(Icons.add, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        
-      );
-    
-  
+              SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: userInputList.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0, vertical: 8.0),
+                      child: Card(
+                        color: Color(0xFFFFFAF5),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.all(10),
+                          title: Text(
+                            userInputList[index],
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Color(0xFFF2B892)),
+                            onPressed: () {
+                              setState(() {
+                                _deletePreferenceFromDatabase(
+                                    userInputList[index]);
+                                userInputList.removeAt(index);
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
 
       case 2:
         // List<PopularItem> dummyPopularItems() {
@@ -525,368 +530,378 @@ class _HomePageState extends State<HomePage> {
         // }
 
         return Container(
-      color: Color(0xFFF1E9E6),
-      child: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          Container(
-            child: Column(
-              children: [
-                SizedBox(height: 40),
-                Text(
-                  '精選食譜',
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 10),
-                if (popularItems.isNotEmpty) // Only display carousel if items are loaded
-                  Container(
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                        height: 250.0,
-                        autoPlay: true,
-                        enlargeCenterPage: true,
-                        aspectRatio: 16 / 9,
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        enableInfiniteScroll: true,
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        viewportFraction: 0.8,
+          color: Color(0xFFF1E9E6),
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              Container(
+                child: Column(
+                  children: [
+                    SizedBox(height: 40),
+                    Text(
+                      '精選食譜',
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
                       ),
-                      items: popularItems.map((item) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin: EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: NetworkImage(item.imageUrl), // Load image from URL
-                                          fit: BoxFit.cover,
-                                        ),
-                                        borderRadius: BorderRadius.circular(10.0),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    item.title,
-                                    style: TextStyle(
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
                     ),
-                  ),
-                SizedBox(height: 20),
-                InkResponse(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PickImage(accountId: widget.accountId),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 300,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15), // 圓角
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset('assets/Camera.jpg', fit: BoxFit.cover),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '    最近做過~',
-                    style: TextStyle(
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15),
-                if (recentItems.isNotEmpty)
-                  Container(
-                    height: 125,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: recentItems.length,
-                      itemBuilder: (context, index) {
-                        PopularItem item = recentItems[index];
-                        return Padding(
-                          padding: EdgeInsets.only(left: 10), // Adjust left padding
-                          child: Center(
-                            child: Container(
-                              width: 100,
-                              margin: EdgeInsets.symmetric(horizontal: 4), // Spacing between images
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.network(
-                                        item.imageUrl,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 5),
-                                  Text(
-                                    item.title,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Row(
+                    SizedBox(height: 10),
+                    if (popularItems
+                        .isNotEmpty) // Only display carousel if items are loaded
+                      Container(
+                        child: CarouselSlider(
+                          options: CarouselOptions(
+                            height: 250.0,
+                            autoPlay: true,
+                            enlargeCenterPage: true,
+                            aspectRatio: 16 / 9,
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            enableInfiniteScroll: true,
+                            autoPlayAnimationDuration:
+                                Duration(milliseconds: 800),
+                            viewportFraction: 0.8,
+                          ),
+                          items: popularItems.map((item) {
+                            return Builder(
+                              builder: (BuildContext context) {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  margin: EdgeInsets.symmetric(horizontal: 5.0),
+                                  child: Column(
                                     children: [
-                                      Icon(
-                                        Icons.favorite,
-                                        color: Colors.red, // Change to red for a heart shape
-                                        size: 14,
+                                      Expanded(
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                              image: NetworkImage(item
+                                                  .imageUrl), // Load image from URL
+                                              fit: BoxFit.cover,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                        ),
                                       ),
-                                      SizedBox(width: 4),
+                                      SizedBox(height: 10),
                                       Text(
-                                        '${item.rating}',
-                                        style: TextStyle(fontSize: 14),
+                                        item.title,
+                                        style: TextStyle(
+                                          fontSize: 16.0,
+                                        ),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                            ),
+                                );
+                              },
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    SizedBox(height: 20),
+                    InkResponse(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                PickImage(accountId: widget.accountId),
                           ),
                         );
                       },
+                      child: Container(
+                        width: 300,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15), // 圓角
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
+                              spreadRadius: 5,
+                              blurRadius: 7,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.asset('assets/Camera.jpg',
+                              fit: BoxFit.cover),
+                        ),
+                      ),
                     ),
-                  )
-                else
-                  Text('目前還沒生成過任何食譜～'),
-                Expanded(
-                  child: SizedBox(),
+                    SizedBox(height: 20),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        '    最近做過~',
+                        style: TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 15),
+                    if (recentItems.isNotEmpty)
+                      Container(
+                        height: 125,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: recentItems.length,
+                          itemBuilder: (context, index) {
+                            PopularItem item = recentItems[index];
+                            return Padding(
+                              padding: EdgeInsets.only(
+                                  left: 10), // Adjust left padding
+                              child: Center(
+                                child: Container(
+                                  width: 100,
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 4), // Spacing between images
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: Image.network(
+                                            item.imageUrl,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Text(
+                                        item.title,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.favorite,
+                                            color: Colors
+                                                .red, // Change to red for a heart shape
+                                            size: 14,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            '${item.rating}',
+                                            style: TextStyle(fontSize: 14),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      Text('目前還沒生成過任何食譜～'),
+                    Expanded(
+                      child: SizedBox(),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
 
-        // return Container(
-        //   color: Color(0xFFF1E9E6),
-        //   child: Stack(
-        //     alignment: Alignment.bottomCenter,
-        //     children: [
-        //       Container(
-        //         // 新加的 Container 包裹原始的 Column
-        //         child: Column(
-        //           children: [
-        //             SizedBox(height: 40),
-        //             Text(
-        //               '精選食譜',
-        //               style: TextStyle(
-        //                 fontSize: 24.0,
-        //                 fontWeight: FontWeight.bold,
-        //               ),
-        //             ),
-        //             SizedBox(height: 10),
-        //             Container(
-        //               child: CarouselSlider(
-        //                 options: CarouselOptions(
-        //                   height: 250.0,
-        //                   autoPlay: true,
-        //                   enlargeCenterPage: true,
-        //                   aspectRatio: 16 / 9,
-        //                   autoPlayCurve: Curves.fastOutSlowIn,
-        //                   enableInfiniteScroll: true,
-        //                   autoPlayAnimationDuration:
-        //                       Duration(milliseconds: 800),
-        //                   viewportFraction: 0.8,
-        //                 ),
-        //                 items: [
-        //                   {'image': 'assets/food/food4.jpg', 'title': '雞肉沙拉'},
-        //                   {'image': 'assets/food/food5.jpg', 'title': '蔬菜湯'},
-        //                   {'image': 'assets/food/food6.jpg', 'title': '早餐水果拼盤'},
-        //                 ].map((item) {
-        //                   final imageUrl = item['image'] ?? '';
-        //                   final title = item['title'] ?? '';
+      // return Container(
+      //   color: Color(0xFFF1E9E6),
+      //   child: Stack(
+      //     alignment: Alignment.bottomCenter,
+      //     children: [
+      //       Container(
+      //         // 新加的 Container 包裹原始的 Column
+      //         child: Column(
+      //           children: [
+      //             SizedBox(height: 40),
+      //             Text(
+      //               '精選食譜',
+      //               style: TextStyle(
+      //                 fontSize: 24.0,
+      //                 fontWeight: FontWeight.bold,
+      //               ),
+      //             ),
+      //             SizedBox(height: 10),
+      //             Container(
+      //               child: CarouselSlider(
+      //                 options: CarouselOptions(
+      //                   height: 250.0,
+      //                   autoPlay: true,
+      //                   enlargeCenterPage: true,
+      //                   aspectRatio: 16 / 9,
+      //                   autoPlayCurve: Curves.fastOutSlowIn,
+      //                   enableInfiniteScroll: true,
+      //                   autoPlayAnimationDuration:
+      //                       Duration(milliseconds: 800),
+      //                   viewportFraction: 0.8,
+      //                 ),
+      //                 items: [
+      //                   {'image': 'assets/food/food4.jpg', 'title': '雞肉沙拉'},
+      //                   {'image': 'assets/food/food5.jpg', 'title': '蔬菜湯'},
+      //                   {'image': 'assets/food/food6.jpg', 'title': '早餐水果拼盤'},
+      //                 ].map((item) {
+      //                   final imageUrl = item['image'] ?? '';
+      //                   final title = item['title'] ?? '';
 
-        //                   return Builder(
-        //                     builder: (BuildContext context) {
-        //                       return Container(
-        //                         width: MediaQuery.of(context).size.width,
-        //                         margin: EdgeInsets.symmetric(horizontal: 5.0),
-        //                         child: Column(
-        //                           children: [
-        //                             Expanded(
-        //                               child: Container(
-        //                                 decoration: BoxDecoration(
-        //                                   image: DecorationImage(
-        //                                     image: AssetImage(imageUrl),
-        //                                     fit: BoxFit.cover,
-        //                                   ),
-        //                                   borderRadius:
-        //                                       BorderRadius.circular(10.0),
-        //                                 ),
-        //                               ),
-        //                             ),
-        //                             SizedBox(height: 10),
-        //                             Text(
-        //                               title,
-        //                               style: TextStyle(
-        //                                 fontSize: 16.0,
-        //                               ),
-        //                             ),
-        //                           ],
-        //                         ),
-        //                       );
-        //                     },
-        //                   );
-        //                 }).toList(),
-        //               ),
-        //             ),
-        //             SizedBox(height: 20),
-        //             InkResponse(
-        //               onTap: () {
-        //                 Navigator.push(
-        //                   context,
-        //                   MaterialPageRoute(
-        //                     builder: (context) =>
-        //                         PickImage(accountId: widget.accountId),
-        //                   ),
-        //                 );
-        //               },
-        //               child: Container(
-        //                 //foregroundColor: Colors.white,
-        //                 width: 300,
-        //                 height: 140,
-        //                 decoration: BoxDecoration(
-        //                   borderRadius: BorderRadius.circular(15), // 圓角
-        //                   boxShadow: [
-        //                     BoxShadow(
-        //                       color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
-        //                       spreadRadius: 5,
-        //                       blurRadius: 7,
-        //                       //offset: Offset(0, 3),
-        //                     ),
-        //                   ],
-        //                 ),
-        //                 child: ClipRRect(
-        //                   borderRadius: BorderRadius.circular(15),
-        //                   child: Image.asset('assets/Camera.jpg',
-        //                       fit: BoxFit.cover),
-        //                 ),
-        //               ),
-        //             ),
-                    
-        //             SizedBox(height: 20),
-        //             Container(
-        //               alignment: Alignment.centerLeft,
-        //               child: Text(
-        //                 '    最近做過~',
-        //                 style: TextStyle(
-        //                   fontSize: 20.0,
-        //                   fontWeight: FontWeight.bold,
-        //                 ),
-        //               ),
-        //             ),
-        //             SizedBox(height: 15),
-        //             Container(
-        //               height: 125,
-        //               child: ListView.builder(
-        //                 scrollDirection: Axis.horizontal,
-        //                 itemCount: dummyPopularItems()
-        //                     .length, // 使用預先定義的假數據列表的長度 注意這裡調用了 dummyPopularItems 函數並使用其返回值的長度
-        //                 itemBuilder: (context, index) {
-        //                   PopularItem item = dummyPopularItems()[
-        //                       index]; // 注意這裡也調用了 dummyPopularItems 函數並使用其返回值的索引
-        //                   return Padding(
-        //                     padding: EdgeInsets.only(left: 10), // 調整左邊填充量
-        //                     child: Center(
-        //                       child: Container(
-        //                         width: 100,
-        //                         margin: EdgeInsets.symmetric(
-        //                             horizontal: 4), // 圖片間間隔
-        //                         child: Column(
-        //                           crossAxisAlignment: CrossAxisAlignment.start,
-        //                           children: [
-        //                             Expanded(
-        //                               child: ClipRRect(
-        //                                 borderRadius: BorderRadius.circular(10),
-        //                                 child: Image.asset(
-        //                                   item.imageUrl,
-        //                                   fit: BoxFit.cover,
-        //                                 ),
-        //                               ),
-        //                             ),
-        //                             SizedBox(height: 5),
-        //                             Text(
-        //                               item.title,
-        //                               style: TextStyle(
-        //                                 fontSize: 14,
-        //                                 fontWeight: FontWeight.bold,
-        //                               ),
-        //                             ),
-        //                             Row(
-        //                               children: [
-        //                                 Icon(
-        //                                   Icons.favorite,
-        //                                   color: Colors
-        //                                       .red, // Change to red for a heart shape
-        //                                   size: 14,
-        //                                 ),
-        //                                 SizedBox(width: 4),
-        //                                 Text(
-        //                                   '${item.rating}' + '',
-        //                                   style: TextStyle(fontSize: 14),
-        //                                 ),
-        //                               ],
-        //                             ),
-                                    
-        //                           ],
-        //                         ),
-        //                       ),
-        //                     ),
-        //                   );
-        //                 },
-        //               ),
-        //             ),
-        //             Expanded(
-        //               child: SizedBox(),
-        //             ),
-        //           ],
-        //         ),
-        //       ),
+      //                   return Builder(
+      //                     builder: (BuildContext context) {
+      //                       return Container(
+      //                         width: MediaQuery.of(context).size.width,
+      //                         margin: EdgeInsets.symmetric(horizontal: 5.0),
+      //                         child: Column(
+      //                           children: [
+      //                             Expanded(
+      //                               child: Container(
+      //                                 decoration: BoxDecoration(
+      //                                   image: DecorationImage(
+      //                                     image: AssetImage(imageUrl),
+      //                                     fit: BoxFit.cover,
+      //                                   ),
+      //                                   borderRadius:
+      //                                       BorderRadius.circular(10.0),
+      //                                 ),
+      //                               ),
+      //                             ),
+      //                             SizedBox(height: 10),
+      //                             Text(
+      //                               title,
+      //                               style: TextStyle(
+      //                                 fontSize: 16.0,
+      //                               ),
+      //                             ),
+      //                           ],
+      //                         ),
+      //                       );
+      //                     },
+      //                   );
+      //                 }).toList(),
+      //               ),
+      //             ),
+      //             SizedBox(height: 20),
+      //             InkResponse(
+      //               onTap: () {
+      //                 Navigator.push(
+      //                   context,
+      //                   MaterialPageRoute(
+      //                     builder: (context) =>
+      //                         PickImage(accountId: widget.accountId),
+      //                   ),
+      //                 );
+      //               },
+      //               child: Container(
+      //                 //foregroundColor: Colors.white,
+      //                 width: 300,
+      //                 height: 140,
+      //                 decoration: BoxDecoration(
+      //                   borderRadius: BorderRadius.circular(15), // 圓角
+      //                   boxShadow: [
+      //                     BoxShadow(
+      //                       color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
+      //                       spreadRadius: 5,
+      //                       blurRadius: 7,
+      //                       //offset: Offset(0, 3),
+      //                     ),
+      //                   ],
+      //                 ),
+      //                 child: ClipRRect(
+      //                   borderRadius: BorderRadius.circular(15),
+      //                   child: Image.asset('assets/Camera.jpg',
+      //                       fit: BoxFit.cover),
+      //                 ),
+      //               ),
+      //             ),
 
-             
-        //     ],
-        //   ),
-        // );
+      //             SizedBox(height: 20),
+      //             Container(
+      //               alignment: Alignment.centerLeft,
+      //               child: Text(
+      //                 '    最近做過~',
+      //                 style: TextStyle(
+      //                   fontSize: 20.0,
+      //                   fontWeight: FontWeight.bold,
+      //                 ),
+      //               ),
+      //             ),
+      //             SizedBox(height: 15),
+      //             Container(
+      //               height: 125,
+      //               child: ListView.builder(
+      //                 scrollDirection: Axis.horizontal,
+      //                 itemCount: dummyPopularItems()
+      //                     .length, // 使用預先定義的假數據列表的長度 注意這裡調用了 dummyPopularItems 函數並使用其返回值的長度
+      //                 itemBuilder: (context, index) {
+      //                   PopularItem item = dummyPopularItems()[
+      //                       index]; // 注意這裡也調用了 dummyPopularItems 函數並使用其返回值的索引
+      //                   return Padding(
+      //                     padding: EdgeInsets.only(left: 10), // 調整左邊填充量
+      //                     child: Center(
+      //                       child: Container(
+      //                         width: 100,
+      //                         margin: EdgeInsets.symmetric(
+      //                             horizontal: 4), // 圖片間間隔
+      //                         child: Column(
+      //                           crossAxisAlignment: CrossAxisAlignment.start,
+      //                           children: [
+      //                             Expanded(
+      //                               child: ClipRRect(
+      //                                 borderRadius: BorderRadius.circular(10),
+      //                                 child: Image.asset(
+      //                                   item.imageUrl,
+      //                                   fit: BoxFit.cover,
+      //                                 ),
+      //                               ),
+      //                             ),
+      //                             SizedBox(height: 5),
+      //                             Text(
+      //                               item.title,
+      //                               style: TextStyle(
+      //                                 fontSize: 14,
+      //                                 fontWeight: FontWeight.bold,
+      //                               ),
+      //                             ),
+      //                             Row(
+      //                               children: [
+      //                                 Icon(
+      //                                   Icons.favorite,
+      //                                   color: Colors
+      //                                       .red, // Change to red for a heart shape
+      //                                   size: 14,
+      //                                 ),
+      //                                 SizedBox(width: 4),
+      //                                 Text(
+      //                                   '${item.rating}' + '',
+      //                                   style: TextStyle(fontSize: 14),
+      //                                 ),
+      //                               ],
+      //                             ),
+
+      //                           ],
+      //                         ),
+      //                       ),
+      //                     ),
+      //                   );
+      //                 },
+      //               ),
+      //             ),
+      //             Expanded(
+      //               child: SizedBox(),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+
+      //     ],
+      //   ),
+      // );
 
       case 3:
         List<Map<String, dynamic>> historicalRecipes = [
@@ -938,7 +953,6 @@ class _HomePageState extends State<HomePage> {
             'description': '清爽可口的鮮蝦沙拉，滿滿的海鮮風味。',
             'rating': 8.9,
           },
-          
         ];
 
         return Container(
@@ -1135,8 +1149,6 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(fontSize: 16),
                       ),
                       SizedBox(width: 100),
-                    
-
                       ElevatedButton(
                         onPressed: () async {
                           // 點擊事件
@@ -1190,6 +1202,5 @@ class _HomePageState extends State<HomePage> {
       default:
         return Container();
     }
-    
   }
 }
