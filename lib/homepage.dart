@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'package:dio/dio.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:recipe_gpt/controller/pick_image.dart';
@@ -41,7 +45,10 @@ class _HomePageState extends State<HomePage> {
   List<String> userInputList = [];
   List<PopularItem> popularItems = [];
   List<PopularItem> recentItems = [];
-  // bool _isNotificationEnabled = false;
+  String profileImageUrl = ''; // Holds the profile image URL
+  File? _image; // Stores the selected image file
+
+  bool _isNotificationEnabled = false;
   String userName = 'Loading...'; // Placeholder for user name
   String userEmail = 'Loading...';
   @override
@@ -53,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     _loadPreferences(); // Load preferences when the page is opened
   }
 
-  bool _isNotificationEnabled = true; // 管理通知開關狀態(預設開)
+  // bool _isNotificationEnabled = true; // 管理通知開關狀態(預設開)
 
   @override
   Widget build(BuildContext context) {
@@ -85,27 +92,143 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+
   Future<void> _fetchUserInfo() async {
     try {
-      var conn = await DatabaseService().connection; // Establish a database connection
+      var conn = await DatabaseService().connection;
       var results = await conn.query(
-        'SELECT name, email FROM recipedb.accounts WHERE accountId = ?',
+        'SELECT name, email, profileImageUrl FROM recipedb.accounts WHERE accountId = ?',
         [widget.accountId],
       );
 
       if (results.isNotEmpty) {
         var row = results.first;
         setState(() {
-          userName = row['name']; // Update the user's name
-          userEmail = row['email'];   // Update the user's email
+          userName = row['name'];
+          userEmail = row['email'];
+          profileImageUrl = row['profileImageUrl'] ?? ''; // Load profile image
         });
       }
-
-      print('User info loaded for accountId: ${widget.accountId}');
     } catch (e) {
       print('Error loading user info: $e');
     }
   }
+
+  // Method to pick an image from the gallery
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      await _uploadImage(_image!); // Upload the selected image
+    }
+  }  
+
+Future<void> _uploadImage(File image) async {
+  try {
+    Dio dio = Dio();
+    FormData formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(image.path, filename: 'profile_${widget.accountId}.jpg'),
+      "accountId": widget.accountId.toString(), // Send the accountId with the upload
+    });
+
+    var response = await dio.post("http://152.42.163.75/upload.php", data: formData);
+    
+    // Print the full response for debugging
+    print('Response Status Code: ${response.statusCode}');
+    print('Response Data: ${response.data}'); // Check what the server returns
+
+    // Check the status code and response type
+    if (response.statusCode == 200) {
+      // Manually parse the response data
+      final responseData = jsonDecode(response.data); // Decode JSON string to Map
+      
+      // Check if responseData is a Map
+      if (responseData is Map<String, dynamic>) {
+        // Check if the keys we expect are present
+        if (responseData.containsKey('status') && responseData.containsKey('imageUrl')) {
+          if (responseData['status'] == 'success') {
+            String imageUrl = responseData['imageUrl'];
+            setState(() {
+              profileImageUrl = imageUrl;
+            });
+
+            // Update the profile image URL in the database
+            var conn = await DatabaseService().connection;
+            await conn.query(
+              'UPDATE accounts SET profileImageUrl = ? WHERE accountId = ?',
+              [imageUrl, widget.accountId],
+            );
+          } else {
+            print('Server Error: ${responseData['message']}');
+          }
+        } else {
+          print('Response does not contain expected keys: $responseData');
+        }
+      } else {
+        print('Unexpected response format: $responseData');
+      }
+    } else {
+      print('Server Error: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error uploading image: $e');
+  }
+}
+
+// Future<void> _uploadImage(File image) async {
+//   try {
+//     Dio dio = Dio();
+//     FormData formData = FormData.fromMap({
+//       "file": await MultipartFile.fromFile(image.path, filename: 'profile_${widget.accountId}.jpg'),
+//       "accountId": widget.accountId.toString(), // Send the accountId with the upload
+//     });
+
+//     // Post the form data to the server
+//     var response = await dio.post("http://152.42.163.75/upload.php", data: formData);
+    
+//     // Print the full response for debugging
+//     print('Response Status Code: ${response.statusCode}');
+//     print('Response Data: ${response.data}'); // Check what the server returns
+
+//     // Check the status code and response type
+//     if (response.statusCode == 200) {
+//       final responseData = response.data;
+
+//       // Check if responseData is a Map
+//       if (responseData is Map<String, dynamic>) {
+//         // Check if the keys we expect are present
+//         if (responseData.containsKey('status') && responseData.containsKey('imageUrl')) {
+//           if (responseData['status'] == 'success') {
+//             String imageUrl = responseData['imageUrl'];
+//             setState(() {
+//               profileImageUrl = imageUrl;
+//             });
+
+//             // Update the profile image URL in the database
+//             var conn = await DatabaseService().connection;
+//             await conn.query(
+//               'UPDATE accounts SET profileImageUrl = ? WHERE accountId = ?',
+//               [imageUrl, widget.accountId],
+//             );
+//           } else {
+//             print('Server Error: ${responseData['message']}');
+//           }
+//         } else {
+//           print('Response does not contain expected keys: $responseData');
+//         }
+//       } else {
+//         print('Unexpected response format: $responseData');
+//       }
+//     } else {
+//       print('Server Error: ${response.statusCode}');
+//     }
+//   } catch (e) {
+//     print('Error uploading image: $e');
+//   }
+// }
 
 
   Future<void> _loadRecentRecipes() async {
@@ -740,196 +863,6 @@ class _HomePageState extends State<HomePage> {
           ),
         );
 
-      // return Container(
-      //   color: Color(0xFFF1E9E6),
-      //   child: Stack(
-      //     alignment: Alignment.bottomCenter,
-      //     children: [
-      //       Container(
-      //         // 新加的 Container 包裹原始的 Column
-      //         child: Column(
-      //           children: [
-      //             SizedBox(height: 40),
-      //             Text(
-      //               '精選食譜',
-      //               style: TextStyle(
-      //                 fontSize: 24.0,
-      //                 fontWeight: FontWeight.bold,
-      //               ),
-      //             ),
-      //             SizedBox(height: 10),
-      //             Container(
-      //               child: CarouselSlider(
-      //                 options: CarouselOptions(
-      //                   height: 250.0,
-      //                   autoPlay: true,
-      //                   enlargeCenterPage: true,
-      //                   aspectRatio: 16 / 9,
-      //                   autoPlayCurve: Curves.fastOutSlowIn,
-      //                   enableInfiniteScroll: true,
-      //                   autoPlayAnimationDuration:
-      //                       Duration(milliseconds: 800),
-      //                   viewportFraction: 0.8,
-      //                 ),
-      //                 items: [
-      //                   {'image': 'assets/food/food4.jpg', 'title': '雞肉沙拉'},
-      //                   {'image': 'assets/food/food5.jpg', 'title': '蔬菜湯'},
-      //                   {'image': 'assets/food/food6.jpg', 'title': '早餐水果拼盤'},
-      //                 ].map((item) {
-      //                   final imageUrl = item['image'] ?? '';
-      //                   final title = item['title'] ?? '';
-
-      //                   return Builder(
-      //                     builder: (BuildContext context) {
-      //                       return Container(
-      //                         width: MediaQuery.of(context).size.width,
-      //                         margin: EdgeInsets.symmetric(horizontal: 5.0),
-      //                         child: Column(
-      //                           children: [
-      //                             Expanded(
-      //                               child: Container(
-      //                                 decoration: BoxDecoration(
-      //                                   image: DecorationImage(
-      //                                     image: AssetImage(imageUrl),
-      //                                     fit: BoxFit.cover,
-      //                                   ),
-      //                                   borderRadius:
-      //                                       BorderRadius.circular(10.0),
-      //                                 ),
-      //                               ),
-      //                             ),
-      //                             SizedBox(height: 10),
-      //                             Text(
-      //                               title,
-      //                               style: TextStyle(
-      //                                 fontSize: 16.0,
-      //                               ),
-      //                             ),
-      //                           ],
-      //                         ),
-      //                       );
-      //                     },
-      //                   );
-      //                 }).toList(),
-      //               ),
-      //             ),
-      //             SizedBox(height: 20),
-      //             InkResponse(
-      //               onTap: () {
-      //                 Navigator.push(
-      //                   context,
-      //                   MaterialPageRoute(
-      //                     builder: (context) =>
-      //                         PickImage(accountId: widget.accountId),
-      //                   ),
-      //                 );
-      //               },
-      //               child: Container(
-      //                 //foregroundColor: Colors.white,
-      //                 width: 300,
-      //                 height: 140,
-      //                 decoration: BoxDecoration(
-      //                   borderRadius: BorderRadius.circular(15), // 圓角
-      //                   boxShadow: [
-      //                     BoxShadow(
-      //                       color: Color(0xFFF2B892).withOpacity(0.6), // 周圍發光
-      //                       spreadRadius: 5,
-      //                       blurRadius: 7,
-      //                       //offset: Offset(0, 3),
-      //                     ),
-      //                   ],
-      //                 ),
-      //                 child: ClipRRect(
-      //                   borderRadius: BorderRadius.circular(15),
-      //                   child: Image.asset('assets/Camera.jpg',
-      //                       fit: BoxFit.cover),
-      //                 ),
-      //               ),
-      //             ),
-
-      //             SizedBox(height: 20),
-      //             Container(
-      //               alignment: Alignment.centerLeft,
-      //               child: Text(
-      //                 '    最近做過~',
-      //                 style: TextStyle(
-      //                   fontSize: 20.0,
-      //                   fontWeight: FontWeight.bold,
-      //                 ),
-      //               ),
-      //             ),
-      //             SizedBox(height: 15),
-      //             Container(
-      //               height: 125,
-      //               child: ListView.builder(
-      //                 scrollDirection: Axis.horizontal,
-      //                 itemCount: dummyPopularItems()
-      //                     .length, // 使用預先定義的假數據列表的長度 注意這裡調用了 dummyPopularItems 函數並使用其返回值的長度
-      //                 itemBuilder: (context, index) {
-      //                   PopularItem item = dummyPopularItems()[
-      //                       index]; // 注意這裡也調用了 dummyPopularItems 函數並使用其返回值的索引
-      //                   return Padding(
-      //                     padding: EdgeInsets.only(left: 10), // 調整左邊填充量
-      //                     child: Center(
-      //                       child: Container(
-      //                         width: 100,
-      //                         margin: EdgeInsets.symmetric(
-      //                             horizontal: 4), // 圖片間間隔
-      //                         child: Column(
-      //                           crossAxisAlignment: CrossAxisAlignment.start,
-      //                           children: [
-      //                             Expanded(
-      //                               child: ClipRRect(
-      //                                 borderRadius: BorderRadius.circular(10),
-      //                                 child: Image.asset(
-      //                                   item.imageUrl,
-      //                                   fit: BoxFit.cover,
-      //                                 ),
-      //                               ),
-      //                             ),
-      //                             SizedBox(height: 5),
-      //                             Text(
-      //                               item.title,
-      //                               style: TextStyle(
-      //                                 fontSize: 14,
-      //                                 fontWeight: FontWeight.bold,
-      //                               ),
-      //                             ),
-      //                             Row(
-      //                               children: [
-      //                                 Icon(
-      //                                   Icons.favorite,
-      //                                   color: Colors
-      //                                       .red, // Change to red for a heart shape
-      //                                   size: 14,
-      //                                 ),
-      //                                 SizedBox(width: 4),
-      //                                 Text(
-      //                                   '${item.rating}' + '',
-      //                                   style: TextStyle(fontSize: 14),
-      //                                 ),
-      //                               ],
-      //                             ),
-
-      //                           ],
-      //                         ),
-      //                       ),
-      //                     ),
-      //                   );
-      //                 },
-      //               ),
-      //             ),
-      //             Expanded(
-      //               child: SizedBox(),
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-
-      //     ],
-      //   ),
-      // );
-
       case 3:
         List<Map<String, dynamic>> historicalRecipes = [
           {
@@ -1087,7 +1020,9 @@ class _HomePageState extends State<HomePage> {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         fit: BoxFit.fill,
-                        image: AssetImage('assets/images.png'), // User avatar image
+                        image: profileImageUrl.isNotEmpty
+                          ? NetworkImage(profileImageUrl)
+                          : AssetImage('assets/images.png') as ImageProvider,
                       ),
                     ),
                     padding: const EdgeInsets.all(10),
@@ -1096,7 +1031,7 @@ class _HomePageState extends State<HomePage> {
                     bottom: 5,
                     right: 5,
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: _pickImage, // Trigger image picker on tap
                       child: Container(
                         width: 35,
                         height: 35,
@@ -1116,73 +1051,18 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(height: 10),
               Text(
-                userName, // Display the fetched user name
+                userName,
                 style: TextStyle(fontSize: 38),
               ),
               SizedBox(height: 0),
               Text(
-                userEmail, // Display the fetched user email
+                userEmail,
                 style: TextStyle(
                   fontSize: 10,
                   decoration: TextDecoration.underline,
                 ),
               ),
               SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '管理通知',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(width: 100),
-                  Transform.scale(
-                    scale: 0.6,
-                    child: Switch(
-                      value: _isNotificationEnabled,
-                      inactiveThumbColor: Color(0xFFF2B892),
-                      onChanged: (bool value) {
-                        setState(() {
-                          _isNotificationEnabled = value;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '找朋友',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  SizedBox(width: 100),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // Sharing functionality
-                    },
-                    child: Text(
-                      '分享',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFF2B892),
-                      foregroundColor: Colors.white,
-                      minimumSize: Size(52, 30),
-                      textStyle: TextStyle(
-                        letterSpacing: 0,
-                        fontSize: 13,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 40),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFF2B892),
@@ -1202,6 +1082,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  
     
         // return Scaffold(
         //   backgroundColor: Color(0xFFF1E9E6),
