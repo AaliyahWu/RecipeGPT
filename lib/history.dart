@@ -34,6 +34,7 @@ class HistoryPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Container(
+                      height: 250, // 設置固定高度
                       padding: EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -63,6 +64,7 @@ class HistoryPage extends StatelessWidget {
                   SizedBox(width: 16),
                   Expanded(
                     child: Container(
+                      height: 250, // 設置固定高度，與食材框框一致
                       padding: EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -97,7 +99,7 @@ class HistoryPage extends StatelessWidget {
             ),
             SizedBox(height: 16),
             Container(
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(9.0),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -120,7 +122,7 @@ class HistoryPage extends StatelessWidget {
                       hintText: '在這裡寫下你的備註...',
                     ),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 12),
                   Row(
                     children: [
                       Spacer(), // 這個 Spacer 會將按鈕推到右邊
