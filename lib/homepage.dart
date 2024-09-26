@@ -41,11 +41,15 @@ class _HomePageState extends State<HomePage> {
   List<String> userInputList = [];
   List<PopularItem> popularItems = [];
   List<PopularItem> recentItems = [];
+  // bool _isNotificationEnabled = false;
+  String userName = 'Loading...'; // Placeholder for user name
+  String userEmail = 'Loading...';
   @override
   void initState() {
     super.initState();
     _loadRecentRecipes();
     _loadTopRecipes();
+    _fetchUserInfo();
     _loadPreferences(); // Load preferences when the page is opened
   }
 
@@ -80,6 +84,29 @@ class _HomePageState extends State<HomePage> {
       body: _buildBody(),
     );
   }
+
+  Future<void> _fetchUserInfo() async {
+    try {
+      var conn = await DatabaseService().connection; // Establish a database connection
+      var results = await conn.query(
+        'SELECT name, email FROM recipedb.accounts WHERE accountId = ?',
+        [widget.accountId],
+      );
+
+      if (results.isNotEmpty) {
+        var row = results.first;
+        setState(() {
+          userName = row['name']; // Update the user's name
+          userEmail = row['email'];   // Update the user's email
+        });
+      }
+
+      print('User info loaded for accountId: ${widget.accountId}');
+    } catch (e) {
+      print('Error loading user info: $e');
+    }
+  }
+
 
   Future<void> _loadRecentRecipes() async {
     try {
@@ -1041,163 +1068,298 @@ class _HomePageState extends State<HomePage> {
         );
 
       case 4:
-        return Scaffold(
-          backgroundColor: Color(0xFFF1E9E6),
-          body: Padding(
-            padding: const EdgeInsets.only(top: 1.0),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
+      return Scaffold(
+      backgroundColor: Color(0xFFF1E9E6),
+      body: Padding(
+        padding: const EdgeInsets.only(top: 1.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Stack(
                 children: <Widget>[
-                  Stack(
-                    children: <Widget>[
-                      Container(
-                        width: 130,
-                        height: 130,
+                  Container(
+                    width: 130,
+                    height: 130,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 0.3),
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: AssetImage('assets/images.png'), // User avatar image
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(10),
+                  ),
+                  Positioned(
+                    bottom: 5,
+                    right: 5,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: Container(
+                        width: 35,
+                        height: 35,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 0.3),
+                          color: Color(0xFFF2B892),
                           shape: BoxShape.circle,
-                          image: DecorationImage(
-                            fit: BoxFit.fill,
-                            image: AssetImage('assets/images.png'),
-                          ),
                         ),
-                        padding: const EdgeInsets.all(10),
-                      ),
-                      Positioned(
-                        bottom: 5,
-                        right: 5,
-                        child: GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            width: 35,
-                            height: 35,
-                            decoration: BoxDecoration(
-                              color: Color(0xFFF2B892),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                          size: 20,
                         ),
                       ),
-                    ],
-                  ),
-                  // SizedBox(height: 10),
-                  Text(
-                    'Test',
-                    style: TextStyle(fontSize: 38),
-                  ),
-                  SizedBox(height: 0),
-                  Text(
-                    'test@test.com',
-                    style: TextStyle(
-                      fontSize: 10,
-                      decoration: TextDecoration.underline,
                     ),
-                  ),
-                  // SizedBox(height: 20),
-                  // ElevatedButton(
-                  //   style: ElevatedButton.styleFrom(
-                  //     backgroundColor: Color(0xFFDD8A62),
-                  //     padding:
-                  //         EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-                  //     textStyle: TextStyle(fontSize: 14),
-                  //   ),
-                  //   child: Text('編輯個人資料',
-                  //       // style: TextStyle(color: Color(0xFFDD8A62))),
-                  //       style: TextStyle(color: Colors.white)),
-                  //   onPressed: () {
-                  //     //
-                  //   },
-                  // ),
-                  SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '管理通知',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(width: 100),
-                      Transform.scale(
-                        scale: 0.6,
-                        child: Switch(
-                          value: _isNotificationEnabled,
-                          //activeColor: Color(0xFFDD8A62), // 這裡是開啟狀態下的顏色
-                          inactiveThumbColor: Color(0xFFF2B892), // 這裡是關閉狀態下的顏色
-                          //inactiveTrackColor: Color(0xFFF2B892), // 這裡是背景顏色
-                          onChanged: (bool value) {
-                            setState(() {
-                              _isNotificationEnabled = value;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        '找朋友',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(width: 100),
-                      ElevatedButton(
-                        onPressed: () async {
-                          // 點擊事件
-                        },
-                        child: Text(
-                          '分享',
-                          style: TextStyle(
-                            color: Colors.white, // 文字顏色
-                            // color: Colors.black, // 文字顏色
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFFF2B892),
-                          foregroundColor: Colors.white,
-                          minimumSize: Size(52, 30),
-                          textStyle: TextStyle(
-                            letterSpacing: 0,
-                            fontSize: 13,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 40),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFF2B892),
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 110, vertical: 10),
-                      textStyle: TextStyle(fontSize: 16),
-                    ),
-                    child:
-                        // Text('登出', style: TextStyle(color: Color(0xFFDD8A62))),
-                        Text('登出', style: TextStyle(color: Colors.white)),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
-                      );
-                    },
                   ),
                 ],
               ),
-            ),
+              SizedBox(height: 10),
+              Text(
+                userName, // Display the fetched user name
+                style: TextStyle(fontSize: 38),
+              ),
+              SizedBox(height: 0),
+              Text(
+                userEmail, // Display the fetched user email
+                style: TextStyle(
+                  fontSize: 10,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '管理通知',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(width: 100),
+                  Transform.scale(
+                    scale: 0.6,
+                    child: Switch(
+                      value: _isNotificationEnabled,
+                      inactiveThumbColor: Color(0xFFF2B892),
+                      onChanged: (bool value) {
+                        setState(() {
+                          _isNotificationEnabled = value;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '找朋友',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  SizedBox(width: 100),
+                  ElevatedButton(
+                    onPressed: () async {
+                      // Sharing functionality
+                    },
+                    child: Text(
+                      '分享',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFF2B892),
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(52, 30),
+                      textStyle: TextStyle(
+                        letterSpacing: 0,
+                        fontSize: 13,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 40),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFF2B892),
+                  padding: EdgeInsets.symmetric(horizontal: 110, vertical: 10),
+                  textStyle: TextStyle(fontSize: 16),
+                ),
+                child: Text('登出', style: TextStyle(color: Colors.white)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Login()),
+                  );
+                },
+              ),
+            ],
           ),
-        );
+        ),
+      ),
+    );
+    
+        // return Scaffold(
+        //   backgroundColor: Color(0xFFF1E9E6),
+        //   body: Padding(
+        //     padding: const EdgeInsets.only(top: 1.0),
+        //     child: Center(
+        //       child: Column(
+        //         mainAxisAlignment: MainAxisAlignment.center,
+        //         crossAxisAlignment: CrossAxisAlignment.center,
+        //         children: <Widget>[
+        //           Stack(
+        //             children: <Widget>[
+        //               Container(
+        //                 width: 130,
+        //                 height: 130,
+        //                 decoration: BoxDecoration(
+        //                   border: Border.all(color: Colors.black, width: 0.3),
+        //                   shape: BoxShape.circle,
+        //                   image: DecorationImage(
+        //                     fit: BoxFit.fill,
+        //                     image: AssetImage('assets/images.png'),
+        //                   ),
+        //                 ),
+        //                 padding: const EdgeInsets.all(10),
+        //               ),
+        //               Positioned(
+        //                 bottom: 5,
+        //                 right: 5,
+        //                 child: GestureDetector(
+        //                   onTap: () {},
+        //                   child: Container(
+        //                     width: 35,
+        //                     height: 35,
+        //                     decoration: BoxDecoration(
+        //                       color: Color(0xFFF2B892),
+        //                       shape: BoxShape.circle,
+        //                     ),
+        //                     child: Icon(
+        //                       Icons.edit,
+        //                       color: Colors.white,
+        //                       size: 20,
+        //                     ),
+        //                   ),
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //           // SizedBox(height: 10),
+        //           Text(
+        //             'Test',
+        //             style: TextStyle(fontSize: 38),
+        //           ),
+        //           SizedBox(height: 0),
+        //           Text(
+        //             'test@test.com',
+        //             style: TextStyle(
+        //               fontSize: 10,
+        //               decoration: TextDecoration.underline,
+        //             ),
+        //           ),
+        //           // SizedBox(height: 20),
+        //           // ElevatedButton(
+        //           //   style: ElevatedButton.styleFrom(
+        //           //     backgroundColor: Color(0xFFDD8A62),
+        //           //     padding:
+        //           //         EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+        //           //     textStyle: TextStyle(fontSize: 14),
+        //           //   ),
+        //           //   child: Text('編輯個人資料',
+        //           //       // style: TextStyle(color: Color(0xFFDD8A62))),
+        //           //       style: TextStyle(color: Colors.white)),
+        //           //   onPressed: () {
+        //           //     //
+        //           //   },
+        //           // ),
+        //           SizedBox(height: 30),
+        //           Row(
+        //             mainAxisAlignment: MainAxisAlignment.center,
+        //             children: [
+        //               Text(
+        //                 '管理通知',
+        //                 style: TextStyle(fontSize: 16),
+        //               ),
+        //               SizedBox(width: 100),
+        //               Transform.scale(
+        //                 scale: 0.6,
+        //                 child: Switch(
+        //                   value: _isNotificationEnabled,
+        //                   //activeColor: Color(0xFFDD8A62), // 這裡是開啟狀態下的顏色
+        //                   inactiveThumbColor: Color(0xFFF2B892), // 這裡是關閉狀態下的顏色
+        //                   //inactiveTrackColor: Color(0xFFF2B892), // 這裡是背景顏色
+        //                   onChanged: (bool value) {
+        //                     setState(() {
+        //                       _isNotificationEnabled = value;
+        //                     });
+        //                   },
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //           SizedBox(height: 20),
+        //           Row(
+        //             mainAxisAlignment: MainAxisAlignment.center,
+        //             children: [
+        //               Text(
+        //                 '找朋友',
+        //                 style: TextStyle(fontSize: 16),
+        //               ),
+        //               SizedBox(width: 100),
+        //               ElevatedButton(
+        //                 onPressed: () async {
+        //                   // 點擊事件
+        //                 },
+        //                 child: Text(
+        //                   '分享',
+        //                   style: TextStyle(
+        //                     color: Colors.white, // 文字顏色
+        //                     // color: Colors.black, // 文字顏色
+        //                   ),
+        //                 ),
+        //                 style: ElevatedButton.styleFrom(
+        //                   backgroundColor: Color(0xFFF2B892),
+        //                   foregroundColor: Colors.white,
+        //                   minimumSize: Size(52, 30),
+        //                   textStyle: TextStyle(
+        //                     letterSpacing: 0,
+        //                     fontSize: 13,
+        //                   ),
+        //                   shape: RoundedRectangleBorder(
+        //                     borderRadius: BorderRadius.circular(25),
+        //                   ),
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //           SizedBox(height: 40),
+        //           ElevatedButton(
+        //             style: ElevatedButton.styleFrom(
+        //               backgroundColor: Color(0xFFF2B892),
+        //               padding:
+        //                   EdgeInsets.symmetric(horizontal: 110, vertical: 10),
+        //               textStyle: TextStyle(fontSize: 16),
+        //             ),
+        //             child:
+        //                 // Text('登出', style: TextStyle(color: Color(0xFFDD8A62))),
+        //                 Text('登出', style: TextStyle(color: Colors.white)),
+        //             onPressed: () {
+        //               Navigator.push(
+        //                 context,
+        //                 MaterialPageRoute(builder: (context) => Login()),
+        //               );
+        //             },
+        //           ),
+        //         ],
+        //       ),
+        //     ),
+        //   ),
+        // );
 
       default:
         return Container();
