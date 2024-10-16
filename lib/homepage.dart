@@ -92,7 +92,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
   Future<void> _fetchUserInfo() async {
     try {
       var conn = await DatabaseService().connection;
@@ -116,67 +115,73 @@ class _HomePageState extends State<HomePage> {
 
   // Method to pick an image from the gallery
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
       });
       await _uploadImage(_image!); // Upload the selected image
     }
-  }  
+  }
 
-Future<void> _uploadImage(File image) async {
-  try {
-    Dio dio = Dio();
-    FormData formData = FormData.fromMap({
-      "file": await MultipartFile.fromFile(image.path, filename: 'profile_${widget.accountId}.jpg'),
-      "accountId": widget.accountId.toString(), // Send the accountId with the upload
-    });
+  Future<void> _uploadImage(File image) async {
+    try {
+      Dio dio = Dio();
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(image.path,
+            filename: 'profile_${widget.accountId}.jpg'),
+        "accountId":
+            widget.accountId.toString(), // Send the accountId with the upload
+      });
 
-    var response = await dio.post("http://152.42.163.75/upload.php", data: formData);
-    
-    // Print the full response for debugging
-    print('Response Status Code: ${response.statusCode}');
-    print('Response Data: ${response.data}'); // Check what the server returns
+      var response =
+          await dio.post("http://152.42.163.75/upload.php", data: formData);
 
-    // Check the status code and response type
-    if (response.statusCode == 200) {
-      // Manually parse the response data
-      final responseData = jsonDecode(response.data); // Decode JSON string to Map
-      
-      // Check if responseData is a Map
-      if (responseData is Map<String, dynamic>) {
-        // Check if the keys we expect are present
-        if (responseData.containsKey('status') && responseData.containsKey('imageUrl')) {
-          if (responseData['status'] == 'success') {
-            String imageUrl = responseData['imageUrl'];
-            setState(() {
-              profileImageUrl = imageUrl;
-            });
+      // Print the full response for debugging
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Data: ${response.data}'); // Check what the server returns
 
-            // Update the profile image URL in the database
-            var conn = await DatabaseService().connection;
-            await conn.query(
-              'UPDATE accounts SET profileImageUrl = ? WHERE accountId = ?',
-              [imageUrl, widget.accountId],
-            );
+      // Check the status code and response type
+      if (response.statusCode == 200) {
+        // Manually parse the response data
+        final responseData =
+            jsonDecode(response.data); // Decode JSON string to Map
+
+        // Check if responseData is a Map
+        if (responseData is Map<String, dynamic>) {
+          // Check if the keys we expect are present
+          if (responseData.containsKey('status') &&
+              responseData.containsKey('imageUrl')) {
+            if (responseData['status'] == 'success') {
+              String imageUrl = responseData['imageUrl'];
+              setState(() {
+                profileImageUrl = imageUrl;
+              });
+
+              // Update the profile image URL in the database
+              var conn = await DatabaseService().connection;
+              await conn.query(
+                'UPDATE accounts SET profileImageUrl = ? WHERE accountId = ?',
+                [imageUrl, widget.accountId],
+              );
+            } else {
+              print('Server Error: ${responseData['message']}');
+            }
           } else {
-            print('Server Error: ${responseData['message']}');
+            print('Response does not contain expected keys: $responseData');
           }
         } else {
-          print('Response does not contain expected keys: $responseData');
+          print('Unexpected response format: $responseData');
         }
       } else {
-        print('Unexpected response format: $responseData');
+        print('Server Error: ${response.statusCode}');
       }
-    } else {
-      print('Server Error: ${response.statusCode}');
+    } catch (e) {
+      print('Error uploading image: $e');
     }
-  } catch (e) {
-    print('Error uploading image: $e');
   }
-}
 
   Future<void> _loadRecentRecipes() async {
     try {
@@ -335,7 +340,7 @@ Future<void> _uploadImage(File image) async {
                               width: 35,
                               height: 35,
                               decoration: BoxDecoration(
-                                color: Colors.grey[300], // 修改图标背景色
+                                color: Color(0xFFF1E9E6), // 修改图标背景色
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
@@ -356,7 +361,7 @@ Future<void> _uploadImage(File image) async {
                               width: 35,
                               height: 35,
                               decoration: BoxDecoration(
-                                color: Colors.grey[300], // 修改图标背景色
+                                color: Color(0xFFF1E9E6), // 修改图标背景色
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
@@ -377,7 +382,7 @@ Future<void> _uploadImage(File image) async {
                               width: 35,
                               height: 35,
                               decoration: BoxDecoration(
-                                color: Colors.grey[300], // 修改图标背景色
+                                color: Color(0xFFF1E9E6), // 修改图标背景色
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
@@ -605,8 +610,6 @@ Future<void> _uploadImage(File image) async {
         );
 
       case 2:
-
-
         return Container(
           color: Color(0xFFF1E9E6),
           child: Stack(
@@ -731,7 +734,7 @@ Future<void> _uploadImage(File image) async {
                                   left: 10), // Adjust left padding
                               child: Center(
                                 child: Container(
-                                  width: 100,
+                                  width: 120,
                                   margin: EdgeInsets.symmetric(
                                       horizontal: 4), // Spacing between images
                                   child: Column(
@@ -742,9 +745,13 @@ Future<void> _uploadImage(File image) async {
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(10),
-                                          child: Image.network(
-                                            item.imageUrl,
-                                            fit: BoxFit.cover,
+                                          child: SizedBox(
+                                            width: 120, // 設置固定寬度
+                                            height: 125, // 設置固定高度
+                                            child: Image.network(
+                                              item.imageUrl,
+                                              fit: BoxFit.cover,
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -929,87 +936,89 @@ Future<void> _uploadImage(File image) async {
         );
 
       case 4:
-      return Scaffold(
-      backgroundColor: Color(0xFFF1E9E6),
-      body: Padding(
-        padding: const EdgeInsets.only(top: 1.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Stack(
+        return Scaffold(
+          backgroundColor: Color(0xFFF1E9E6),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 1.0),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 0.3),
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        fit: BoxFit.fill,
-                        image: profileImageUrl.isNotEmpty
-                          ? NetworkImage(profileImageUrl)
-                          : AssetImage('assets/images.png') as ImageProvider,
-                      ),
-                    ),
-                    padding: const EdgeInsets.all(10),
-                  ),
-                  Positioned(
-                    bottom: 5,
-                    right: 5,
-                    child: GestureDetector(
-                      onTap: _pickImage, // Trigger image picker on tap
-                      child: Container(
-                        width: 35,
-                        height: 35,
+                  Stack(
+                    children: <Widget>[
+                      Container(
+                        width: 130,
+                        height: 130,
                         decoration: BoxDecoration(
-                          color: Color(0xFFF2B892),
+                          border: Border.all(color: Colors.black, width: 0.3),
                           shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: profileImageUrl.isNotEmpty
+                                ? NetworkImage(profileImageUrl)
+                                : AssetImage('assets/images.png')
+                                    as ImageProvider,
+                          ),
                         ),
-                        child: Icon(
-                          Icons.edit,
-                          color: Colors.white,
-                          size: 20,
+                        padding: const EdgeInsets.all(10),
+                      ),
+                      Positioned(
+                        bottom: 5,
+                        right: 5,
+                        child: GestureDetector(
+                          onTap: _pickImage, // Trigger image picker on tap
+                          child: Container(
+                            width: 35,
+                            height: 35,
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF2B892),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
                         ),
                       ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    userName,
+                    style: TextStyle(fontSize: 38),
+                  ),
+                  SizedBox(height: 0),
+                  Text(
+                    userEmail,
+                    style: TextStyle(
+                      fontSize: 10,
+                      decoration: TextDecoration.underline,
                     ),
+                  ),
+                  SizedBox(height: 30),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFF2B892),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 110, vertical: 10),
+                      textStyle: TextStyle(fontSize: 16),
+                    ),
+                    child: Text('登出', style: TextStyle(color: Colors.white)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    },
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Text(
-                userName,
-                style: TextStyle(fontSize: 38),
-              ),
-              SizedBox(height: 0),
-              Text(
-                userEmail,
-                style: TextStyle(
-                  fontSize: 10,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-              SizedBox(height: 30),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFF2B892),
-                  padding: EdgeInsets.symmetric(horizontal: 110, vertical: 10),
-                  textStyle: TextStyle(fontSize: 16),
-                ),
-                child: Text('登出', style: TextStyle(color: Colors.white)),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Login()),
-                  );
-                },
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
       default:
         return Container();
     }
