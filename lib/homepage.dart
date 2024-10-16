@@ -13,6 +13,9 @@ import 'package:recipe_gpt/services/openai/chat_response.dart';
 import 'package:recipe_gpt/services/openai/chat_screen.dart';
 import 'package:recipe_gpt/camerafunction.dart';
 import 'package:recipe_gpt/history.dart';
+import 'package:recipe_gpt/addpost.dart';
+import 'package:recipe_gpt/post.dart';
+import 'package:recipe_gpt/pm.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:recipe_gpt/db/db.dart';
 
@@ -331,27 +334,32 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        // 添加帖子的按钮
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AddPostPage()),
+                              );
+                            },
                             borderRadius: BorderRadius.circular(8),
                             child: Ink(
                               width: 35,
                               height: 35,
                               decoration: BoxDecoration(
-                                color: Color(0xFFF1E9E6), // 修改图标背景色
+                                color: Color(0xFFF1E9E6),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
-                                child: Icon(
-                                  Icons.add,
-                                  color: Colors.black,
-                                ),
+                                child: Icon(Icons.add, color: Colors.black),
                               ),
                             ),
                           ),
                         ),
+                        // 喜欢按钮
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
@@ -361,35 +369,40 @@ class _HomePageState extends State<HomePage> {
                               width: 35,
                               height: 35,
                               decoration: BoxDecoration(
-                                color: Color(0xFFF1E9E6), // 修改图标背景色
+                                color: Color(0xFFF1E9E6),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
-                                child: Icon(
-                                  Icons.favorite,
-                                  color: Colors.black,
-                                ),
+                                child:
+                                    Icon(Icons.favorite, color: Colors.black),
                               ),
                             ),
                           ),
                         ),
+                        // 三条线图标按钮，导航到 PostManagement 页面
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      PostManagement(), // 导航到 PostManagement 页面
+                                ),
+                              );
+                            },
                             borderRadius: BorderRadius.circular(8),
                             child: Ink(
                               width: 35,
                               height: 35,
                               decoration: BoxDecoration(
-                                color: Color(0xFFF1E9E6), // 修改图标背景色
+                                color: Color(0xFFF1E9E6),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
-                                child: Icon(
-                                  Icons.menu, // 更改为菜单图标
-                                  color: Colors.black,
-                                ),
+                                child: Icon(Icons.menu,
+                                    color: Colors.black), // 三条线图标
                               ),
                             ),
                           ),
@@ -403,7 +416,7 @@ class _HomePageState extends State<HomePage> {
               // 下滑可滚动的内容部分
               Expanded(
                 child: ListView.builder(
-                  itemCount: 10, // 控制滑动项目的数量
+                  itemCount: 10,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -422,67 +435,93 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ],
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Stack(
+                            // 使用 Stack 来定位按钮
                             children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(16)),
-                                child: Image.asset(
-                                  'assets/LOGO.png',
-                                  height: 250,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(16)),
+                                    child: Image.asset(
+                                      'assets/LOGO.png',
+                                      height: 250,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '好食在 $index',
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4),
+                                        Text(
+                                          '#創意料理 $index',
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 6.0, vertical: 2.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.close,
+                                              color: Colors.red),
+                                          onPressed: () {},
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.skip_next,
+                                              color: Colors.grey),
+                                          onPressed: () {},
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.favorite,
+                                              color: Colors.green),
+                                          onPressed: () {},
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '好食在 $index', // 显示不同的索引
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
+                              Positioned(
+                                // 定位按钮
+                                right: 8,
+                                top: 8,
+                                child: IconButton(
+                                  icon: Icon(Icons.info,
+                                      color: const Color.fromARGB(
+                                          255, 239, 239, 239)),
+                                  onPressed: () {
+                                    // 点击后导航到 PostPage
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PostPage(index: index), // 传递 index
                                       ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      '#創意料理 $index',
-                                      style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Spacer(),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6.0, vertical: 2.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    IconButton(
-                                      icon:
-                                          Icon(Icons.close, color: Colors.red),
-                                      onPressed: () {},
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.skip_next,
-                                          color: Colors.grey),
-                                      onPressed: () {},
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.favorite,
-                                          color: Colors.green),
-                                      onPressed: () {},
-                                    ),
-                                  ],
+                                    );
+                                  },
                                 ),
                               ),
                             ],
