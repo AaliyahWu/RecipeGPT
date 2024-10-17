@@ -24,7 +24,7 @@ class ChatService {
         Message(
           role: "system",
           content:
-              "下列三項資訊，食材: $prompt, 人數: $strPeople, 飲食偏好:$preference。請根據食材生成10種食譜名稱，輸出格式為只要顯示食譜名稱就好，食譜名稱前面不要有數字。",
+              "下列三項資訊，食材: $prompt, 人數: $strPeople, 飲食偏好:$preference。請根據食材生成10種食譜名稱，條列顯示，輸出格式為只要顯示食譜名稱就好，食譜名稱前面不要有數字。",
         )
       ]);
 
@@ -54,7 +54,7 @@ class ChatService {
         Message(
           role: "system",
           content:
-              "請根據以下資訊生成食譜內容:\n食譜名稱: $recipe\n食材: $prompt\n人數: $strPeople 人份\飲食偏好: $preferences\n。食譜所用食材，只能採用告訴你的那些食材，不能多加其他食材。請先顯示食譜名稱(不要顯示食譜編號)、再顯示食材用量,然後再條列顯示製作步驟(包含調味料的用量)。",
+              "請根據以下資訊生成食譜內容:\n食譜名稱: $recipe\n食材: $prompt\n人數: $strPeople 人份\飲食偏好: $preferences\n。食譜所用食材，只能採用告訴你的那些食材，不能多加其他食材。請先顯示食譜名稱(不要顯示食譜編號)、再顯示卡路里、食材用量,然後再條列顯示製作步驟(包含調味料的用量)。",
         )
       ]);
 

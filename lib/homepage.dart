@@ -40,7 +40,7 @@ class PopularItem {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentPageIndex = 2; // 当前页面索引
+  int _currentPageIndex = 2; // 当前頁面索引
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   String userInput = '';
