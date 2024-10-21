@@ -16,6 +16,7 @@ import 'package:recipe_gpt/history.dart';
 import 'package:recipe_gpt/addpost.dart';
 import 'package:recipe_gpt/post.dart';
 import 'package:recipe_gpt/pm.dart';
+import 'package:recipe_gpt/favorite.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:recipe_gpt/db/db.dart';
 
@@ -363,7 +364,14 @@ class _HomePageState extends State<HomePage> {
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => FavoritePage(),
+                                ),
+                              );
+                            },
                             borderRadius: BorderRadius.circular(8),
                             child: Ink(
                               width: 35,
@@ -387,8 +395,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      PostManagement(), // 导航到 PostManagement 页面
+                                  builder: (context) => PostManagement(),
                                 ),
                               );
                             },
@@ -401,8 +408,7 @@ class _HomePageState extends State<HomePage> {
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
-                                child: Icon(Icons.menu,
-                                    color: Colors.black), // 三条线图标
+                                child: Icon(Icons.menu, color: Colors.black),
                               ),
                             ),
                           ),
@@ -412,7 +418,6 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-
               // 下滑可滚动的内容部分
               Expanded(
                 child: ListView.builder(
@@ -436,7 +441,6 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                           child: Stack(
-                            // 使用 Stack 来定位按钮
                             children: [
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,15 +509,10 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                               Positioned(
-                                // 定位按钮
-                                right: 8,
+                                right: 8, // 保持原本的大小
                                 top: 8,
-                                child: IconButton(
-                                  icon: Icon(Icons.info,
-                                      color: const Color.fromARGB(
-                                          255, 239, 239, 239)),
-                                  onPressed: () {
-                                    // 点击后导航到 PostPage
+                                child: InkWell(
+                                  onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -522,6 +521,28 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     );
                                   },
+                                  child: Container(
+                                    width: 40, // 保持原本的宽度
+                                    height: 40, // 保持原本的高度
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange, // 背景颜色更显眼
+                                      shape: BoxShape.circle, // 圆形
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 10,
+                                          offset: Offset(0, 4),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.info,
+                                        color: Colors.white, // 图标颜色
+                                        size: 24, // 图标大小
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ],
