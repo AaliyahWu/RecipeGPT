@@ -13,6 +13,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   Map<String, dynamic>? recipeDetails;
+  TextEditingController _remarkController = TextEditingController(); // 備註控制器
 
   @override
   void initState() {
@@ -24,9 +25,9 @@ class _HistoryPageState extends State<HistoryPage> {
     try {
       var conn = await DatabaseService().connection;
 
-      // 使用 recipeId 查詢食譜的詳細資料
+      // 使用 recipeId 查詢食譜的詳細資料，包含 remark 欄位
       var result = await conn.query(
-        'SELECT recipeName, recipeText, createDate, rating, url FROM recipedb.recipes WHERE recipeId = ?',
+        'SELECT recipeName, recipeText, createDate, rating, url, remark FROM recipedb.recipes WHERE recipeId = ?',
         [widget.recipeId],
       );
 
@@ -36,15 +37,38 @@ class _HistoryPageState extends State<HistoryPage> {
         setState(() {
           recipeDetails = {
             'title': row['recipeName'],
-            'content': row['recipeText'],  // 這裡假設 recipeText 包含了食材和步驟的描述
+            'content': row['recipeText'],  // 包含食材和步驟的描述
             'createDate': (row['createDate'] as DateTime).toLocal().toString().split(' ')[0], // 格式化日期
             'rating': row['rating'],
-            'imageUrl': row['url'] ?? 'assets/default_image.png'
+            'imageUrl': row['url'] ?? 'assets/default_image.png',
+            'remark': row['remark'] ?? ''  // 確保 remark 不為 null
           };
+          _remarkController.text = recipeDetails!['remark']; // 將 remark 載入至 TextField 控制器
         });
       }
     } catch (e) {
       print('Error loading recipe details: $e');
+    }
+  }
+
+  Future<void> _saveRemark() async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 更新資料庫中的 remark 欄位
+      await conn.query(
+        'UPDATE recipedb.recipes SET remark = ? WHERE recipeId = ?',
+        [_remarkController.text, widget.recipeId],
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('備註已儲存')),
+      );
+    } catch (e) {
+      print('Error saving remark: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('備註儲存失敗')),
+      );
     }
   }
 
@@ -130,6 +154,7 @@ class _HistoryPageState extends State<HistoryPage> {
                         ),
                         SizedBox(height: 8),
                         TextField(
+                          controller: _remarkController, // 綁定備註控制器
                           maxLines: 2,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
@@ -141,11 +166,7 @@ class _HistoryPageState extends State<HistoryPage> {
                           children: [
                             Spacer(),
                             ElevatedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('備註已儲存')),
-                                );
-                              },
+                              onPressed: _saveRemark, // 儲存備註到資料庫
                               child: Text('儲存'),
                             ),
                           ],
