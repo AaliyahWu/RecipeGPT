@@ -36,7 +36,7 @@ class _HistoryPageState extends State<HistoryPage> {
         setState(() {
           recipeDetails = {
             'title': row['recipeName'],
-            'ingredients': row['recipeText'],  // 這裡假設 recipeText 包含了食材和步驟的描述
+            'content': row['recipeText'],  // 這裡假設 recipeText 包含了食材和步驟的描述
             'createDate': (row['createDate'] as DateTime).toLocal().toString().split(' ')[0], // 格式化日期
             'rating': row['rating'],
             'imageUrl': row['url'] ?? 'assets/default_image.png'
@@ -84,73 +84,36 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                   SizedBox(height: 16),
                   Expanded(
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 250,
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '食材',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    recipeDetails!['ingredients'],
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
+                    child: Container(
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '食譜內容',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                        ),
-                        SizedBox(width: 16),
-                        Expanded(
-                          child: Container(
-                            height: 250,
-                            padding: EdgeInsets.all(16.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
+                            SizedBox(height: 10),
+                            Text(
+                              recipeDetails!['content'], // 顯示來自 DB 的 recipeText
+                              style: TextStyle(fontSize: 12),
                             ),
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '步驟',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(height: 10),
-                                  Text(
-                                    recipeDetails!['ingredients'], // 假設 recipeText 包含步驟
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 10),
                   Container(
-                    padding: EdgeInsets.all(9.0),
+                    padding: EdgeInsets.all(6.5),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -165,15 +128,15 @@ class _HistoryPageState extends State<HistoryPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 8),
                         TextField(
-                          maxLines: 3,
+                          maxLines: 2,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: '在這裡寫下你的備註...',
                           ),
                         ),
-                        SizedBox(height: 12),
+                        SizedBox(height: 8),
                         Row(
                           children: [
                             Spacer(),
