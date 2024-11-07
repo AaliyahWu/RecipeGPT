@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
   List<String> userInputList = [];
   List<PopularItem> popularItems = [];
   List<PopularItem> recentItems = [];
+  List<Map<String, dynamic>> historicalRecipes = []; // 定義變數來儲存歷史食譜資料
   String profileImageUrl = ''; // Holds the profile image URL
   File? _image; // Stores the selected image file
 
@@ -62,6 +63,7 @@ class _HomePageState extends State<HomePage> {
     _loadTopRecipes();
     _fetchUserInfo();
     _loadPreferences(); // Load preferences when the page is opened
+    _fetchRecipes(); // 初始化時載入歷史食譜
   }
 
   // bool _isNotificationEnabled = true; // 管理通知開關狀態(預設開)
@@ -285,6 +287,35 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       print('Error loading preferences from database: $e');
     }
+  }
+  
+  Future<void> _fetchRecipes() async {
+      try {
+        var conn = await DatabaseService().connection;
+
+        // 查詢食譜資料
+        var results = await conn.query('SELECT recipeName, createDate, rating, url FROM recipedb.recipes WHERE accountId = ?', [widget.accountId]);
+
+        // 將查詢結果轉換為列表形式
+        setState(() {
+          historicalRecipes = results.map((row) {
+            // 將 createDate 轉換成 '年-月-日' 格式
+            String formattedDate = (row['createDate'] as DateTime).toLocal().toString().split(' ')[0];
+            
+            return {
+              'title': row['recipeName'],            // 食譜名稱
+              // 'description': row['recipeText'],      // 食譜描述
+              'date': formattedDate,                 // 格式化的日期
+              'rating': row['rating'],               // 評分
+              'imageUrl': row['url'] ?? 'assets/default_image.png' // 如果無圖片URL，則顯示預設圖片
+            };
+          }).toList();
+        });
+
+        print('歷史食譜載入成功');
+      } catch (e) {
+        print('載入歷史食譜出錯: $e');
+      }
   }
 
   Widget _buildBody() {
@@ -859,57 +890,6 @@ class _HomePageState extends State<HomePage> {
         );
 
       case 3:
-        List<Map<String, dynamic>> historicalRecipes = [
-          {
-            'imageUrl': 'assets/food/food1.jpg',
-            'title': '番茄炒蛋',
-            'description': '簡單易做的番茄炒蛋，營養豐富。',
-            'rating': 8.8,
-          },
-          {
-            'imageUrl': 'assets/food/food2.jpg',
-            'title': '牛肉炒飯',
-            'description': '新鮮的牛肉與香脆的蔬菜完美結合，豐富的層次感。',
-            'rating': 8.1,
-          },
-          {
-            'imageUrl': 'assets/food/food3.jpg',
-            'title': '炒高麗菜',
-            'description': '口感鮮嫩，營養豐富的炒高麗菜。',
-            'rating': 9.2,
-          },
-          {
-            'imageUrl': 'assets/food/food4.jpg',
-            'title': '雞肉沙拉',
-            'description': '健康清爽的雞肉沙拉,適合夏日輕食。',
-            'rating': 9.1,
-          },
-          {
-            'imageUrl': 'assets/food/food7.jpg',
-            'title': '牛肉意面',
-            'description': '香濃美味的牛肉意面,百吃不厭。',
-            'rating': 8.6,
-          },
-          {
-            'imageUrl': 'assets/food/food6.jpg',
-            'title': '早餐水果拼盤',
-            'description': '各種新鮮水果的精彩組合。',
-            'rating': 8.2,
-          },
-          {
-            'imageUrl': 'assets/food/food8.jpg',
-            'title': '香菇炒麵',
-            'description': '香氣四溢的香菇炒麵，美味可口。',
-            'rating': 9.0,
-          },
-          {
-            'imageUrl': 'assets/food/food9.jpg',
-            'title': '鮮蝦沙拉',
-            'description': '清爽可口的鮮蝦沙拉，滿滿的海鮮風味。',
-            'rating': 8.9,
-          },
-        ];
-
         return Container(
           color: Color(0xFFF1E9E6),
           child: Column(
@@ -923,77 +903,87 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Expanded(
-                child: ListView.builder(
-                  itemCount: historicalRecipes.length,
-                  itemBuilder: (context, index) {
-                    var recipe = historicalRecipes[index];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0, vertical: 8.0),
-                      child: Card(
-                        color: Color(0xFFFFFAF5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(10),
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.asset(
-                              recipe['imageUrl'],
-                              fit: BoxFit.cover,
-                              width: 50,
-                              height: 50,
-                            ),
-                          ),
-                          title: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                recipe['title'],
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                child: historicalRecipes.isEmpty
+                    ? Center(child: CircularProgressIndicator()) // 顯示加載指示器
+                    : ListView.builder(
+                        itemCount: historicalRecipes.length,
+                        itemBuilder: (context, index) {
+                          var recipe = historicalRecipes[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 8.0),
+                            child: Card(
+                              color: Color(0xFFFFFAF5),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                              Row(
-                                children: [
-                                  Icon(Icons.favorite,
-                                      color: Colors.red, size: 20),
-                                  Text(
-                                    ' ${recipe['rating']}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.all(10),
+                                leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    recipe['imageUrl'],
+                                    fit: BoxFit.cover,
+                                    width: 50,
+                                    height: 50,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Image.asset(
+                                        'assets/default_image.png',
+                                        width: 50,
+                                        height: 50,
+                                      );
+                                    },
                                   ),
-                                ],
+                                ),
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      recipe['title'],
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.favorite,
+                                            color: Colors.red, size: 20),
+                                        Text(
+                                          ' ${recipe['rating']}',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                subtitle: Text(
+                                  '製作時間：${recipe['date']}', // 在日期前加上 "製作時間："
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => HistoryPage()), // 跳轉到歷史詳情
+                                  );
+                                },
                               ),
-                            ],
-                          ),
-                          subtitle: Text(
-                            recipe['description'],
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
                             ),
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HistoryPage()),
-                            );
-                          },
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),
         );
+
 
       case 4:
         return Scaffold(
