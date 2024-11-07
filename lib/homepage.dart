@@ -294,25 +294,28 @@ class _HomePageState extends State<HomePage> {
         var conn = await DatabaseService().connection;
 
         // 查詢食譜資料
-        var results = await conn.query('SELECT recipeName, createDate, rating, url FROM recipedb.recipes WHERE accountId = ?', [widget.accountId]);
+        var results = await conn.query('SELECT recipeId, recipeName, createDate, rating, url FROM recipedb.recipes WHERE accountId = ?', [widget.accountId]);
 
         // 將查詢結果轉換為列表形式
         setState(() {
           historicalRecipes = results.map((row) {
-            // 將 createDate 轉換成 '年-月-日' 格式
-            String formattedDate = (row['createDate'] as DateTime).toLocal().toString().split(' ')[0];
-            
+            int? id = row['recipeId'];
+            if (id == null) {
+              throw Exception('recipeId 為 null，請檢查資料庫資料');
+            }
+
             return {
-              'title': row['recipeName'],            // 食譜名稱
-              // 'description': row['recipeText'],      // 食譜描述
-              'date': formattedDate,                 // 格式化的日期
-              'rating': row['rating'],               // 評分
-              'imageUrl': row['url'] ?? 'assets/default_image.png' // 如果無圖片URL，則顯示預設圖片
+              'recipeId': id,  // 確保填充了 recipeId
+              'title': row['recipeName'],
+              'date': (row['createDate'] as DateTime).toLocal().toString().split(' ')[0],
+              'rating': row['rating'],
+              'imageUrl': row['url'] ?? 'assets/default_image.png',
             };
           }).toList();
         });
 
         print('歷史食譜載入成功');
+
       } catch (e) {
         print('載入歷史食譜出錯: $e');
       }
@@ -968,11 +971,17 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => HistoryPage()), // 跳轉到歷史詳情
-                                  );
+                                  int? recipeId = recipe['recipeId'];
+                                  if (recipeId != null) {  // 確保 recipeId 存在
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HistoryPage(recipeId: recipeId), // 傳遞 recipeId 到 HistoryPage
+                                      ),
+                                    );
+                                  } else {
+                                    print('無效的 recipeId，無法跳轉到 HistoryPage');
+                                  }
                                 },
                               ),
                             ),
