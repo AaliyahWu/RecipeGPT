@@ -37,12 +37,12 @@ class _CheckListState extends State<CheckList> {
     try {
       var conn = await DatabaseService().connection;
       var results = await conn.query(
-          'SELECT name FROM recipedb.preference WHERE accountId = ?',
+          'SELECT preference FROM recipedb.preference WHERE accountId = ?',
           [widget.accountId]);
 
       if (results.isNotEmpty) {
         setState(() {
-          _preferences = results.map((row) => row['name']).join(', ');
+          _preferences = results.map((row) => row['preference']).join(', ');
         });
       } else {
         setState(() {
