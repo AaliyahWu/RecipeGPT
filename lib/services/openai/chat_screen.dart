@@ -1,8 +1,10 @@
-// this is chat_screen.dart
-
+import 'dart:io';
+import 'dart:convert'; 
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:dio/dio.dart';
 import 'chat_service.dart';
-import 'package:recipe_gpt/homepage.dart'; // 假設HomePage的widget在homepage.dart中定義
+import 'package:recipe_gpt/homepage.dart';
 import '/db/db.dart';
 
 class ChatPage extends StatefulWidget {
@@ -21,6 +23,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   String _chatResponse = '';
   ScrollController _scrollController = ScrollController();
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -49,13 +52,13 @@ class _ChatPageState extends State<ChatPage> {
                   decoration: BoxDecoration(
                     color: Color.fromRGBO(255, 255, 255, 0.8),
                     image: DecorationImage(
-                        image: AssetImage('assets/image/note.jpg'),
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                          Colors.black.withOpacity(0.5),
-                          BlendMode.dstATop,
-                        ),
+                      image: AssetImage('assets/image/note.jpg'),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.5),
+                        BlendMode.dstATop,
                       ),
+                    ),
                     borderRadius: BorderRadius.circular(20.0),
                     boxShadow: [
                       BoxShadow(
@@ -74,9 +77,7 @@ class _ChatPageState extends State<ChatPage> {
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: Center(
                           child: Text(
-                            _chatResponse.isNotEmpty
-                                ? _chatResponse
-                                : '食譜生成中...',
+                            _chatResponse.isNotEmpty ? _chatResponse : '食譜生成中...',
                             style: TextStyle(fontSize: 18.0),
                           ),
                         ),
@@ -86,30 +87,24 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
             ),
-            SizedBox(height: 16.0), // 添加一些間隔
+            SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor  : Color(0xFFF2B892), // 背景顏色
-                    foregroundColor : Colors.white, // 文字顏色
+                    backgroundColor: Color(0xFFF2B892),
+                    foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
-                    // 導航回首頁
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage(accountId: widget.accountId)),
-                      // MaterialPageRoute(builder: (context) => HomePage()),//測試新登入模組
-                      (route) => false,
-                    );
+                  onPressed: () async {
+                    await _showImageSourceDialog(context);
                   },
                   child: Text('完成'),
                 ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor  : Color(0xFFF2B892), // 背景顏色
-                    foregroundColor : Colors.white, // 文字顏色
+                    backgroundColor: Color(0xFFF2B892),
+                    foregroundColor: Colors.white,
                   ),
                   onPressed: () {
                     // 分享食譜
@@ -125,31 +120,119 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
+  Future<void> _showImageSourceDialog(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("選擇圖片來源"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+              child: Text("拍照"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+              child: Text("從相簿選擇"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+      await _uploadImage(_selectedImage!);  // Call the upload function after selecting the image
+    }
+  }
+
+  Future<void> _uploadImage(File image) async {
+  try {
+    Dio dio = Dio();
+    FormData formData = FormData.fromMap({
+      "file": await MultipartFile.fromFile(image.path, filename: 'recipe_${widget.recipe}.jpg'),
+      "accountId": widget.accountId.toString(),
+      "recipeName": widget.recipe,
+    });
+
+    var response = await dio.post("http://152.42.163.75/upload.php", data: formData);
+
+    // Decode the response data as JSON
+    if (response.statusCode == 200) {
+      Map<String, dynamic> responseData;
+      try {
+        responseData = jsonDecode(response.data);  // Decode JSON string to Map
+      } catch (e) {
+        print('Failed to decode JSON: ${response.data}');
+        return;
+      }
+
+      // Check if the JSON contains the expected keys
+      if (responseData['status'] == 'success' && responseData.containsKey('imageUrl')) {
+        String imageUrl = responseData['imageUrl'];
+        await _saveImageUrlToDatabase(widget.accountId, imageUrl);  // Save the image URL in the database
+
+        // Navigate back to the homepage upon successful upload and save
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(accountId: widget.accountId)),
+          (route) => false,
+        );
+      } else {
+        print('Upload failed: ${responseData['message'] ?? "Unknown error"}');
+      }
+    } else {
+      print('Unexpected status code: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error uploading image: $e');
+  }
+}
+
+
+  Future<void> _saveImageUrlToDatabase(int accountId, String imageUrl) async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // Update the 'url' field in the most recent recipe entry for this account
+      await conn.query(
+        'UPDATE recipedb.recipes SET url = ? WHERE accountId = ? ORDER BY createDate DESC LIMIT 1',
+        [imageUrl, accountId],
+      );
+
+      print('Image URL successfully saved to database');
+    } catch (e) {
+      print('Error saving image URL to database: $e');
+    }
+  }
 
   void _startChat(String recipe, String prompt, int people, String preferences) async {
     String? response = await ChatService().request(recipe, prompt, people, preferences);
     setState(() {
-       // 確保 response 不為
       _chatResponse = response ?? 'No response';
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
     });
 
-    // 如果有 response，保存到数据库
     if (response != null && response.isNotEmpty) {
-      await _saveRecipeToDatabase(widget.accountId, recipe, response);
+      await _saveRecipeToDatabase(widget.accountId, recipe, response);  // Save the recipe to the database
     }
-
   }
 
-  // 新增這個方法，用來存儲食譜到資料庫
   Future<void> _saveRecipeToDatabase(int accountId, String recipeName, String recipeText) async {
     try {
       var conn = await DatabaseService().connection;
 
-      // // 从第四个字符开始截取 recipeName
-      // String truncatedRecipeName = recipeName.length > 3 ? recipeName.substring(0) : '';
-
-      // 插入新的食譜記錄到 `recipes` 表
       await conn.query(
         'INSERT INTO recipedb.recipes (accountId, recipeName, recipeText, createDate) VALUES (?, ?, ?, NOW())',
         [accountId, recipeName, recipeText],
