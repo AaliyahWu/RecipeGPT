@@ -19,6 +19,7 @@ import 'package:recipe_gpt/pm.dart';
 import 'package:recipe_gpt/favorite.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:recipe_gpt/db/db.dart';
+import 'dart:math';
 
 void main() => runApp(MaterialApp(home: LoginCard()));
 
@@ -288,38 +289,77 @@ class _HomePageState extends State<HomePage> {
       print('Error loading preferences from database: $e');
     }
   }
-  
+
   Future<void> _fetchRecipes() async {
-      try {
-        var conn = await DatabaseService().connection;
+    try {
+      var conn = await DatabaseService().connection;
 
-        // 查詢食譜資料
-        var results = await conn.query('SELECT recipeId, recipeName, createDate, rating, url FROM recipedb.recipes WHERE accountId = ?', [widget.accountId]);
+      // 查詢食譜資料
+      var results = await conn.query(
+          'SELECT recipeId, recipeName, createDate, rating, url FROM recipedb.recipes WHERE accountId = ?',
+          [widget.accountId]);
 
-        // 將查詢結果轉換為列表形式
-        setState(() {
-          historicalRecipes = results.map((row) {
-            int? id = row['recipeId'];
-            if (id == null) {
-              throw Exception('recipeId 為 null，請檢查資料庫資料');
-            }
+      // 將查詢結果轉換為列表形式
+      setState(() {
+        historicalRecipes = results.map((row) {
+          int? id = row['recipeId'];
+          if (id == null) {
+            throw Exception('recipeId 為 null，請檢查資料庫資料');
+          }
 
-            return {
-              'recipeId': id,  // 確保填充了 recipeId
-              'title': row['recipeName'],
-              'date': (row['createDate'] as DateTime).toLocal().toString().split(' ')[0],
-              'rating': row['rating'],
-              'imageUrl': row['url'] ?? 'assets/default_image.png',
-            };
-          }).toList();
-        });
+          return {
+            'recipeId': id, // 確保填充了 recipeId
+            'title': row['recipeName'],
+            'date': (row['createDate'] as DateTime)
+                .toLocal()
+                .toString()
+                .split(' ')[0],
+            'rating': row['rating'],
+            'imageUrl': row['url'] ?? 'assets/default_image.png',
+          };
+        }).toList();
+      });
 
-        print('歷史食譜載入成功');
-
-      } catch (e) {
-        print('載入歷史食譜出錯: $e');
-      }
+      print('歷史食譜載入成功');
+    } catch (e) {
+      print('載入歷史食譜出錯: $e');
+    }
   }
+
+// List of random content sets
+  final List<Map<String, String>> randomContentSets = [
+    {
+      'image': 'assets/food/food1.jpg',
+      'title': '番茄炒蛋',
+      'hashtag': '#美食推薦',
+    },
+    {
+      'image': 'assets/food/food2.jpg',
+      'title': '牛肉炒飯',
+      'hashtag': '#牛肉好吃好吃！',
+    },
+    {
+      'image': 'assets/food/food3.jpg',
+      'title': '炒高麗菜',
+      'hashtag': '#太清爽拉～',
+    },
+    {
+      'image': 'assets/food/food4.jpg',
+      'title': '雞肉沙拉',
+      'hashtag': '#食神駕到！',
+    },
+    {
+      'image': 'assets/food/food7.jpg',
+      'title': '牛肉意麵',
+      'hashtag': '#美味探索',
+    },
+    {
+      'image': 'assets/food/food6.jpg',
+      'title': '水果拼盤',
+      'hashtag': '#料理魔法',
+    },
+  ];
+  final Random _random = Random();
 
   Widget _buildBody() {
     switch (_currentPageIndex) {
@@ -457,6 +497,9 @@ class _HomePageState extends State<HomePage> {
                 child: ListView.builder(
                   itemCount: 10,
                   itemBuilder: (context, index) {
+                    // Select a random content set, but ensure it's consistent for each index
+                    var contentSet =
+                        randomContentSets[index % randomContentSets.length];
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(
@@ -483,7 +526,7 @@ class _HomePageState extends State<HomePage> {
                                     borderRadius: BorderRadius.vertical(
                                         top: Radius.circular(16)),
                                     child: Image.asset(
-                                      'assets/LOGO.png',
+                                      contentSet['image']!,
                                       height: 250,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
@@ -496,7 +539,7 @@ class _HomePageState extends State<HomePage> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '好食在 $index',
+                                          '${contentSet['title']}',
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontSize: 24,
@@ -505,7 +548,7 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                         SizedBox(height: 4),
                                         Text(
-                                          '#創意料理 $index',
+                                          '${contentSet['hashtag']}',
                                           style: TextStyle(
                                             color: Colors.grey,
                                             fontSize: 16,
@@ -543,7 +586,7 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                               Positioned(
-                                right: 8, // 保持原本的大小
+                                right: 8,
                                 top: 8,
                                 child: InkWell(
                                   onTap: () {
@@ -551,16 +594,16 @@ class _HomePageState extends State<HomePage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            PostPage(index: index), // 传递 index
+                                            PostPage(index: index),
                                       ),
                                     );
                                   },
                                   child: Container(
-                                    width: 40, // 保持原本的宽度
-                                    height: 40, // 保持原本的高度
+                                    width: 40,
+                                    height: 40,
                                     decoration: BoxDecoration(
-                                      color: Colors.orange, // 背景颜色更显眼
-                                      shape: BoxShape.circle, // 圆形
+                                      color: Colors.orange,
+                                      shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.black26,
@@ -572,8 +615,8 @@ class _HomePageState extends State<HomePage> {
                                     child: Center(
                                       child: Icon(
                                         Icons.info,
-                                        color: Colors.white, // 图标颜色
-                                        size: 24, // 图标大小
+                                        color: Colors.white,
+                                        size: 24,
                                       ),
                                     ),
                                   ),
@@ -939,7 +982,8 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 title: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       recipe['title'],
@@ -972,11 +1016,14 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 onTap: () {
                                   int? recipeId = recipe['recipeId'];
-                                  if (recipeId != null) {  // 確保 recipeId 存在
+                                  if (recipeId != null) {
+                                    // 確保 recipeId 存在
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => HistoryPage(recipeId: recipeId), // 傳遞 recipeId 到 HistoryPage
+                                        builder: (context) => HistoryPage(
+                                            recipeId:
+                                                recipeId), // 傳遞 recipeId 到 HistoryPage
                                       ),
                                     );
                                   } else {
@@ -992,7 +1039,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         );
-
 
       case 4:
         return Scaffold(

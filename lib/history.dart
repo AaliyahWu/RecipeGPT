@@ -146,7 +146,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '備註',
+                          '  備註',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,

@@ -225,8 +225,8 @@ class _PickImageState extends State<PickImage> {
 
     request.headers['x-api-key'] = ApiKey.ultralyticsApiKey; // API key
     request.fields['size'] = '640';
-    request.fields['confidence'] = '0.2';
-    request.fields['iou'] = '0.5';
+    request.fields['confidence'] = '0.1';
+    request.fields['iou'] = '0.6';
 
     request.files.add(await http.MultipartFile.fromPath(
       'image',
