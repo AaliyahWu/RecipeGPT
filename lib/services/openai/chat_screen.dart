@@ -32,179 +32,220 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      backgroundColor: const Color(0xFFF1E9E6),
-      title: Text('生成食譜'),
-    ),
-    backgroundColor: Color(0xFFF1E9E6),
-    body: Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Color.fromRGBO(255, 255, 255, 0.8),
-                  image: DecorationImage(
-                    image: AssetImage('assets/image/note.jpg'),
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.5),
-                      BlendMode.dstATop,
-                    ),
-                  ),
-                  borderRadius: BorderRadius.circular(20.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 7,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Center(
-                        child: Text(
-                          _chatResponse.isNotEmpty
-                              ? _chatResponse
-                              : '食譜生成中...',
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 16.0),
-          Center(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFF2B892),
-                foregroundColor: Colors.white,
-              ),
-              onPressed: () async {
-                await _showImageSourceDialog(context);
-              },
-              child: Text('完成'),
-            ),
-          ),
-        ],
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFF1E9E6),
+        title: Text('生成食譜'),
       ),
-    ),
-  );
-}
-
-  Future<void> _showImageSourceDialog(BuildContext context) async {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return Theme(
-        data: Theme.of(context).copyWith(
-          dialogBackgroundColor: Color(0xFFF2B892), // Background color
-          textTheme: TextTheme(
-            bodyText2: TextStyle(color: Colors.white), // Foreground text color
-          ),
-        ),
-        child: AlertDialog(
-          title: Text(
-            "選擇圖片來源",
-            style: TextStyle(color: Colors.white), // Title text color
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.camera);
-              },
-              child: Text("拍照", style: TextStyle(color: Colors.white)),
+      backgroundColor: Color(0xFFF1E9E6),
+      body: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(255, 255, 255, 0.8),
+                    image: DecorationImage(
+                      image: AssetImage('assets/image/note.jpg'),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.5),
+                        BlendMode.dstATop,
+                      ),
+                    ),
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: 1,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Center(
+                          child: Text(
+                            _chatResponse.isNotEmpty
+                                ? _chatResponse
+                                : '食譜生成中...',
+                            style: TextStyle(fontSize: 18.0),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery);
-              },
-              child: Text("從相簿選擇", style: TextStyle(color: Colors.white)),
+            SizedBox(height: 16.0),
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFF2B892),
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async {
+                  await _showRatingDialog(context);
+                },
+                child: Text('完成'),
+              ),
             ),
           ],
         ),
-      );
-    },
-  );
-}
+      ),
+    );
+  }
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _showRatingDialog(BuildContext context) async {
+    TextEditingController ratingController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                dialogBackgroundColor: Color(0xFFF2B892),
+                textTheme: TextTheme(
+                  bodyText2: TextStyle(color: Colors.white),
+                ),
+              ),
+              child: AlertDialog(
+                title: Text(
+                  "輸入評分並選擇圖片來源",
+                  style: TextStyle(color: Colors.white),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: ratingController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: '評分 (1-10)',
+                        labelStyle: TextStyle(color: Colors.white),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.white),
+                        ),
+                      ),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    SizedBox(height: 16),
+                    _selectedImage != null
+                        ? Image.file(
+                            _selectedImage!,
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          )
+                        : Text(
+                            "尚未選擇圖片",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                  ],
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () async {
+                      await _pickImage(ImageSource.camera, setState);
+                    },
+                    child: Text("拍照", style: TextStyle(color: Colors.white)),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      await _pickImage(ImageSource.gallery, setState);
+                    },
+                    child: Text("從相簿選擇", style: TextStyle(color: Colors.white)),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      if (ratingController.text.isNotEmpty) {
+                        String rating = ratingController.text;
+
+                        // Validate the rating is between 1 and 10
+                        int? ratingValue = int.tryParse(rating);
+                        if (ratingValue != null && ratingValue >= 1 && ratingValue <= 10) {
+                          await _saveRatingToDatabase(widget.accountId, rating);
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomePage(accountId: widget.accountId)),
+                            (route) => false,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('請輸入1到10之間的有效評分')),
+                          );
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('評分欄不能為空')),
+                        );
+                      }
+                    },
+                    child: Text("提交評分", style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source, StateSetter setState) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
       });
-      await _uploadImage(_selectedImage!);  // Call the upload function after selecting the image
+      await _uploadImage(_selectedImage!);
     }
   }
 
   Future<void> _uploadImage(File image) async {
-  try {
-    Dio dio = Dio();
-    FormData formData = FormData.fromMap({
-      "file": await MultipartFile.fromFile(image.path, filename: 'recipe_${widget.recipe}.jpg'),
-      "accountId": widget.accountId.toString(),
-      "recipeName": widget.recipe,
-    });
+    try {
+      Dio dio = Dio();
+      FormData formData = FormData.fromMap({
+        "file": await MultipartFile.fromFile(image.path, filename: 'recipe_${widget.recipe}.jpg'),
+        "accountId": widget.accountId.toString(),
+        "recipeName": widget.recipe,
+      });
 
-    var response = await dio.post("http://152.42.163.75/upload.php", data: formData);
+      var response = await dio.post("http://152.42.163.75/upload.php", data: formData);
 
-    // Decode the response data as JSON
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseData;
-      try {
-        responseData = jsonDecode(response.data);  // Decode JSON string to Map
-      } catch (e) {
-        print('Failed to decode JSON: ${response.data}');
-        return;
+      if (response.statusCode == 200) {
+        Map<String, dynamic> responseData = jsonDecode(response.data);
+        if (responseData['status'] == 'success' && responseData.containsKey('imageUrl')) {
+          String imageUrl = responseData['imageUrl'];
+          await _saveImageUrlToDatabase(widget.accountId, imageUrl);
+        }
       }
-
-      // Check if the JSON contains the expected keys
-      if (responseData['status'] == 'success' && responseData.containsKey('imageUrl')) {
-        String imageUrl = responseData['imageUrl'];
-        await _saveImageUrlToDatabase(widget.accountId, imageUrl);  // Save the image URL in the database
-
-        // Navigate back to the homepage upon successful upload and save
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage(accountId: widget.accountId)),
-          (route) => false,
-        );
-      } else {
-        print('Upload failed: ${responseData['message'] ?? "Unknown error"}');
-      }
-    } else {
-      print('Unexpected status code: ${response.statusCode}');
+    } catch (e) {
+      print('Error uploading image: $e');
     }
-  } catch (e) {
-    print('Error uploading image: $e');
   }
-}
-
 
   Future<void> _saveImageUrlToDatabase(int accountId, String imageUrl) async {
     try {
       var conn = await DatabaseService().connection;
 
-      // Update the 'url' field in the most recent recipe entry for this account
       await conn.query(
         'UPDATE recipedb.recipes SET url = ? WHERE accountId = ? ORDER BY createDate DESC LIMIT 1',
         [imageUrl, accountId],
@@ -216,6 +257,21 @@ Widget build(BuildContext context) {
     }
   }
 
+  Future<void> _saveRatingToDatabase(int accountId, String rating) async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      await conn.query(
+        'UPDATE recipedb.recipes SET rating = ? WHERE accountId = ? ORDER BY createDate DESC LIMIT 1',
+        [rating, accountId],
+      );
+
+      print('評分成功保存到資料庫');
+    } catch (e) {
+      print('保存評分到資料庫時出錯: $e');
+    }
+  }
+
   void _startChat(String recipe, String prompt, int people, String preferences) async {
     String? response = await ChatService().request(recipe, prompt, people, preferences);
     setState(() {
@@ -224,7 +280,7 @@ Widget build(BuildContext context) {
     });
 
     if (response != null && response.isNotEmpty) {
-      await _saveRecipeToDatabase(widget.accountId, recipe, response);  // Save the recipe to the database
+      await _saveRecipeToDatabase(widget.accountId, recipe, response);
     }
   }
 
