@@ -32,93 +32,170 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF1E9E6),
-        title: Text('生成食譜'),
-      ),
-      backgroundColor: Color(0xFFF1E9E6),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  padding: EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(255, 255, 255, 0.8),
-                    image: DecorationImage(
-                      image: AssetImage('assets/image/note.jpg'),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.5),
-                        BlendMode.dstATop,
-                      ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor: const Color(0xFFF1E9E6),
+      title: Text('生成食譜'),
+    ),
+    backgroundColor: Color(0xFFF1E9E6),
+    body: Padding(
+      padding: EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(255, 255, 255, 0.8),
+                  image: DecorationImage(
+                    image: AssetImage('assets/image/note.jpg'),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.5),
+                      BlendMode.dstATop,
                     ),
-                    borderRadius: BorderRadius.circular(20.0),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
                   ),
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    itemCount: 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Center(
-                          child: Text(
-                            _chatResponse.isNotEmpty ? _chatResponse : '食譜生成中...',
-                            style: TextStyle(fontSize: 18.0),
-                          ),
+                  borderRadius: BorderRadius.circular(20.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: 1,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: Center(
+                        child: Text(
+                          _chatResponse.isNotEmpty
+                              ? _chatResponse
+                              : '食譜生成中...',
+                          style: TextStyle(fontSize: 18.0),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF2B892),
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () async {
-                    await _showImageSourceDialog(context);
-                  },
-                  child: Text('完成'),
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFF2B892),
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: () {
-                    // 分享食譜
-                    // Share.share(_chatResponse);
-                  },
-                  child: Text('分享'),
-                ),
-              ],
+          ),
+          SizedBox(height: 16.0),
+          Center(
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFF2B892),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () async {
+                await _showImageSourceDialog(context);
+              },
+              child: Text('完成'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       backgroundColor: const Color(0xFFF1E9E6),
+  //       title: Text('生成食譜'),
+  //     ),
+  //     backgroundColor: Color(0xFFF1E9E6),
+  //     body: Padding(
+  //       padding: EdgeInsets.all(20.0),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.stretch,
+  //         children: [
+  //           Expanded(
+  //             child: Align(
+  //               alignment: Alignment.bottomCenter,
+  //               child: Container(
+  //                 padding: EdgeInsets.all(16.0),
+  //                 decoration: BoxDecoration(
+  //                   color: Color.fromRGBO(255, 255, 255, 0.8),
+  //                   image: DecorationImage(
+  //                     image: AssetImage('assets/image/note.jpg'),
+  //                     fit: BoxFit.cover,
+  //                     colorFilter: ColorFilter.mode(
+  //                       Colors.black.withOpacity(0.5),
+  //                       BlendMode.dstATop,
+  //                     ),
+  //                   ),
+  //                   borderRadius: BorderRadius.circular(20.0),
+  //                   boxShadow: [
+  //                     BoxShadow(
+  //                       color: Colors.grey.withOpacity(0.5),
+  //                       spreadRadius: 5,
+  //                       blurRadius: 7,
+  //                       offset: Offset(0, 3),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 child: ListView.builder(
+  //                   controller: _scrollController,
+  //                   itemCount: 1,
+  //                   itemBuilder: (BuildContext context, int index) {
+  //                     return Padding(
+  //                       padding: const EdgeInsets.only(bottom: 16.0),
+  //                       child: Center(
+  //                         child: Text(
+  //                           _chatResponse.isNotEmpty ? _chatResponse : '食譜生成中...',
+  //                           style: TextStyle(fontSize: 18.0),
+  //                         ),
+  //                       ),
+  //                     );
+  //                   },
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //           SizedBox(height: 16.0),
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //             children: [
+  //               ElevatedButton(
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Color(0xFFF2B892),
+  //                   foregroundColor: Colors.white,
+  //                 ),
+  //                 onPressed: () async {
+  //                   await _showImageSourceDialog(context);
+  //                 },
+  //                 child: Text('完成'),
+  //               ),
+  //               ElevatedButton(
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Color(0xFFF2B892),
+  //                   foregroundColor: Colors.white,
+  //                 ),
+  //                 onPressed: () {
+  //                   // 分享食譜
+  //                   // Share.share(_chatResponse);
+  //                 },
+  //                 child: Text('分享'),
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Future<void> _showImageSourceDialog(BuildContext context) async {
   showDialog(
