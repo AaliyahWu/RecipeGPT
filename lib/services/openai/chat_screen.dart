@@ -121,31 +121,69 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Future<void> _showImageSourceDialog(BuildContext context) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("選擇圖片來源"),
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Theme(
+        data: Theme.of(context).copyWith(
+          dialogBackgroundColor: Color(0xFFF2B892), // Background color
+          textTheme: TextTheme(
+            bodyText2: TextStyle(color: Colors.white), // Foreground text color
+          ),
+        ),
+        child: AlertDialog(
+          title: Text(
+            "選擇圖片來源",
+            style: TextStyle(color: Colors.white), // Title text color
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);
               },
-              child: Text("拍照"),
+              child: Text("拍照", style: TextStyle(color: Colors.white)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
               },
-              child: Text("從相簿選擇"),
+              child: Text("從相簿選擇", style: TextStyle(color: Colors.white)),
             ),
           ],
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
+
+  // Future<void> _showImageSourceDialog(BuildContext context) async {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: Text("選擇圖片來源"),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //               _pickImage(ImageSource.camera);
+  //             },
+  //             child: Text("拍照"),
+  //           ),
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.pop(context);
+  //               _pickImage(ImageSource.gallery);
+  //             },
+  //             child: Text("從相簿選擇"),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
