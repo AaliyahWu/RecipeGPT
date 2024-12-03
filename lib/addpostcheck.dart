@@ -39,34 +39,85 @@ class AddPostCheckPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color backgroundColor = Color(0xFFF1E9E6);
     return Scaffold(
       appBar: AppBar(
         title: Text('確認新增貼文'),
-        backgroundColor: Color(0xFFF1E9E6),
+        backgroundColor: backgroundColor,
+        elevation: 0,
       ),
+      backgroundColor: Colors.white, // 設置固定背景顏色
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 顯示食譜圖片
-            Image.network(
-              recipe['imageUrl'],
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            // 食譜圖片
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                recipe['imageUrl'], // 顯示食譜的圖片 URL
+                width: double.infinity,
+                height: 250,
+                fit: BoxFit.cover,
+              ),
             ),
             SizedBox(height: 16),
-            // 顯示食譜名稱
+            // 食譜名稱
             Text(
-              recipe['recipeName'],
+              recipe['recipeName'], // 顯示食譜名稱
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            Spacer(),
-            // 提交按鈕
-            ElevatedButton(
-              onPressed: () => _submitPost(context),
-              child: Text('確認新增貼文'),
+            SizedBox(height: 16),
+            // 步驟標題
+            Text(
+              '食譜步驟：',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 8),
+            // 滾動區域：顯示食譜步驟
+            Expanded(
+              child: Scrollbar(
+                thickness: 8.0, // 滾動條厚度
+                radius: Radius.circular(4.0), // 圓角
+                thumbVisibility: true, // 始終顯示滾動條
+                child: SingleChildScrollView(
+                  child: Text(
+                    recipe['recipeText'] ?? '步驟資訊未提供', // 若步驟為 null，提供預設值
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.black54,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 24),
+            // 提交貼文按鈕
+            Center(
+              child: ElevatedButton(
+                onPressed: () => _submitPost(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 24.0),
+                  child: Text(
+                    '確認新增貼文',
+                    style: TextStyle(fontSize: 18, color: Colors.white), // 白色文字
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFDD8A62), // 固定背景顏色
+                  shadowColor: Colors.transparent, // 去除陰影
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
