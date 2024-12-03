@@ -1,164 +1,100 @@
 import 'package:flutter/material.dart';
-import 'addpostcheck.dart'; // 导入AddPostCheckPage页面
+import 'package:mysql1/mysql1.dart'; // For database connection
+import 'addpostcheck.dart'; // 導入確認頁面
+import 'db/db.dart'; // 資料庫服務
 
-class AddPostPage extends StatelessWidget {
-  final List<Map<String, dynamic>> historicalRecipes = [
-    {
-      'imageUrl': 'assets/food/food1.jpg',
-      'title': '番茄炒蛋',
-      'description': '簡單易做的番茄炒蛋，營養豐富。',
-      'rating': 8.8,
-    },
-    {
-      'imageUrl': 'assets/food/food2.jpg',
-      'title': '牛肉炒飯',
-      'description': '新鮮的牛肉與香脆的蔬菜完美結合，豐富的層次感。',
-      'rating': 8.1,
-    },
-    {
-      'imageUrl': 'assets/food/food3.jpg',
-      'title': '炒高麗菜',
-      'description': '口感鮮嫩，營養豐富的炒高麗菜。',
-      'rating': 9.2,
-    },
-    {
-      'imageUrl': 'assets/food/food4.jpg',
-      'title': '雞肉沙拉',
-      'description': '健康清爽的雞肉沙拉,適合夏日輕食。',
-      'rating': 9.1,
-    },
-    {
-      'imageUrl': 'assets/food/food7.jpg',
-      'title': '牛肉意面',
-      'description': '香濃美味的牛肉意面,百吃不厭。',
-      'rating': 8.6,
-    },
-    {
-      'imageUrl': 'assets/food/food6.jpg',
-      'title': '早餐水果拼盤',
-      'description': '各種新鮮水果的精彩組合。',
-      'rating': 8.2,
-    },
-    {
-      'imageUrl': 'assets/food/food8.jpg',
-      'title': '香菇炒麵',
-      'description': '香氣四溢的香菇炒麵，美味可口。',
-      'rating': 9.0,
-    },
-    {
-      'imageUrl': 'assets/food/food9.jpg',
-      'title': '鮮蝦沙拉',
-      'description': '清爽可口的鮮蝦沙拉，滿滿的海鮮風味。',
-      'rating': 8.9,
-    },
-  ];
+class AddPostPage extends StatefulWidget {
+  final int accountId; // 接收使用者的帳號 ID
+
+  AddPostPage({required this.accountId});
+
+  @override
+  _AddPostPageState createState() => _AddPostPageState();
+}
+
+class _AddPostPageState extends State<AddPostPage> {
+  List<Map<String, dynamic>> historicalRecipes = []; // 歷史食譜列表
+  bool isLoading = true; // 載入狀態
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchHistoricalRecipes(); // 初始化時載入歷史食譜
+  }
+
+  // 從資料庫加載歷史食譜
+  Future<void> _fetchHistoricalRecipes() async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 查詢該使用者的歷史食譜
+      var results = await conn.query(
+        '''
+        SELECT recipeId, recipeName, url 
+        FROM recipedb.recipes 
+        WHERE accountId = ? 
+        ORDER BY createDate DESC
+        ''',
+        [widget.accountId],
+      );
+
+      // 將查詢結果存入列表
+      setState(() {
+        historicalRecipes = results.map((row) {
+          return {
+            'recipeId': row['recipeId'],
+            'recipeName': row['recipeName'],
+            'imageUrl': row['url'],
+            'recipeText': row['recipeText'],
+          };
+        }).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('載入歷史食譜出錯: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            color: Color(0xFFF1E9E6),
-            child: Column(
-              children: [
-                SizedBox(height: 40),
-                Text(
-                  '新增貼文',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: historicalRecipes.length,
-                    itemBuilder: (context, index) {
-                      var recipe = historicalRecipes[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Card(
-                          color: Color(0xFFFFFAF5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.all(10),
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.asset(
-                                recipe['imageUrl'],
-                                fit: BoxFit.cover,
-                                width: 50,
-                                height: 50,
-                              ),
-                            ),
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  recipe['title'],
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.favorite,
-                                        color: Colors.red, size: 20),
-                                    Text(
-                                      ' ${recipe['rating']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            subtitle: Text(
-                              recipe['description'],
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            onTap: () {
-                              // 当点击某个贴文时，导航到 AddPostCheckPage，并传递该帖子的详情
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddPostCheckPage(
-                                    recipe: recipe, // 传递该帖子的详情
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // 左上角的返回按钮
-          Positioned(
-            top: 40,
-            left: 16,
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () {
-                Navigator.pop(context); // 返回上一页
-              },
-            ),
-          ),
-        ],
+      appBar: AppBar(
+        title: Text('新增貼文'),
+        backgroundColor: Color(0xFFF1E9E6),
       ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : historicalRecipes.isEmpty
+              ? Center(child: Text('目前沒有歷史食譜'))
+              : ListView.builder(
+                  itemCount: historicalRecipes.length,
+                  itemBuilder: (context, index) {
+                    final recipe = historicalRecipes[index];
+                    return Card(
+                      margin: EdgeInsets.all(10),
+                      child: ListTile(
+                        leading: Image.network(
+                          recipe['imageUrl'],
+                          width: 60,
+                          height: 60,
+                          fit: BoxFit.cover,
+                        ),
+                        title: Text(recipe['recipeName']),
+                        onTap: () {
+                          // 導航到確認頁面
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddPostCheckPage(
+                                recipe: recipe,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                ),
     );
   }
 }

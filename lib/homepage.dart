@@ -51,6 +51,7 @@ class _HomePageState extends State<HomePage> {
   List<PopularItem> popularItems = [];
   List<PopularItem> recentItems = [];
   List<Map<String, dynamic>> historicalRecipes = []; // 定義變數來儲存歷史食譜資料
+  List<Map<String, dynamic>> posts = []; // 在 State 類中添加 `posts` 列表
   String profileImageUrl = ''; // Holds the profile image URL
   File? _image; // Stores the selected image file
 
@@ -65,6 +66,7 @@ class _HomePageState extends State<HomePage> {
     _fetchUserInfo();
     _loadPreferences(); // Load preferences when the page is opened
     _fetchRecipes(); // 初始化時載入歷史食譜
+    _fetchPosts();
   }
 
   // bool _isNotificationEnabled = true; // 管理通知開關狀態(預設開)
@@ -97,6 +99,38 @@ class _HomePageState extends State<HomePage> {
       ),
       body: _buildBody(),
     );
+  }
+
+  Future<void> _fetchPosts() async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 查詢 posts 與 recipes 表的關聯資料
+      var results = await conn.query('''
+        SELECT p.postId, p.postTime, r.recipeName, r.url
+        FROM recipedb.posts AS p
+        JOIN recipedb.recipes AS r
+        ON p.recipeID = r.recipeId
+        ORDER BY p.postTime DESC
+        ''');
+
+      // 將查詢結果存入 posts 列表
+      setState(() {
+        posts = results.map((row) {
+          return {
+            'postId': row['postId'],
+            'postTime':
+                row['postTime'].toLocal().toString().split(' ')[0], // 日期格式化
+            'recipeName': row['recipeName'],
+            'url': row['url'], // 食譜圖片 URL
+          };
+        }).toList();
+      });
+
+      print('貼文載入成功');
+    } catch (e) {
+      print('載入貼文出錯: $e');
+    }
   }
 
   Future<void> _fetchUserInfo() async {
@@ -417,7 +451,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => AddPostPage()),
+                                    builder: (context) => AddPostPage(accountId: widget.accountId)),
                               );
                             },
                             borderRadius: BorderRadius.circular(8),
@@ -492,143 +526,152 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              // 下滑可滚动的内容部分
+              // 動態貼文展示
               Expanded(
-                child: ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    // Select a random content set, but ensure it's consistent for each index
-                    var contentSet =
-                        randomContentSets[index % randomContentSets.length];
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Center(
-                        child: Container(
-                          width: 300,
-                          height: 400,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.vertical(
-                                        top: Radius.circular(16)),
-                                    child: Image.asset(
-                                      contentSet['image']!,
-                                      height: 250,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
+                child: posts.isEmpty
+                    ? Center(child: CircularProgressIndicator()) // 資料載入中
+                    : ListView.builder(
+                        itemCount: posts.length,
+                        itemBuilder: (context, index) {
+                          final post = posts[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Center(
+                              child: Container(
+                                width: 300,
+                                height: 400,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 4),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
+                                  ],
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          '${contentSet['title']}',
-                                          style: TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
+                                        // 顯示食譜圖片
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(16),
+                                          ),
+                                          child: Image.network(
+                                            post['url'], // 動態載入食譜圖片 URL
+                                            height: 250,
+                                            width: double.infinity,
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
-                                        SizedBox(height: 4),
-                                        Text(
-                                          '${contentSet['hashtag']}',
-                                          style: TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 16,
+                                        Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // 顯示食譜名稱
+                                              Text(
+                                                post['recipeName'], // 動態載入食譜名稱
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 24,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              SizedBox(height: 4),
+                                              // 顯示潑文時間
+                                              Text(
+                                                '潑文時間: ${post['postTime']}', // 動態載入潑文時間
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Spacer(),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 6.0,
+                                            vertical: 2.0,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              // 功能按鈕
+                                              IconButton(
+                                                icon: Icon(Icons.close,
+                                                    color: Colors.red),
+                                                onPressed: () {},
+                                              ),
+                                              IconButton(
+                                                icon: Icon(Icons.skip_next,
+                                                    color: Colors.grey),
+                                                onPressed: () {},
+                                              ),
+                                              IconButton(
+                                                icon: Icon(Icons.favorite,
+                                                    color: Colors.green),
+                                                onPressed: () {},
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  Spacer(),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 6.0, vertical: 2.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        IconButton(
-                                          icon: Icon(Icons.close,
-                                              color: Colors.red),
-                                          onPressed: () {},
+                                    // 詳細資訊按鈕
+                                    Positioned(
+                                      right: 8,
+                                      top: 8,
+                                      child: InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PostPage(index: index),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: Colors.orange,
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black26,
+                                                blurRadius: 10,
+                                                offset: Offset(0, 4),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              Icons.info,
+                                              color: Colors.white,
+                                              size: 24,
+                                            ),
+                                          ),
                                         ),
-                                        IconButton(
-                                          icon: Icon(Icons.skip_next,
-                                              color: Colors.grey),
-                                          onPressed: () {},
-                                        ),
-                                        IconButton(
-                                          icon: Icon(Icons.favorite,
-                                              color: Colors.green),
-                                          onPressed: () {},
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Positioned(
-                                right: 8,
-                                top: 8,
-                                child: InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            PostPage(index: index),
-                                      ),
-                                    );
-                                  },
-                                  child: Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: Colors.orange,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          blurRadius: 10,
-                                          offset: Offset(0, 4),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Center(
-                                      child: Icon(
-                                        Icons.info,
-                                        color: Colors.white,
-                                        size: 24,
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ],
           ),

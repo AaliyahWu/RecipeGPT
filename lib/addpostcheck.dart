@@ -1,153 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:mysql1/mysql1.dart'; // For database connection
+import 'db/db.dart'; // 資料庫服務
 
 class AddPostCheckPage extends StatelessWidget {
   final Map<String, dynamic> recipe;
 
   AddPostCheckPage({required this.recipe});
 
+  Future<void> _submitPost(BuildContext context) async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 插入貼文資料到資料庫
+      await conn.query(
+        '''
+        INSERT INTO recipedb.posts (recipeID, postTime, tag) 
+        VALUES (?, NOW(), ?)
+        ''',
+        [recipe['recipeId'], '新增貼文'], // 預設標籤為 "新增貼文"
+      );
+
+      // 返回上一頁並顯示提示
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('貼文新增成功！')),
+      );
+    } catch (e) {
+      print('新增貼文出錯: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = Color(0xFFF1E9E6);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('新增貼文詳情'),
-        backgroundColor: backgroundColor,
-        elevation: 0,
+        title: Text('確認新增貼文'),
+        backgroundColor: Color(0xFFF1E9E6),
       ),
-      body: Container(
-        color: backgroundColor,
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 显示食谱图片
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: AssetImage(recipe['imageUrl']), // 使用传入的图片 URL
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 食譜照片
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  recipe['imageUrl'], // 顯示食譜的圖片 URL
+                  width: double.infinity,
+                  height: 250,
                   fit: BoxFit.cover,
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            // 食材和步骤区域
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 250, // 固定高度
-                      padding: EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '食材',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              '- 2個番茄\n- 3個雞蛋\n- 1小勺鹽\n- 適量油 ',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Container(
-                      height: 250, // 固定高度，與食材框框一致
-                      padding: EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '步驟',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              '1. 番茄切片，雞蛋打散。\n'
-                              '2. 熱鍋，加入油，煎雞蛋至金黃。\n'
-                              '3. 加入番茄，炒至軟爛。\n'
-                              '4. 加入鹽調味，即可出鍋。',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              SizedBox(height: 16),
+              // 食譜名稱
+              Text(
+                recipe['recipeName'] ?? '未命名食譜', // 若名稱為 null，提供預設值
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            SizedBox(height: 16),
-            // 备注区域
-            Container(
-              padding: EdgeInsets.all(9.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+              SizedBox(height: 16),
+              // 步驟標題
+              Text(
+                '食譜步驟：',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '新增標籤',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+              SizedBox(height: 8),
+              // 顯示食譜步驟
+              Text(
+                recipe['recipeText'] ?? '步驟資訊未提供', // 若步驟為 null，提供預設值
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 24),
+              // 提交貼文按鈕
+              Center(
+                child: ElevatedButton(
+                  onPressed: () => _submitPost(context),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12.0, horizontal: 24.0),
+                    child: Text(
+                      '確認新增貼文',
+                      style: TextStyle(fontSize: 18),
                     ),
                   ),
-                  SizedBox(height: 10),
-                  TextField(
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: '#',
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFDD8A62), // 按鈕顏色
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Spacer(), // 将按钮推到右边
-                      ElevatedButton(
-                        onPressed: () {
-                          // 加入儲存備註的邏輯
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('已上傳')),
-                          );
-                        },
-                        child: Text('上傳'),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -120,7 +120,7 @@ class _ChatPageState extends State<ChatPage> {
               data: Theme.of(context).copyWith(
                 dialogBackgroundColor: Color(0xFFF2B892),
                 textTheme: TextTheme(
-                  bodyText2: TextStyle(color: Colors.white),
+                  bodyMedium: TextStyle(color: Colors.white),
                 ),
               ),
               child: AlertDialog(
