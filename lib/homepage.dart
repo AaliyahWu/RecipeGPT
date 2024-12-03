@@ -105,29 +105,28 @@ class _HomePageState extends State<HomePage> {
     try {
       var conn = await DatabaseService().connection;
 
-      // 查詢 posts 與 recipes 表的關聯資料
+      // 查詢 posts 與 recipes 的關聯數據
       var results = await conn.query('''
-        SELECT p.postId, p.postTime, r.recipeName, r.url
-        FROM recipedb.posts AS p
-        JOIN recipedb.recipes AS r
-        ON p.recipeID = r.recipeId
-        ORDER BY p.postTime DESC
-        ''');
+      SELECT p.postId, p.postTime, r.recipeName, r.url
+      FROM recipedb.posts AS p
+      JOIN recipedb.recipes AS r
+      ON p.recipeID = r.recipeId
+      ORDER BY p.postTime DESC
+      ''');
 
-      // 將查詢結果存入 posts 列表
+      // 更新貼文資料
       setState(() {
         posts = results.map((row) {
           return {
             'postId': row['postId'],
-            'postTime':
-                row['postTime'].toLocal().toString().split(' ')[0], // 日期格式化
+            'postTime': row['postTime'].toLocal().toString().split(' ')[0],
             'recipeName': row['recipeName'],
-            'url': row['url'], // 食譜圖片 URL
+            'url': row['url'],
           };
         }).toList();
       });
 
-      print('貼文載入成功');
+      print('貼文已刷新');
     } catch (e) {
       print('載入貼文出錯: $e');
     }
@@ -447,12 +446,20 @@ class _HomePageState extends State<HomePage> {
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              // 導航到 AddPostPage 並等待結果
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => AddPostPage(accountId: widget.accountId)),
+                                  builder: (context) =>
+                                      AddPostPage(accountId: widget.accountId),
+                                ),
                               );
+
+                              // 如果新增貼文成功，重新加載貼文列表
+                              if (result == true) {
+                                _fetchPosts(); // 呼叫已有的方法刷新貼文
+                              }
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: Ink(
