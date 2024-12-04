@@ -69,8 +69,8 @@ class _PostManagementPageState extends State<PostManagementPage> {
         [postId],
       );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('貼文已刪除')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('貼文已刪除')));
 
       // 返回上一頁並標記需要刷新
       Navigator.pop(context, true);
@@ -110,8 +110,8 @@ class _PostManagementPageState extends State<PostManagementPage> {
                     itemBuilder: (context, index) {
                       var post = posts[index];
                       // 使用 DateFormat 格式化日期，只顯示到年月日
-                      String formattedDate = DateFormat('yyyy-MM-dd')
-                          .format(post['postTime']);
+                      String formattedDate =
+                          DateFormat('yyyy-MM-dd').format(post['postTime']);
 
                       return Card(
                         margin: EdgeInsets.only(bottom: 16.0),
@@ -168,9 +168,8 @@ class _PostManagementPageState extends State<PostManagementPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PostDetailPage(
-                                  post: post, // 傳遞完整的貼文資料到詳細頁面
-                                ),
+                                builder: (context) => PMCDetailedPage(
+                                    postId: post['postId']), // 必须传递 postId
                               ),
                             );
                           },
