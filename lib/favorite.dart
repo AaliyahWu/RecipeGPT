@@ -65,7 +65,7 @@ class _FavoritePageState extends State<FavoritePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '我的最愛管理列表',
+          '我的最愛管理',
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Color(0xFFF1E9E6),

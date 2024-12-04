@@ -148,14 +148,14 @@ class _PostManagementPageState extends State<PostManagementPage> {
                                   color: Colors.grey[600],
                                 ),
                               ),
-                              if (post['tag'] != null)
-                                Text(
-                                  '標籤: ${post['tag']}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                  ),
-                                ),
+                              // if (post['tag'] != null)
+                              //   Text(
+                              //     '標籤: ${post['tag']}',
+                              //     style: TextStyle(
+                              //       fontSize: 14,
+                              //       color: Colors.grey[600],
+                              //     ),
+                              //   ),
                             ],
                           ),
                           trailing: IconButton(

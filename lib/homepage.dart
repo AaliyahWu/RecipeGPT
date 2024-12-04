@@ -55,6 +55,8 @@ class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> posts = []; // 在 State 類中添加 `posts` 列表
   String profileImageUrl = ''; // Holds the profile image URL
   File? _image; // Stores the selected image file
+  bool isLoading = true; // 用於控制進度指示器
+  bool isLiking = false; // 用於控制愛心按鈕狀態
 
   bool _isNotificationEnabled = false;
   String userName = 'Loading...'; // Placeholder for user name
@@ -106,23 +108,26 @@ class _HomePageState extends State<HomePage> {
     try {
       var conn = await DatabaseService().connection;
 
-      // 查詢 posts 與 recipes 的關聯數據
+      // 查詢 posts 與 recipes 的關聯數據，並判斷是否存在於 dislike 中
       var results = await conn.query('''
-      SELECT p.postId, p.postTime, r.recipeName, r.url
-      FROM recipedb.posts AS p
-      JOIN recipedb.recipes AS r
-      ON p.recipeID = r.recipeId
-      ORDER BY p.postTime DESC
-      ''');
+    SELECT p.postId, p.postTime, r.recipeId, r.recipeName, r.url,
+           CASE WHEN d.recipeId IS NOT NULL THEN 1 ELSE 0 END AS isDisliked
+    FROM recipedb.posts AS p
+    JOIN recipedb.recipes AS r ON p.recipeID = r.recipeId
+    LEFT JOIN recipedb.dislikes AS d ON r.recipeId = d.recipeId AND d.accountId = ?
+    ORDER BY isDisliked ASC, p.postTime DESC
+    ''', [widget.accountId]);
 
       // 更新貼文資料
       setState(() {
         posts = results.map((row) {
           return {
             'postId': row['postId'],
+            'recipeId': row['recipeId'], // 確保有 `recipeId`
             'postTime': row['postTime'].toLocal().toString().split(' ')[0],
             'recipeName': row['recipeName'],
             'url': row['url'],
+            'isDisliked': row['isDisliked'], // 新增 isDisliked 字段以進行判斷
           };
         }).toList();
       });
@@ -360,6 +365,86 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // 以下是 _addLikeToDatabase 方法的實現，新增於 _HomePageState 類中：
+
+  Future<void> _addLikeToDatabase(int recipeId) async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 先查詢該用戶對應的食譜是否已經加入過愛心
+      var existingLikes = await conn.query(
+        '''
+      SELECT * FROM recipedb.likes
+      WHERE accountId = ? AND recipeId = ?
+      ''',
+        [widget.accountId, recipeId],
+      );
+
+      if (existingLikes.isNotEmpty) {
+        // 如果已經有愛心，顯示提示消息
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('已經加入到我的最愛')),
+        );
+      } else {
+        // 獲取當前時間，並轉換為 UTC
+        DateTime now = DateTime.now().toUtc();
+
+        // 插入新的愛心紀錄
+        await conn.query(
+          '''
+        INSERT INTO recipedb.likes (accountId, recipeId, likeTime)
+        VALUES (?, ?, ?)
+        ''',
+          [widget.accountId, recipeId, now],
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('加入我的最愛成功')),
+        );
+      }
+    } catch (e) {
+      print('新增最愛失敗: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('新增我的最愛失敗，請稍後再試')),
+      );
+    }
+  }
+
+  Future<void> _addDislikeToDatabase(int recipeId) async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 首先檢查是否已經對該食譜按過叉叉
+      var checkResult = await conn.query(
+        'SELECT * FROM recipedb.dislikes WHERE accountId = ? AND recipeId = ?',
+        [widget.accountId, recipeId],
+      );
+
+      if (checkResult.isNotEmpty) {
+        // 如果已經按過叉叉，不需要再添加
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('已經添加過這個食譜')),
+        );
+        return;
+      }
+
+      // 向 dislikes 資料表中插入新記錄
+      await conn.query(
+        'INSERT INTO recipedb.dislikes (dislikeTime, accountId, recipeId) VALUES (?, ?, ?)',
+        [DateTime.now().toUtc(), widget.accountId, recipeId],
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('已成功添加到不感興趣列表')),
+      );
+    } catch (e) {
+      print('新增不喜歡失敗: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('新增不感興趣列表失敗')),
+      );
+    }
+  }
+
 // List of random content sets
   final List<Map<String, String>> randomContentSets = [
     {
@@ -554,8 +639,8 @@ class _HomePageState extends State<HomePage> {
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             child: Center(
                               child: Container(
-                                width: 300,
-                                height: 400,
+                                width: 320,
+                                height: 420,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(16),
@@ -600,7 +685,7 @@ class _HomePageState extends State<HomePage> {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              SizedBox(height: 4),
+                                              SizedBox(height: 5),
                                               // 顯示潑文時間
                                               Text(
                                                 '發布時間: ${post['postTime']}', // 動態載入潑文時間
@@ -612,7 +697,7 @@ class _HomePageState extends State<HomePage> {
                                             ],
                                           ),
                                         ),
-                                        Spacer(),
+                                        // Spacer(),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 6.0,
@@ -626,17 +711,99 @@ class _HomePageState extends State<HomePage> {
                                               IconButton(
                                                 icon: Icon(Icons.close,
                                                     color: Colors.red),
-                                                onPressed: () {},
+                                                onPressed: () async {
+                                                  // 確認 recipeId 是否存在且不是 null
+                                                  if (post.containsKey(
+                                                          'recipeId') &&
+                                                      post['recipeId'] !=
+                                                          null) {
+                                                    int recipeId =
+                                                        post['recipeId'];
+
+                                                    // 確認 recipeId 是有效的數字
+                                                    if (recipeId > 0) {
+                                                      await _addDislikeToDatabase(
+                                                          recipeId);
+                                                      _fetchPosts(); // 重新加載貼文列表以更新顯示
+                                                    } else {
+                                                      // 如果 recipeId 無效，提示錯誤
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        SnackBar(
+                                                            content: Text(
+                                                                '錯誤: 無效的食譜編號')),
+                                                      );
+                                                    }
+                                                  } else {
+                                                    // 如果 recipeId 是 null 或者不存在，提示錯誤
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              '錯誤: 找不到食譜編號')),
+                                                    );
+                                                  }
+                                                },
                                               ),
+
                                               // IconButton(
                                               //   icon: Icon(Icons.skip_next,
                                               //       color: Colors.grey),
                                               //   onPressed: () {},
                                               // ),
                                               IconButton(
-                                                icon: Icon(Icons.favorite,
-                                                    color: Colors.green),
-                                                onPressed: () {},
+                                                icon: isLiking
+                                                    ? CircularProgressIndicator()
+                                                    : Icon(Icons.favorite,
+                                                        color: Colors.green),
+                                                onPressed: isLiking
+                                                    ? null
+                                                    : () async {
+                                                        // 確認 recipeId 是否存在且不是 null
+                                                        if (post.containsKey(
+                                                                'recipeId') &&
+                                                            post['recipeId'] !=
+                                                                null) {
+                                                          int recipeId =
+                                                              post['recipeId'];
+
+                                                          // 確認 recipeId 是有效的數字
+                                                          if (recipeId > 0) {
+                                                            setState(() {
+                                                              isLiking =
+                                                                  true; // 設定為加載狀態
+                                                            });
+
+                                                            await _addLikeToDatabase(
+                                                                recipeId);
+
+                                                            setState(() {
+                                                              isLiking =
+                                                                  false; // 恢復狀態
+                                                            });
+                                                          } else {
+                                                            // 如果 recipeId 無效，提示錯誤
+                                                            ScaffoldMessenger
+                                                                    .of(context)
+                                                                .showSnackBar(
+                                                              SnackBar(
+                                                                  content: Text(
+                                                                      '錯誤: 無效的食譜編號')),
+                                                            );
+                                                          }
+                                                        } else {
+                                                          // 如果 recipeId 是 null 或者不存在，提示錯誤
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                            SnackBar(
+                                                                content: Text(
+                                                                    '錯誤: 找不到食譜編號')),
+                                                          );
+                                                        }
+                                                      },
                                               ),
                                             ],
                                           ),
@@ -652,9 +819,8 @@ class _HomePageState extends State<HomePage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                              builder: (context) =>
-                                                  PostPage(
-                                                      postId: post['postId']),
+                                              builder: (context) => PostPage(
+                                                  postId: post['postId']),
                                             ),
                                           );
                                         },
