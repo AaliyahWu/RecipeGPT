@@ -415,30 +415,30 @@ class _HomePageState extends State<HomePage> {
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Container(
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: '尋找食譜',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            prefixIcon: Icon(Icons.search, color: Colors.grey),
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    //   child: Container(
+                    //     height: 40,
+                    //     decoration: BoxDecoration(
+                    //       color: Colors.white,
+                    //       borderRadius: BorderRadius.circular(30.0),
+                    //     ),
+                    //     child: TextField(
+                    //       decoration: InputDecoration(
+                    //         hintText: '尋找食譜',
+                    //         hintStyle: TextStyle(color: Colors.grey),
+                    //         prefixIcon: Icon(Icons.search, color: Colors.grey),
+                    //         filled: true,
+                    //         fillColor: Colors.transparent,
+                    //         border: OutlineInputBorder(
+                    //           borderRadius: BorderRadius.circular(30.0),
+                    //           borderSide: BorderSide.none,
+                    //         ),
+                    //       ),
+                    //       style: TextStyle(color: Colors.black),
+                    //     ),
+                    //   ),
+                    // ),
                     SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -520,7 +520,7 @@ class _HomePageState extends State<HomePage> {
 
                               // 如果刪除貼文成功，重新加載貼文列表
                               if (result == true) {
-                                 _fetchPosts(); // 呼叫已有的方法刷新貼文
+                                _fetchPosts(); // 呼叫已有的方法刷新貼文
                               }
                             },
                             borderRadius: BorderRadius.circular(8),
@@ -628,11 +628,11 @@ class _HomePageState extends State<HomePage> {
                                                     color: Colors.red),
                                                 onPressed: () {},
                                               ),
-                                              IconButton(
-                                                icon: Icon(Icons.skip_next,
-                                                    color: Colors.grey),
-                                                onPressed: () {},
-                                              ),
+                                              // IconButton(
+                                              //   icon: Icon(Icons.skip_next,
+                                              //       color: Colors.grey),
+                                              //   onPressed: () {},
+                                              // ),
                                               IconButton(
                                                 icon: Icon(Icons.favorite,
                                                     color: Colors.green),
@@ -653,7 +653,8 @@ class _HomePageState extends State<HomePage> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
-                                                  PostPage(index: index),
+                                                  PostPage(
+                                                      postId: post['postId']),
                                             ),
                                           );
                                         },

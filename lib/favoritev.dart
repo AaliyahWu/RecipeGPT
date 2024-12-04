@@ -143,7 +143,7 @@ class _FavoritevPageState extends State<FavoritevPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    '步驟',
+                                    '製作步驟',
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,

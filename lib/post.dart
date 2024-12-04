@@ -1,101 +1,156 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // 引入日期格式化工具
+import 'db/db.dart'; // 假設有資料庫服務類
 
-class PostPage extends StatelessWidget {
-  final int index;
+class PostPage extends StatefulWidget {
+  final int postId;
 
-  PostPage({required this.index});
+  PostPage({required this.postId});
+
+  @override
+  _PostPageState createState() => _PostPageState();
+}
+
+class _PostPageState extends State<PostPage> {
+  bool isLoading = true;
+  Map<String, dynamic>? recipeDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchRecipeDetails(); // 初始化時獲取食譜詳細資料
+  }
+
+  Future<void> _fetchRecipeDetails() async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 查詢食譜詳細資料
+      var results = await conn.query(
+        '''
+        SELECT r.recipeName, r.recipeText, r.url, p.postTime
+        FROM recipedb.recipes AS r
+        JOIN recipedb.posts AS p
+        ON r.recipeId = p.recipeId
+        WHERE p.postId = ?
+        ''',
+        [widget.postId],
+      );
+
+      if (results.isNotEmpty) {
+        var row = results.first;
+        setState(() {
+          recipeDetails = {
+            'recipeName': row['recipeName'],
+            'recipeText': row['recipeText'],
+            'imageUrl': row['url'],
+            'postTime': row['postTime'], // 原始的日期時間數據
+          };
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('載入食譜詳情失敗: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = Color(0xFFF1E9E6);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('食譜詳情'),
-        backgroundColor: backgroundColor,
+        backgroundColor: Color(0xFFF1E9E6),
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          color: backgroundColor,
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 帖子图片
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: AssetImage('assets/food/food1.jpg'), // 替换为帖子的图片
-                    fit: BoxFit.cover,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : recipeDetails == null
+              ? Center(child: Text('無法載入食譜詳細資料'))
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // 顯示圖片
+                      Container(
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: NetworkImage(recipeDetails!['imageUrl']),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16),
+
+                      // 顯示食譜名稱
+                      Text(
+                        recipeDetails!['recipeName'],
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 16),
+
+                      // 顯示發布時間（只顯示年月日）
+                      Text(
+                        '發布時間: ${_formatPostTime(recipeDetails!['postTime'])}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+
+                      // 顯示製作步驟
+                      Container(
+                        padding: EdgeInsets.all(16.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '製作步驟',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              recipeDetails!['recipeText'],
+                              style: TextStyle(
+                                fontSize: 14,
+                                height: 1.5,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              SizedBox(height: 16),
-
-              // 食材部分
-              Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '食材',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      '- 2個番茄\n- 3個雞蛋\n- 1小勺鹽\n- 適量油\n',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-
-              SizedBox(height: 16),
-
-              // 步骤部分
-              Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '步驟',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Text(
-                      '1. 番茄切片，雞蛋打散。\n'
-                      '2. 熱鍋，加入油，煎雞蛋至金黃。\n'
-                      '3. 加入番茄，炒至軟爛。\n'
-                      '4. 加入鹽調味，即可出鍋。\n',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
+  }
+
+  // 格式化發布時間，只顯示年月日
+  String _formatPostTime(DateTime postTime) {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    return formatter.format(postTime);
   }
 }
