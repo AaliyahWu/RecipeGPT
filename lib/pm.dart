@@ -1,123 +1,184 @@
 import 'package:flutter/material.dart';
-import 'pmc.dart'; // 导入 Pmc 页面
+import 'package:intl/intl.dart'; // 用於日期格式化
+import 'db/db.dart'; // 假設有資料庫服務類
+import 'pmc.dart'; // 貼文詳情頁面
 
-class PostManagement extends StatelessWidget {
-  final List<Map<String, dynamic>> historicalRecipes = [
-    {
-      'imageUrl': 'assets/food/food1.jpg',
-      'title': '番茄炒蛋',
-      'description': '簡單易做的番茄炒蛋，營養豐富。',
-      'rating': 8.8,
-    },
-    // 添加其他食谱...
-  ];
+class PostManagementPage extends StatefulWidget {
+  final int accountId; // 接收用戶的 accountId
+
+  PostManagementPage({required this.accountId});
+
+  @override
+  _PostManagementPageState createState() => _PostManagementPageState();
+}
+
+class _PostManagementPageState extends State<PostManagementPage> {
+  List<Map<String, dynamic>> posts = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPosts();
+  }
+
+  Future<void> _fetchPosts() async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 查詢 posts 表，關聯 recipes 表，過濾屬於當前用戶的貼文
+      var results = await conn.query(
+        '''
+        SELECT p.postId, p.postTime, p.tag, r.recipeName, r.url
+        FROM recipedb.posts AS p
+        JOIN recipedb.recipes AS r
+        ON p.recipeId = r.recipeId
+        WHERE r.accountId = ?
+        ORDER BY p.postTime DESC
+        ''',
+        [widget.accountId],
+      );
+
+      setState(() {
+        posts = results.map((row) {
+          return {
+            'postId': row['postId'],
+            'postTime': row['postTime'],
+            'tag': row['tag'],
+            'recipeName': row['recipeName'],
+            'imageUrl': row['url'],
+          };
+        }).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('載入貼文失敗: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _deletePost(int postId) async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 從 posts 表中刪除記錄
+      await conn.query(
+        'DELETE FROM recipedb.posts WHERE postId = ?',
+        [postId],
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('貼文已刪除')));
+
+      // 返回上一頁並標記需要刷新
+      Navigator.pop(context, true);
+    } catch (e) {
+      print('刪除貼文失敗: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('刪除貼文失敗，請稍後再試')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            color: Color(0xFFF1E9E6),
-            child: Column(
-              children: [
-                SizedBox(height: 40),
-                Text(
-                  '貼文管理',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+      appBar: AppBar(
+        title: Text(
+          '貼文管理',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Color(0xFFF1E9E6),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : posts.isEmpty
+              ? Center(
+                  child: Text(
+                    '目前沒有貼文',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
-                ),
-                Expanded(
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: ListView.builder(
-                    itemCount: historicalRecipes.length,
+                    itemCount: posts.length,
                     itemBuilder: (context, index) {
-                      var recipe = historicalRecipes[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        child: Card(
-                          color: Color(0xFFFFFAF5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                      var post = posts[index];
+                      // 使用 DateFormat 格式化日期，只顯示到年月日
+                      String formattedDate = DateFormat('yyyy-MM-dd')
+                          .format(post['postTime']);
+
+                      return Card(
+                        margin: EdgeInsets.only(bottom: 16.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.all(10),
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.network(
+                              post['imageUrl'],
+                              fit: BoxFit.cover,
+                              width: 70,
+                              height: 70,
+                            ),
                           ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.all(10),
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.asset(
-                                recipe['imageUrl'],
-                                fit: BoxFit.cover,
-                                width: 50,
-                                height: 50,
-                              ),
+                          title: Text(
+                            post['recipeName'],
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '發布日期: $formattedDate',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                              if (post['tag'] != null)
                                 Text(
-                                  recipe['title'],
+                                  '標籤: ${post['tag']}',
                                   style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.grey[600],
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.favorite,
-                                        color: Colors.red, size: 20),
-                                    Text(
-                                      ' ${recipe['rating']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            subtitle: Text(
-                              recipe['description'],
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            onTap: () {
-                              // 当点击某个贴文时，导航到 Pmc 页面
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PmcPage(
-                                    recipe: recipe, // 传递该帖子的详情
-                                  ),
-                                ),
-                              );
+                            ],
+                          ),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              _deletePost(post['postId']);
                             },
                           ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PostDetailPage(
+                                  post: post, // 傳遞完整的貼文資料到詳細頁面
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
                   ),
                 ),
-              ],
-            ),
-          ),
-          // 左上角的返回按钮
-          Positioned(
-            top: 40,
-            left: 16,
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () {
-                Navigator.pop(context); // 返回上一页
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

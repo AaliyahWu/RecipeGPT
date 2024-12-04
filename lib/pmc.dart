@@ -1,162 +1,143 @@
 import 'package:flutter/material.dart';
+import 'db/db.dart'; // 假設有資料庫服務類
 
-class PmcPage extends StatelessWidget {
-  final Map<String, dynamic> recipe;
+class PostDetailPage extends StatefulWidget {
+  final Map<String, dynamic> post;
 
-  PmcPage({required this.recipe});
+  PostDetailPage({required this.post});
+
+  @override
+  _PostDetailPageState createState() => _PostDetailPageState();
+}
+
+class _PostDetailPageState extends State<PostDetailPage> {
+  bool isLoading = false;
+
+  Future<void> _deletePost() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 從 posts 表中刪除記錄
+      await conn.query(
+        'DELETE FROM recipedb.posts WHERE postId = ?',
+        [widget.post['postId']],
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('貼文已刪除')),
+      );
+
+      // 返回上一頁並標記為成功刪除
+      Navigator.pop(context, true);
+    } catch (e) {
+      print('刪除貼文失敗: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('刪除貼文失敗，請稍後再試')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _confirmDelete() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('確認刪除'),
+          content: Text('確定要刪除此貼文嗎？此操作無法恢復。'),
+          actions: [
+            TextButton(
+              child: Text('取消'),
+              onPressed: () {
+                Navigator.of(context).pop(); // 關閉對話框
+              },
+            ),
+            ElevatedButton(
+              child: Text('確認'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // 設定確認按鈕為紅色
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // 關閉對話框
+                _deletePost(); // 呼叫刪除貼文的方法
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor = Color(0xFFF1E9E6);
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('貼文修改'),
-        backgroundColor: backgroundColor,
+        title: Text('貼文詳情'),
+        backgroundColor: Color(0xFFF1E9E6),
+        elevation: 0,
       ),
-      body: Container(
-        color: backgroundColor,
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: AssetImage(recipe['imageUrl']),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 250,
-                      padding: EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '食材',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              '- 2個番茄\n- 3個雞蛋\n- 1小勺鹽\n- 適量油',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
-                    child: Container(
-                      height: 250,
-                      padding: EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '步驟',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              '1. 番茄切片，雞蛋打散。\n'
-                              '2. 熱鍋，加入油，煎雞蛋至金黃。\n'
-                              '3. 加入番茄，炒至軟爛。\n'
-                              '4. 加入鹽調味，即可出鍋。',
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            Container(
-              padding: EdgeInsets.all(9.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-              ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // 顯示貼文圖片
+                  Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                        image: NetworkImage(widget.post['url']),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
+                  // 顯示食譜名稱
                   Text(
-                    '更新標籤',
+                    widget.post['recipeName'],
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: 10),
-                  TextField(
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: '#',
+                  SizedBox(height: 16),
+
+                  // 顯示發布時間
+                  Text(
+                    '發布時間: ${widget.post['postTime'].toString().split(' ')[0]}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
                     ),
                   ),
-                  SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Spacer(),
-                      ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('已更新')),
-                          );
-                        },
-                        child: Text('更新'),
-                      ),
-                      SizedBox(width: 8),
-                      ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('已刪除貼文')),
-                          );
-                        },
-                        child: Text('刪除貼文'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                      ),
-                    ],
+                  Spacer(),
+
+                  // 刪除貼文按鈕
+                  ElevatedButton.icon(
+                    onPressed: _confirmDelete,
+                    icon: Icon(Icons.delete),
+                    label: Text('刪除貼文'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: EdgeInsets.symmetric(vertical: 12.0),
+                      textStyle: TextStyle(fontSize: 18),
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

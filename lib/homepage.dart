@@ -44,6 +44,7 @@ class PopularItem {
 class _HomePageState extends State<HomePage> {
   int _currentPageIndex = 2; // 当前頁面索引
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+  bool shouldRefreshPosts = false; // 用於標記是否需要刷新社群頁面
 
   String userInput = '';
   TextEditingController _controller = TextEditingController();
@@ -483,7 +484,8 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => FavoritePage(accountId: widget.accountId),
+                                  builder: (context) =>
+                                      FavoritePage(accountId: widget.accountId),
                                 ),
                               );
                             },
@@ -506,13 +508,20 @@ class _HomePageState extends State<HomePage> {
                         Material(
                           color: Colors.transparent,
                           child: InkWell(
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              // 導航到 PostManagementPage 並等待返回結果
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => PostManagement(),
+                                  builder: (context) => PostManagementPage(
+                                      accountId: widget.accountId),
                                 ),
                               );
+
+                              // 如果刪除貼文成功，重新加載貼文列表
+                              if (result == true) {
+                                 _fetchPosts(); // 呼叫已有的方法刷新貼文
+                              }
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: Ink(
@@ -594,7 +603,7 @@ class _HomePageState extends State<HomePage> {
                                               SizedBox(height: 4),
                                               // 顯示潑文時間
                                               Text(
-                                                '潑文時間: ${post['postTime']}', // 動態載入潑文時間
+                                                '發布時間: ${post['postTime']}', // 動態載入潑文時間
                                                 style: TextStyle(
                                                   color: Colors.grey,
                                                   fontSize: 16,

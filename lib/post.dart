@@ -11,7 +11,7 @@ class PostPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('好實在'),
+        title: Text('食譜詳情'),
         backgroundColor: backgroundColor,
         elevation: 0,
       ),
