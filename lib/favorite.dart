@@ -1,47 +1,95 @@
 import 'package:flutter/material.dart';
+import 'db/db.dart'; // 假設您有資料庫服務類
 import 'favoritev.dart';
 
-class FavoritePage extends StatelessWidget {
-  final List<Map<String, dynamic>> favoriteRecipes = [
-    {
-      'imageUrl': 'assets/food/food1.jpg',
-      'title': '番茄炒蛋',
-      'description': '簡單易做的番茄炒蛋，營養豐富。這道菜品非常適合家庭聚餐，也可以搭配白米飯食用。',
-      'rating': 9.5,
-    },
-    {
-      'imageUrl': 'assets/food/food2.jpg',
-      'title': '牛肉麵',
-      'description': '香濃的牛肉麵，回味無窮。湯頭鮮美，牛肉嫩滑，非常受歡迎。',
-      'rating': 9.2,
-    },
-  ];
+class FavoritePage extends StatefulWidget {
+  final int accountId; // 接收從首頁傳遞的 accountId
+
+  FavoritePage({required this.accountId});
+
+  @override
+  _FavoritePageState createState() => _FavoritePageState();
+}
+
+class _FavoritePageState extends State<FavoritePage> {
+  List<Map<String, dynamic>> favoriteRecipes = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFavoriteRecipes();
+  }
+
+  Future<void> _fetchFavoriteRecipes() async {
+    try {
+      var conn = await DatabaseService().connection;
+
+      // 查詢我的最愛資料，包含 recipeId
+      var results = await conn.query(
+        '''
+        SELECT l.likeId, l.likeTime, r.recipeId, r.recipeName AS title, r.url AS imageUrl, r.rating, r.recipeText AS description
+        FROM recipedb.likes AS l
+        JOIN recipedb.recipes AS r
+        ON l.recipeId = r.recipeId
+        WHERE l.accountId = ?
+        ORDER BY l.likeTime DESC
+        ''',
+        [widget.accountId], // 使用從 homepage.dart 傳遞過來的 accountId
+      );
+
+      setState(() {
+        favoriteRecipes = results.map((row) {
+          return {
+            'likeId': row['likeId'],
+            'likeTime': row['likeTime'],
+            'recipeId': row['recipeId'], // 包含 recipeId
+            'title': row['title'],
+            'imageUrl': row['imageUrl'],
+            'rating': row['rating'],
+            'description': row['description'],
+          };
+        }).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('載入我的最愛失敗: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            color: Color(0xFFF1E9E6),
-            child: Column(
-              children: [
-                SizedBox(height: 40),
-                Text(
-                  '我的最愛管理',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+      appBar: AppBar(
+        title: Text(
+          '我的最愛管理列表',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Color(0xFFF1E9E6),
+        elevation: 0,
+        iconTheme: IconThemeData(color: Colors.black),
+      ),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : favoriteRecipes.isEmpty
+              ? Center(
+                  child: Text(
+                    '目前沒有收藏的食譜',
+                    style: TextStyle(fontSize: 16, color: Colors.black),
                   ),
-                ),
-                Expanded(
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16.0),
                   child: ListView.builder(
                     itemCount: favoriteRecipes.length,
                     itemBuilder: (context, index) {
                       var recipe = favoriteRecipes[index];
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
+                            horizontal: 0.0, vertical: 8.0),
                         child: Card(
                           color: Color(0xFFFFFAF5),
                           shape: RoundedRectangleBorder(
@@ -51,60 +99,46 @@ class FavoritePage extends StatelessWidget {
                             contentPadding: EdgeInsets.all(10),
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8.0),
-                              child: Image.asset(
+                              child: Image.network(
                                 recipe['imageUrl'],
                                 fit: BoxFit.cover,
-                                width: 50,
-                                height: 50,
+                                width: 70,
+                                height: 70,
                               ),
                             ),
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    recipe['title'],
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.favorite,
-                                        color: Colors.red, size: 20),
-                                    Text(
-                                      ' ${recipe['rating']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            subtitle: Text(
-                              recipe['description'],
+                            title: Text(
+                              recipe['title'],
                               style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey[600],
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                              maxLines: 2,
+                              maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            onTap: () {
-                              Navigator.push(
+                            // subtitle: Text(
+                            //   recipe['description'],
+                            //   style: TextStyle(
+                            //     fontSize: 14,
+                            //     color: Colors.grey[600],
+                            //   ),
+                            //   maxLines: 2,
+                            //   overflow: TextOverflow.ellipsis,
+                            // ),
+                            onTap: () async {
+                              final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => FavoritevPage(
-                                    recipe: recipe,
+                                    recipeId: recipe['recipeId'],
+                                    accountId: widget.accountId,
                                   ),
                                 ),
                               );
+
+                              // 如果從 FavoritevPage 返回，且返回值為 true，則重新加載數據
+                              if (result == true) {
+                                _fetchFavoriteRecipes(); // 重新查詢收藏列表
+                              }
                             },
                           ),
                         ),
@@ -112,21 +146,6 @@ class FavoritePage extends StatelessWidget {
                     },
                   ),
                 ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 40,
-            left: 16,
-            child: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
