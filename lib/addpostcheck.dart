@@ -44,9 +44,10 @@ class AddPostCheckPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('確認新增貼文'),
         backgroundColor: backgroundColor,
-        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        // elevation: 0,
       ),
-      backgroundColor: Colors.white, // 設置固定背景顏色
+      backgroundColor: backgroundColor, // 設置固定背景顏色
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

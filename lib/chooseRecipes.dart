@@ -41,6 +41,7 @@ class _RecipeListPageState extends State<RecipeListPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1E9E6),
+        surfaceTintColor: Colors.transparent,
         title: Text('食譜列表'),
       ),
       body: recipes.isEmpty

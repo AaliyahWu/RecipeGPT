@@ -1211,11 +1211,16 @@ class _HomePageState extends State<HomePage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      recipe['title'],
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                    Expanded(
+                                      child: Text(
+                                        recipe['title'],
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 1, // 設定最大行數為1，確保在一行內顯示
+                                        overflow: TextOverflow
+                                            .ellipsis, // 使用...來代替顯示不完的文字
                                       ),
                                     ),
                                     Row(

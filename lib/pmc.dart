@@ -66,7 +66,8 @@ class _PMCDetailedPageState extends State<PMCDetailedPage> {
       appBar: AppBar(
         title: Text('食譜詳情'),
         backgroundColor: Color(0xFFF1E9E6),
-        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        // elevation: 0,
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())

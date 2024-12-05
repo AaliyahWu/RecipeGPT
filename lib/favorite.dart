@@ -69,7 +69,8 @@ class _FavoritePageState extends State<FavoritePage> {
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Color(0xFFF1E9E6),
-        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        // elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
       body: isLoading

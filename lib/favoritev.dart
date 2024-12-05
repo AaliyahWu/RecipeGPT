@@ -85,7 +85,8 @@ class _FavoritevPageState extends State<FavoritevPage> {
       appBar: AppBar(
         title: Text('好食在'),
         backgroundColor: backgroundColor,
-        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        // elevation: 0,
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())

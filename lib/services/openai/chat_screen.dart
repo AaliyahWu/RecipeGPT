@@ -36,6 +36,7 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFFF1E9E6),
+        surfaceTintColor: Colors.transparent,
         title: Text('生成食譜'),
       ),
       backgroundColor: Color(0xFFF1E9E6),

@@ -70,6 +70,7 @@ class _CheckListState extends State<CheckList> {
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Color(0xFFF1E9E6),
+        surfaceTintColor: Colors.transparent,
         iconTheme: IconThemeData(color: Colors.black),
       ),
       backgroundColor: Color(0xFFF1E9E6),

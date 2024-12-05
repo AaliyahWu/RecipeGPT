@@ -72,7 +72,8 @@ class _AddPostPageState extends State<AddPostPage> {
           ),
         ),
         backgroundColor: Color(0xFFF1E9E6), // 固定 AppBar 背景顏色
-        elevation: 0, // 去除陰影
+        // elevation: 1, // 去除陰影
+        surfaceTintColor: Colors.transparent, //設定滑動時背景顏色透明
         iconTheme: IconThemeData(color: Colors.black), // 設定返回按鈕顏色
       ),
       body: Padding(
