@@ -92,7 +92,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Container(
-                    height: 200,
+                    height: 154,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
@@ -102,12 +102,12 @@ class _HistoryPageState extends State<HistoryPage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 8),
                   Text(
                     '製作時間：${recipeDetails!['createDate']}',
                     style: TextStyle(fontSize: 16, color: Colors.grey[700]),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 8),
                   Expanded(
                     child: Container(
                       padding: EdgeInsets.all(16.0),
@@ -149,20 +149,20 @@ class _HistoryPageState extends State<HistoryPage> {
                         Text(
                           '  備註',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         SizedBox(height: 8),
                         TextField(
                           controller: _remarkController, // 綁定備註控制器
-                          maxLines: 2,
+                          maxLines: 1,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: '在這裡寫下你的備註...',
                           ),
                         ),
-                        SizedBox(height: 8),
+                        SizedBox(height: 4),
                         Row(
                           children: [
                             Spacer(),

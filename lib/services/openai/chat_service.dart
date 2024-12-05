@@ -24,7 +24,7 @@ class ChatService {
         Message(
           role: "system",
           content:
-              "下列三項資訊，食材: $prompt, 人數: $strPeople, 飲食偏好:$preference。請根據食材生成10種食譜名稱，條列顯示，輸出格式為只要顯示食譜名稱就好，食譜名稱前面不要有數字。",
+              "下列三項資訊，食材: $prompt, 人數: $strPeople, 飲食偏好:$preference。請根據食材生成10種食譜名稱，條列顯示，輸出格式為只要顯示食譜名稱就好，食譜名稱前面不要有其他標示、數字、空白，只要食譜名稱即可。",
         )
       ]);
 

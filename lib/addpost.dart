@@ -64,8 +64,8 @@ class _AddPostPageState extends State<AddPostPage> {
       backgroundColor: Color(0xFFF1E9E6), // 固定 AppBar 背景顏色
       appBar: AppBar(
         title: Container(
-          padding:
-              EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0), // 添加適當的內邊距
+          padding: EdgeInsets.symmetric(
+              horizontal: 16.0, vertical: 10.0), // 添加適當的內邊距
           child: Text(
             '新增貼文',
             style: TextStyle(color: Colors.black), // 設定文字顏色
@@ -78,7 +78,7 @@ class _AddPostPageState extends State<AddPostPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
-            horizontal: 16.0, vertical: 8.0), // 設定內邊距
+            horizontal: 20.0, vertical: 8.0), // 設定內邊距
         child: isLoading
             ? Center(child: CircularProgressIndicator()) // 顯示加載指示器
             : historicalRecipes.isEmpty
@@ -86,7 +86,7 @@ class _AddPostPageState extends State<AddPostPage> {
                     child: Text(
                       '目前沒有可以新增的食譜',
                       style: TextStyle(
-                          color: Colors.black, fontSize: 16), // 修正文字顏色
+                          color: Colors.black, fontSize: 18), // 修正文字顏色
                     ),
                   )
                 : ListView.builder(
@@ -95,13 +95,14 @@ class _AddPostPageState extends State<AddPostPage> {
                       final recipe = historicalRecipes[index];
                       return Card(
                         margin:
-                            EdgeInsets.symmetric(vertical: 8.0), // 每個項目的上下間距
+                            EdgeInsets.symmetric(vertical: 16.0), // 每個項目的上下間距
                         child: ListTile(
+                          contentPadding: EdgeInsets.all(10),
                           leading: Image.network(
                             recipe['imageUrl'],
+                            fit: BoxFit.cover,
                             width: 70,
                             height: 70,
-                            fit: BoxFit.cover,
                           ),
                           title: Text(
                             recipe['recipeText'] ?? '',

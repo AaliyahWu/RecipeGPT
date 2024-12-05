@@ -67,6 +67,7 @@ class _PostPageState extends State<PostPage> {
       appBar: AppBar(
         title: Text('食譜詳情'),
         backgroundColor: Color(0xFFF1E9E6),
+        surfaceTintColor: Colors.transparent,
         elevation: 0,
       ),
       body: isLoading
