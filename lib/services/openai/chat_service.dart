@@ -20,11 +20,11 @@ class ChatService {
   Future<String?> requestRecipeList(String prompt, int people, String preference) async {
     String strPeople = people.toString();
     try {
-      ChatRequest request = ChatRequest(model: "gpt-3.5-turbo", messages: [
+      ChatRequest request = ChatRequest(model: "gpt-4o-mini", messages: [ //gpt-3.5-turbo gpt-4o-mini
         Message(
           role: "system",
           content:
-              "下列三項資訊，食材: $prompt, 人數: $strPeople, 飲食偏好:$preference。請根據食材生成10種食譜名稱，條列顯示，輸出格式為只要顯示食譜名稱就好，食譜名稱前面不要有其他標示、數字、空白，只要食譜名稱即可。",
+              "下列三項資訊，食材: $prompt, 人數: $strPeople, 飲食偏好:$preference。請僅根據食材生成10種食譜名稱，條列顯示，食譜名稱所用食材，只能採用食材中的食材，飲食偏好的食材不能採用。輸出格式為只要顯示食譜名稱就好，食譜名稱前面不要有其他空行、標示、數字、空白，只要食譜名稱即可。",
         )
       ]);
 
@@ -50,11 +50,11 @@ class ChatService {
     String strPeople = people.toString();
     // gpt-3.5-turbo
     try {
-      ChatRequest request = ChatRequest(model: "gpt-3.5-turbo", messages: [
+      ChatRequest request = ChatRequest(model: "gpt-4o-mini", messages: [ //gpt-3.5-turbo gpt-4o-mini
         Message(
           role: "system",
           content:
-              "請根據以下資訊生成食譜內容:\n食譜名稱: $recipe\n食材: $prompt\n人數: $strPeople 人份\飲食偏好: $preferences\n。食譜所用食材，只能採用告訴你的那些食材，不能多加其他食材。請先顯示食譜名稱(不要顯示食譜編號)、再顯示卡路里、食材用量,然後再條列顯示製作步驟(包含調味料的用量)。",
+              "請根據以下資訊生成食譜內容:\n食譜名稱: $recipe\n食材: $prompt\n人數: $strPeople 人份\飲食偏好: $preferences\n。食譜所用食材，只能採用食材中的食材，飲食偏好的食材不能採用。請先顯示食譜名稱(不要顯示食譜編號)、再顯示卡路里、食材用量,然後再條列顯示製作步驟(包含調味料的用量)。",
         )
       ]);
 

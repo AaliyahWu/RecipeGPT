@@ -258,8 +258,9 @@ class _HomePageState extends State<HomePage> {
     try {
       var conn = await DatabaseService().connection;
       var results = await conn.query(
-        'SELECT recipeName, rating, url FROM recipedb.recipes WHERE accountId != ? ORDER BY RAND() LIMIT 3;',
-        [widget.accountId],
+        // 'SELECT recipeName, rating, url FROM recipedb.recipes WHERE accountId != ? ORDER BY RAND() LIMIT 3;',
+        'SELECT recipeName, rating, url FROM recipedb.recipes ORDER BY rating DESC LIMIT 3',
+        // [widget.accountId],
       );
 
       setState(() {
