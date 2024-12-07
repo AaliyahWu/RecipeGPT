@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:recipe_gpt/checklist.dart';
 import 'package:recipe_gpt/services/openai/api_key.dart';
+import 'package:image/image.dart' as img;
 
 class PickImage extends StatefulWidget {
    final int accountId; // 新增此行以接收 accountId
@@ -184,12 +185,26 @@ class _PickImageState extends State<PickImage> {
 
   // Gallery
   Future<void> _pickImageFromGallery() async {
-    final returnImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    // final returnImage =
+    //     await ImagePicker().pickImage(source: ImageSource.gallery);
+    // if (returnImage == null) return;
+    final returnImage = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (returnImage == null) return;
+
+    // 讀取圖像並進行預處理
+    img.Image image = img.decodeImage(File(returnImage.path).readAsBytesSync())!;
+    // 去噪
+    img.Image denoisedImage = img.gaussianBlur(image, 1);
+    // 調整對比度
+    // img.Image contrastImage = img.adjustColor(denoisedImage, contrast: 1.2);
+
+    // 將處理後的圖像轉換為字節數組
+    final processedImageBytes = img.encodePng(denoisedImage);
+
     setState(() {
       selectedImage = File(returnImage.path);
-      _image = File(returnImage.path).readAsBytesSync();
+      // _image = File(returnImage.path).readAsBytesSync();
+      _image = processedImageBytes as Uint8List?;
       _isProcessing = true;
       _statusText = '辨識中...';
     });
@@ -199,12 +214,24 @@ class _PickImageState extends State<PickImage> {
 
   // Camera
   Future<void> _pickImageFromCamera() async {
-    final returnImage =
-        await ImagePicker().pickImage(source: ImageSource.camera);
+    // final returnImage =
+    //     await ImagePicker().pickImage(source: ImageSource.camera);
+    // if (returnImage == null) return;
+    final returnImage = await ImagePicker().pickImage(source: ImageSource.camera);
     if (returnImage == null) return;
+
+    // 讀取圖像並進行預處理
+    img.Image image = img.decodeImage(File(returnImage.path).readAsBytesSync())!;
+    // img.Image resizedImage = img.copyResize(image, width: 640, height: 640);
+    img.Image contrastImage = img.adjustColor(image, contrast: 1.2);
+
+    // 將處理後的圖像轉換為字節數組
+    final processedImageBytes = img.encodePng(contrastImage);
+
     setState(() {
       selectedImage = File(returnImage.path);
-      _image = File(returnImage.path).readAsBytesSync();
+      // _image = File(returnImage.path).readAsBytesSync();
+      _image = processedImageBytes as Uint8List?;
       _isProcessing = true;
       _statusText = '辨識中...';
     });
@@ -225,7 +252,7 @@ class _PickImageState extends State<PickImage> {
 
     request.headers['x-api-key'] = ApiKey.ultralyticsApiKey; // API key
     request.fields['size'] = '640';
-    request.fields['confidence'] = '0.1';
+    request.fields['confidence'] = '0.4';
     request.fields['iou'] = '0.6';
 
     request.files.add(await http.MultipartFile.fromPath(
@@ -286,7 +313,7 @@ class _PickImageState extends State<PickImage> {
   Future<List<String>> _translateItemsToChinese(List<String> items) async {
     final apiKey = ApiKey.openAIApiKey;
     List<String> translatedItems = [];
-    int delay = 5000; // 延遲5秒開始 (在短時間內發送了多個API請求觸發了速率限制failed: 429)
+    int delay = 3000; // 延遲3秒開始 (在短時間內發送了多個API請求觸發了速率限制failed: 429)
 
     for (String item in items) {
       if (_translationCache.containsKey(item)) {
@@ -303,7 +330,7 @@ class _PickImageState extends State<PickImage> {
             'messages': [
               {
                 'role': 'system',
-                'content': '將下面的文字翻譯成繁體中文： $item',
+                'content': '將下面的文字翻譯成繁體中文(臺灣)，(只要給我結果，不需要任何符號)： $item',
               }
             ],
             'temperature': 0.5,
