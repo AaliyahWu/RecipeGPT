@@ -220,19 +220,19 @@ class _PickImageState extends State<PickImage> {
     // final returnImage = await ImagePicker().pickImage(source: ImageSource.camera);
     // if (returnImage == null) return;
 
-    // 讀取圖像並進行預處理
-    img.Image image = img.decodeImage(File(returnImage.path).readAsBytesSync())!;
-    // 去噪
-    img.Image denoisedImage = img.gaussianBlur(image, 1);
-    // img.Image resizedImage = img.copyResize(image, width: 640, height: 640);
-    img.Image contrastImage = img.adjustColor(denoisedImage, contrast: 1.2);
+    // // 讀取圖像並進行預處理
+    // img.Image image = img.decodeImage(File(returnImage.path).readAsBytesSync())!;
+    // // 去噪
+    // img.Image denoisedImage = img.gaussianBlur(image, 1);
+    // // img.Image resizedImage = img.copyResize(image, width: 640, height: 640);
+    // img.Image contrastImage = img.adjustColor(denoisedImage, contrast: 1.2);
 
-    // 將處理後的圖像轉換為字節數組
+    // // 將處理後的圖像轉換為字節數組
     // final processedImageBytes = img.encodePng(contrastImage);
 
     setState(() {
       selectedImage = File(returnImage.path);
-      _image = contrastImage as Uint8List?;
+      _image = File(returnImage.path).readAsBytesSync();
       // _image = processedImageBytes as Uint8List?;
       _isProcessing = true;
       _statusText = '辨識中...';
