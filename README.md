@@ -32,10 +32,10 @@
 
 ## 📷 主要功能展示
 🚀 **食材影像辨識**  
-![image](https://drive.google.com/file/d/1PZcJsHaegufhCosF_FTOS4l_j-Jg082x/view?usp=sharing)
-![image](https://drive.google.com/file/d/1GFR5T-F-w97OqtmsmPwaQudXXgRdMKO8/view?usp=sharing)
-![image](https://drive.google.com/file/d/1OHmdWL8I4Hw5wahXvrfYiv4drSJpH5qD/view?usp=sharing)
+![image](https://github.com/AaliyahWu/RecipeGPT/blob/master/readmeJpg/%E9%A3%9F%E6%9D%90%E5%BD%B1%E5%83%8F%E8%BE%A8%E8%AD%98/%E5%9C%96%E7%89%871.png)
+![image](https://github.com/AaliyahWu/RecipeGPT/blob/master/readmeJpg/%E9%A3%9F%E6%9D%90%E5%BD%B1%E5%83%8F%E8%BE%A8%E8%AD%98/%E5%9C%96%E7%89%872.jpg)
+![image](https://github.com/AaliyahWu/RecipeGPT/blob/master/readmeJpg/%E9%A3%9F%E6%9D%90%E5%BD%B1%E5%83%8F%E8%BE%A8%E8%AD%98/%E5%9C%96%E7%89%873.jpg)
 📚 **歷史記錄 & 社群互動**  
-![image](https://drive.google.com/file/d/1VPUVFh-4cCuyIXF1dMLCglfu-vrKq58E/view?usp=sharing)
-![image](https://drive.google.com/file/d/1nVBm78NEynsV13SksvqZj15DJxhH2gAK/view?usp=sharing)
+![image](https://github.com/AaliyahWu/RecipeGPT/blob/master/readmeJpg/%E6%AD%B7%E5%8F%B2%E8%A8%98%E9%8C%84%20%26%20%E7%A4%BE%E7%BE%A4%E4%BA%92%E5%8B%95/%E5%9C%96%E7%89%874.jpg)
+![image](https://github.com/AaliyahWu/RecipeGPT/blob/master/readmeJpg/%E6%AD%B7%E5%8F%B2%E8%A8%98%E9%8C%84%20%26%20%E7%A4%BE%E7%BE%A4%E4%BA%92%E5%8B%95/%E5%9C%96%E7%89%875.jpg)
 
